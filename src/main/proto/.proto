@@ -1,0 +1,53 @@
+syntax = "proto3";
+
+option java_package = "server";
+option java_outer_classname = "CipherServiceProto";
+
+service Scraba {
+   rpc startConnection(EmptyMessage) returns (ClientData) {}
+   rpc login(ClientLogin) returns (ClientData) {}
+   rpc register(ClientRegister) returns (ClientData) {}
+   rpc saveProject(SerializedObject) returns (EmptyMessage) {}
+   rpc getTutorialList(Query) returns (StringList) {}
+   rpc getProjectList(Query) returns (StringList) {}
+   
+   rpc getTutorial(Query) returns (SerializedObject) {}
+   rpc getProject(Query) returns (SerializedObject) {}
+
+}
+
+message Query {
+  string query = 1;
+}
+
+message SerializedObject {
+  string obj = 1;
+}
+
+message StringList {
+  repeated string results = 1;
+}
+
+message ClientData {
+  string id = 1;
+  string name = 2;
+  string public_key = 3;
+  string private_key = 4;
+}
+
+message ClientLogin {
+  string name = 1;
+  string password = 2;
+}
+
+message ClientRegister {
+  string name = 1;
+  string password = 2;
+  string email = 3;
+}
+
+message StringResponse {
+  string response = 1;
+}
+
+message EmptyMessage {}
