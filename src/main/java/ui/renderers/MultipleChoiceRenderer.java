@@ -150,7 +150,6 @@ public class MultipleChoiceRenderer implements CapsuleRenderer {
 	public List<IRenderer> getChildren() {
 		List<IRenderer> output = new ArrayList<>();
 		for(BlockBundleRenderer bbr: getBlockBundles()) {
-			System.out.println(bbr.getChildren());
 			output.addAll(bbr.getChildren());	
 		}
 		return output;

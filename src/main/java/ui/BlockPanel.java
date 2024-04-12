@@ -9,6 +9,8 @@ import java.awt.Point;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
+import java.awt.event.MouseWheelEvent;
+import java.awt.event.MouseWheelListener;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -38,8 +40,8 @@ import ui.renderers.InvocableBlockRenderer;
 
 public class BlockPanel extends JPanel{
 	
-	public static final boolean DEBUG_SHOW_HITBOXES = true;
-	public static final boolean DEBUG_SHOW_HASHES = true;
+	public static final boolean DEBUG_SHOW_HITBOXES = false;
+	public static final boolean DEBUG_SHOW_HASHES = false;
 	public static final List<String> DEBUG_MUTED_FUNCTIONS = List.of(
 		//block interaction
 		//"addBlock",
@@ -62,10 +64,19 @@ public class BlockPanel extends JPanel{
 	
 	
 	private static final long serialVersionUID = 8172972493584077329L;
+	
+	//Position
 	private int x = 0;
 	private int y = 0;
+	
+	//Position of mouse on screen when dragging panel (clicked == null)
 	private int cx = 0;
 	private int cy = 0;
+	
+	//Zoom of the blocks
+	private double zoom = 0.5;
+	
+	
 	private final List<DragableRenderer> blocks = new LinkedList<>();
 	private BlockClickable clicked = null;
 	private BlockClickable hovered = null;
@@ -118,13 +129,22 @@ public class BlockPanel extends JPanel{
 	}
 	private Point mouse;
 	private Rect hpoint = null;
-	public Point clickPosition;
+	public Point clickPosition;	
 	
 	private BlockPanel() {
 		super();
 		setIgnoreRepaint(true);
 		addMouseListener(new MouseController());
 		addMouseMotionListener(new MouseMotionController());
+		addMouseWheelListener(new MouseWheelListener() {
+
+			@Override
+			public void mouseWheelMoved(MouseWheelEvent e) {
+				zoom = Math.max(0.25, Math.min(zoom - e.getWheelRotation() * 0.05, 1));
+				repaint();
+			}
+			
+		});
 	}
 	@Override
 	public void repaint() {
@@ -141,12 +161,12 @@ public class BlockPanel extends JPanel{
 			g0.fillRect(0, 0, this.getWidth(), this.getHeight());
 			List<DragableRenderer> _temp = new ArrayList<>(blocks);
 			Collections.reverse(_temp);
-			((Graphics2D)g0).setStroke(new BasicStroke(5));
+			((Graphics2D)g0).setStroke(new BasicStroke((int)Math.ceil(5 * zoom)));
 			System.out.println("▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓ Start repaint");
 			for (DragableRenderer b : _temp) {
 				System.out.println(b.getBlock().toString().replaceAll(".*\\.", ""));
 				if(blocks.contains(b)) {
-					g0.drawImage(b.getRenderable(), x + b.getX(), y + b.getY(), null);
+					g0.drawImage(b.getRenderable().getScaledInstance((int)(b.getRenderable().getWidth() * zoom), (int)(b.getRenderable().getHeight() * zoom), BufferedImage.SCALE_FAST), (int)((x + b.getX()) * zoom), (int)((y + b.getY()) * zoom), null);
 					if(DEBUG_SHOW_HITBOXES) {
 						g0.setColor(Color.green);
 						Rect hb = b.getClickable().getPosition();
@@ -175,15 +195,16 @@ public class BlockPanel extends JPanel{
 		@Override
 		public void mousePressed(MouseEvent e) {
 			clickPosition = e.getPoint().getLocation();
+			clickPosition.x /= zoom;
+			clickPosition.y /= zoom;
 			clickPosition.translate(-x, -y);
 			System.out.println("▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓");
-			System.out.println(x + " " + y);
-			mouse = e.getPoint();
+			mouse = e.getPoint().getLocation();
 				
 			for(DragableRenderer dr : blocks) {
 				System.out.println(dr.getBlock().toString().replaceAll(".*\\.", "") + " x:" + mouse.x + " y:" + mouse.y);
 				Rect r = dr.getClickable().getPosition();
-				if(mouse.x > r.x + x && mouse.x < r.x + x + r.w && mouse.y > r.y + y && mouse.y < r.y + r.h + y) {
+				if(mouse.x > (r.x + x) * zoom && mouse.x < (r.x + x + r.w) * zoom && mouse.y > (r.y + y) * zoom && mouse.y < (r.y + r.h + y) * zoom) {
 					System.out.println("in");
 					clicked = dr.getClickable();
 					break;
@@ -192,13 +213,13 @@ public class BlockPanel extends JPanel{
 			}
 			if(clicked != null) {
 				System.out.println(clicked.getClass().getSimpleName() + " " + clicked.getBlock().toString().replaceAll(".*\\.", "") + 
-						" px:" + mouse.x + " py:" + mouse.y + 
-						" xf:" + (mouse.x - clicked.getPosition().x) + " yf:" + (mouse.x - clicked.getPosition().x));
-				clicked.onClick(mouse.x - (clicked.getPosition().x + x), mouse.y - (clicked.getPosition().y + y));
+						" px:" + clickPosition.x + " py:" + clickPosition.y + 
+						" xf:" + (clickPosition.x - clicked.getPosition().x) + " yf:" + (clickPosition.x - clicked.getPosition().x));
+				clicked.onClick(clickPosition.x - clicked.getPosition().x, clickPosition.y - clicked.getPosition().y);//(int)(mouse.x - (clicked.getPosition().x + x) * zoom), (int)(mouse.y - (clicked.getPosition().y + y) * zoom));
 				paintComponent(getGraphics());
 			} else {
-				cx = mouse.x - x;
-				cy = mouse.y - y;
+				cx = (int) (mouse.x / zoom - x);
+				cy = (int) (mouse.y / zoom - y);
 			}
 		}
 		@Override
@@ -216,9 +237,13 @@ public class BlockPanel extends JPanel{
 	private class MouseMotionController extends MouseMotionAdapter {
 		@Override
 		public void mouseDragged(MouseEvent e) {
+			Point clickPosition = e.getPoint().getLocation();
+			clickPosition.x /= zoom;
+			clickPosition.y /= zoom;
+			clickPosition.translate(-x, -y);
 			mouse = e.getPoint();
 			if(clicked != null) {
-				clicked.onDrag(mouse.x - x, mouse.y - y);
+				clicked.onDrag(clickPosition.x, clickPosition.y);
 				paintComponent(getGraphics());
 				hpoint = clicked.getPosition();
 				hpoint.x += hpoint.w/2;
@@ -238,8 +263,8 @@ public class BlockPanel extends JPanel{
 					
 				}
 			} else {
-				x = mouse.x - cx;
-				y = mouse.y - cy;
+				x = (int) ((mouse.x / zoom - cx));
+				y = (int) ((mouse.y / zoom - cy));
 				paintComponent(getGraphics());
 			}
 			FlashThread.INSTANCE.setHovered(null);
