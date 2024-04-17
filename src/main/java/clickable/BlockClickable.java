@@ -1,4 +1,4 @@
-package domain.clickable;
+package clickable;
 
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
@@ -9,7 +9,7 @@ import domain.models.interfaces.Clickable;
 import domain.models.interfaces.Translatable;
 import domain.models.interfaces.Valuable;
 import domain.models.interfaces.VariableHolder;
-import ui.BlockPanel;
+import ui.components.BlockPanel;
 import ui.renderers.IRenderer;
 import ui.renderers.IRenderer.DragableRenderer;
 import ui.renderers.LiteralRenderer;

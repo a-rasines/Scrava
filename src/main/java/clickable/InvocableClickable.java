@@ -1,6 +1,6 @@
-package domain.clickable;
+package clickable;
 
-import ui.BlockPanel;
+import ui.components.BlockPanel;
 import ui.renderers.IRenderer.DragableRenderer;
 
 public class InvocableClickable extends BlockClickable{

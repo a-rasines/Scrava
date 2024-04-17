@@ -9,13 +9,13 @@ import java.lang.reflect.Constructor;
 import java.util.LinkedList;
 import java.util.List;
 
-import domain.clickable.BlockClickable;
+import clickable.BlockClickable;
 import domain.models.interfaces.Clickable.Rect;
 import domain.models.interfaces.Translatable;
 import domain.models.interfaces.Valuable;
 import domain.models.interfaces.VariableHolder;
 import domain.values.AbstractLiteral;
-import ui.BlockPanel;
+import ui.components.BlockPanel;
 import ui.renderers.IRenderer.DragableRenderer;
 import ui.renderers.SimpleBlockRenderer.SimpleRenderable.BlockCategory;
 

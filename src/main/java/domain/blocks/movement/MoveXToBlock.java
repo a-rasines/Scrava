@@ -11,6 +11,10 @@ public class MoveXToBlock extends MoveToBlock{
 		super(s, x, new NumberLiteral<Byte>((byte)0));
 	}
 	
+	public MoveXToBlock(Sprite s) {
+		this(s, new NumberLiteral<Integer>(0));
+	}
+
 	@Override
 	public String getTitle() {
 		return "Move to x: " + VARIABLE_NUM;

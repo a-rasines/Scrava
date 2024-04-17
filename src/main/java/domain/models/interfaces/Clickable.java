@@ -1,6 +1,6 @@
 package domain.models.interfaces;
 
-import domain.clickable.BlockClickable;
+import clickable.BlockClickable;
 import ui.renderers.IRenderer;
 
 public interface Clickable {

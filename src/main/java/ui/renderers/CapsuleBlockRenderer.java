@@ -13,10 +13,10 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
+import clickable.BlockClickable;
+import clickable.CapsuleBlockClickable;
 import domain.blocks.container.IfBlock;
 import domain.blocks.movement.MoveBlock;
-import domain.clickable.BlockClickable;
-import domain.clickable.CapsuleBlockClickable;
 import domain.models.interfaces.Clickable.Rect;
 import domain.models.interfaces.InvocableBlock;
 import domain.models.interfaces.Translatable;
@@ -24,7 +24,7 @@ import domain.models.interfaces.Valuable;
 import domain.models.types.CapsuleBlock;
 import domain.values.AbstractLiteral;
 import domain.values.BooleanLiteral;
-import ui.BlockPanel;
+import ui.components.BlockPanel;
 
 public class CapsuleBlockRenderer implements CapsuleRenderer{
 	

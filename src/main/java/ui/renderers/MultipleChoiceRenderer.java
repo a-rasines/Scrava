@@ -12,19 +12,19 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
+import clickable.BlockClickable;
+import clickable.CapsuleBlockClickable;
 import debug.DebugOut;
 import domain.blocks.container.IfElseBlock;
 import domain.blocks.movement.MoveBlock;
 import domain.blocks.movement.MoveToBlock;
 import domain.blocks.movement.MoveXBlock;
-import domain.clickable.BlockClickable;
-import domain.clickable.CapsuleBlockClickable;
 import domain.models.interfaces.Clickable.Rect;
 import domain.models.interfaces.InvocableBlock;
 import domain.models.interfaces.Translatable;
 import domain.models.types.CapsuleBlock;
 import domain.models.types.MultipleOptionCapsuleBlock;
-import ui.BlockPanel;
+import ui.components.BlockPanel;
 
 public class MultipleChoiceRenderer implements CapsuleRenderer {
 

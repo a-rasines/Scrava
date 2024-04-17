@@ -15,15 +15,15 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
-import domain.clickable.BlockClickable;
-import domain.clickable.LiteralClickable;
+import clickable.BlockClickable;
+import clickable.LiteralClickable;
 import domain.models.interfaces.Clickable;
 import domain.models.interfaces.Clickable.Rect;
 import domain.models.interfaces.Translatable;
 import domain.models.interfaces.Valuable;
 import domain.values.AbstractLiteral;
 import domain.values.NumberLiteral;
-import ui.BlockPanel;
+import ui.components.BlockPanel;
 
 public class LiteralRenderer implements IRenderer {
 	

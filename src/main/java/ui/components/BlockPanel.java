@@ -1,10 +1,14 @@
-package ui;
+package ui.components;
 
 import java.awt.BasicStroke;
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
+import java.awt.Container;
+import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.LayoutManager;
 import java.awt.Point;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -19,7 +23,9 @@ import java.util.List;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 
+import clickable.BlockClickable;
 import debug.DebugOut;
 import domain.blocks.conditional.bool.AndBlock;
 import domain.blocks.container.IfElseBlock;
@@ -28,64 +34,17 @@ import domain.blocks.movement.MoveToBlock;
 import domain.blocks.movement.MoveXBlock;
 import domain.blocks.operators.AddOperator;
 import domain.blocks.operators.AppendOperator;
-import domain.clickable.BlockClickable;
 import domain.models.interfaces.Clickable.Rect;
 import domain.values.NumberLiteral;
 import domain.values.StringLiteral;
 import domain.values.Variable;
+import ui.FlashThread;
 import ui.renderers.IRenderer;
 import ui.renderers.IRenderer.DragableRenderer;
 import ui.renderers.IRenderer.IRenderable;
 import ui.renderers.InvocableBlockRenderer;
 
 public class BlockPanel extends JPanel{
-	
-	public static final boolean DEBUG_SHOW_HITBOXES = false;
-	public static final boolean DEBUG_SHOW_HASHES = false;
-	public static final List<String> DEBUG_MUTED_FUNCTIONS = List.of(
-		//block interaction
-		//"addBlock",
-		"getBlockBundleIndex",
-		"moveTo",
-		"removeBlock",
-		"removeChild",
-		
-		//event
-		"mouseDragged",
-		//"onClick",
-		"onHover",
-		//"onHoverEnd",
-		
-		//paint
-		"paintComponent",
-		"patch",
-		"renderText"
-	);
-	
-	
-	private static final long serialVersionUID = 8172972493584077329L;
-	
-	//Position
-	private int x = 0;
-	private int y = 0;
-	
-	//Position of mouse on screen when dragging panel (clicked == null)
-	private int cx = 0;
-	private int cy = 0;
-	
-	//Zoom of the blocks
-	private double zoom = 0.5;
-	
-	
-	private final List<DragableRenderer> blocks = new LinkedList<>();
-	private BlockClickable clicked = null;
-	private BlockClickable hovered = null;
-	public static BlockPanel INSTANCE = new BlockPanel();
-	
-	public void setClicked(BlockClickable cl) {
-		System.out.println("clicked set to " + cl.getBlock().toString().replaceAll(".*\\.", ""));
-		clicked = cl;
-	}
 	
 	public static void main(String[] args) {
 		DebugOut.setup();
@@ -112,6 +71,56 @@ public class BlockPanel extends JPanel{
 		p.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		p.setVisible(true);
 	}
+	
+	public static final boolean DEBUG_SHOW_HITBOXES = false;
+	public static final boolean DEBUG_SHOW_HASHES = false;
+	public static final List<String> DEBUG_MUTED_FUNCTIONS = List.of(
+		//block interaction
+		"addBlock",
+		"getBlockBundleIndex",
+		"moveTo",
+		"removeBlock",
+		"removeChild",
+		
+		//event
+		"mouseDragged",
+		"mousePressed",
+		"onClick",
+		"onHover",
+		"onHoverEnd",
+		
+		//paint
+		"paintComponent",
+		"patch",
+		"renderText"
+	);
+	
+	
+	private static final long serialVersionUID = 8172972493584077329L;
+	
+	//Position
+	private int x = 0;
+	private int y = 0;
+	
+	//Position of mouse on screen when dragging panel (clicked == null)
+	private int cx = 0;
+	private int cy = 0;
+	
+	//Zoom of the blocks
+	public double zoom = 0.5;
+	
+	
+	private final List<DragableRenderer> blocks = new LinkedList<>();
+	private BlockClickable clicked = null;
+	private BlockClickable hovered = null;
+	private final JScrollPane blockPane;
+	public static BlockPanel INSTANCE = new BlockPanel();
+	
+	public void setClicked(BlockClickable cl) {
+		System.out.println("clicked set to " + cl.getBlock().toString().replaceAll(".*\\.", ""));
+		clicked = cl;
+	}
+	
 	public void addBlock(IRenderable b) {
 		System.out.println(""+b);
 		addBlock(IRenderer.getDragableRendererOf(b));
@@ -131,8 +140,15 @@ public class BlockPanel extends JPanel{
 	private Rect hpoint = null;
 	public Point clickPosition;	
 	
+	//▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓
+	//▓							Constructor									▓
+	//▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓
+	
 	private BlockPanel() {
 		super();
+		blockPane = new JScrollPane(BlockList.INSTANCE);
+		add(blockPane);
+		add(SectionList.INSTANCE);
 		setIgnoreRepaint(true);
 		addMouseListener(new MouseController());
 		addMouseMotionListener(new MouseMotionController());
@@ -145,12 +161,29 @@ public class BlockPanel extends JPanel{
 			}
 			
 		});
+		//Empty layout to not mess with custom render system
+		setLayout(new LayoutManager() {public void addLayoutComponent(String name, Component comp) {} public void removeLayoutComponent(Component comp) {} public Dimension preferredLayoutSize(Container parent) {	return null; } public Dimension minimumLayoutSize(Container parent) { return null; } public void layoutContainer(Container parent) {}});
+		repaint();
 	}
 	@Override
 	public void repaint() {
 		if(getGraphics() != null)
-			paintComponent(getGraphics());
+			paint(getGraphics());
 		else super.repaint();
+	}
+	
+	@Override
+	public void paint(Graphics g) {
+		//super.paint(g);
+		BufferedImage temp = new BufferedImage(getWidth(), getHeight(), BufferedImage.TYPE_3BYTE_BGR);
+		BlockList.INSTANCE.setBounds(2 * getWidth() / 3 - 10, 0, getWidth() / 3 - 20, getHeight() - 20);
+		blockPane.setBounds(2 * getWidth() / 3 - 10, 0, getWidth() / 3 - 10, getHeight() - 10);
+		BlockList.INSTANCE.paintComponents(g);
+		SectionList.INSTANCE.setBounds(getWidth() - 25, 0, 25, getHeight());
+		SectionList.INSTANCE.paintComponents(g);
+		paintComponent(temp.getGraphics());
+		temp = temp.getSubimage(0, 0, 2 * getWidth() / 3 - 10, getHeight());
+		g.drawImage(temp, 0, 0, null);
 	}
 	@Override
 	protected void paintComponent(Graphics g) {
@@ -194,6 +227,8 @@ public class BlockPanel extends JPanel{
 	private class MouseController extends MouseAdapter {
 		@Override
 		public void mousePressed(MouseEvent e) {
+			if(e.getPoint().x > 2 * getWidth() / 3) // List / section selected
+				return;
 			clickPosition = e.getPoint().getLocation();
 			clickPosition.x /= zoom;
 			clickPosition.y /= zoom;
@@ -216,7 +251,7 @@ public class BlockPanel extends JPanel{
 						" px:" + clickPosition.x + " py:" + clickPosition.y + 
 						" xf:" + (clickPosition.x - clicked.getPosition().x) + " yf:" + (clickPosition.x - clicked.getPosition().x));
 				clicked.onClick(clickPosition.x - clicked.getPosition().x, clickPosition.y - clicked.getPosition().y);//(int)(mouse.x - (clicked.getPosition().x + x) * zoom), (int)(mouse.y - (clicked.getPosition().y + y) * zoom));
-				paintComponent(getGraphics());
+				repaint();
 			} else {
 				cx = (int) (mouse.x / zoom - x);
 				cy = (int) (mouse.y / zoom - y);
@@ -244,7 +279,7 @@ public class BlockPanel extends JPanel{
 			mouse = e.getPoint();
 			if(clicked != null) {
 				clicked.onDrag(clickPosition.x, clickPosition.y);
-				paintComponent(getGraphics());
+				repaint();
 				hpoint = clicked.getPosition();
 				hpoint.x += hpoint.w/2;
 				hpoint.y += 20;
@@ -265,7 +300,7 @@ public class BlockPanel extends JPanel{
 			} else {
 				x = (int) ((mouse.x / zoom - cx));
 				y = (int) ((mouse.y / zoom - cy));
-				paintComponent(getGraphics());
+				repaint();
 			}
 			FlashThread.INSTANCE.setHovered(null);
 			if(hovered != null) {

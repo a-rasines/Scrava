@@ -1,4 +1,4 @@
-package domain.clickable;
+package clickable;
 
 import java.util.Collection;
 import java.util.List;
@@ -7,7 +7,7 @@ import domain.models.interfaces.Clickable;
 import domain.models.interfaces.InvocableBlock;
 import domain.models.interfaces.Valuable;
 import domain.models.interfaces.VariableHolder;
-import ui.BlockPanel;
+import ui.components.BlockPanel;
 import ui.renderers.CapsuleRenderer;
 import ui.renderers.IRenderer;
 import ui.renderers.IRenderer.DragableRenderer;

@@ -14,9 +14,9 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
+import clickable.BlockClickable;
+import clickable.InvocableClickable;
 import domain.blocks.movement.MoveBlock;
-import domain.clickable.BlockClickable;
-import domain.clickable.InvocableClickable;
 import domain.models.interfaces.Clickable.Rect;
 import domain.models.interfaces.InvocableBlock;
 import domain.models.interfaces.Translatable;
@@ -24,7 +24,7 @@ import domain.models.interfaces.Valuable;
 import domain.models.interfaces.VariableHolder;
 import domain.values.AbstractLiteral;
 import domain.values.NumberLiteral;
-import ui.BlockPanel;
+import ui.components.BlockPanel;
 import ui.renderers.IRenderer.DragableRenderer;
 
 public class InvocableBlockRenderer implements DragableRenderer {

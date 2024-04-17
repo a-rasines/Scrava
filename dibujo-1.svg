@@ -23,9 +23,9 @@
      inkscape:pagecheckerboard="0"
      inkscape:deskcolor="#d1d1d1"
      inkscape:document-units="mm"
-     inkscape:zoom="2.0000002"
-     inkscape:cx="958.99991"
-     inkscape:cy="201.24998"
+     inkscape:zoom="1.4142137"
+     inkscape:cx="1039.4469"
+     inkscape:cy="317.84447"
      inkscape:window-width="1920"
      inkscape:window-height="1001"
      inkscape:window-x="-9"
@@ -38,6 +38,31 @@
      inkscape:label="Capa 1"
      inkscape:groupmode="layer"
      id="layer1">
+    <path
+       id="path47"
+       style="fill:#00ff00;stroke:#ffffff;stroke-width:1;fill-opacity:1"
+       d="m 301.23349,125.57298 v -11.54296 h 16.13959 c 0,10.53379 -16.13959,11.54296 -16.13959,11.54296 z"
+       inkscape:export-filename="src\main\resources\textures\section\end.svg"
+       inkscape:export-xdpi="96"
+       inkscape:export-ydpi="96" />
+    <path
+       id="path50"
+       style="fill:#00ff00;stroke:#ffffff;stroke-width:1;fill-opacity:1"
+       d="m 301.23351,54.068534 v 11.542965 h 16.13959 c 0,-10.533795 -16.13959,-11.542965 -16.13959,-11.542965 z"
+       inkscape:export-filename="src\main\resources\textures\section\start.svg"
+       inkscape:export-xdpi="96"
+       inkscape:export-ydpi="96" />
+    <rect
+       style="fill:#00ff00;fill-opacity:1;stroke:#ffffff;stroke-width:1"
+       id="rect44"
+       width="16.139582"
+       height="48.418747"
+       x="301.23352"
+       y="65.611496" />
+    <path
+       id="rect47"
+       style="fill:#00ff00;fill-opacity:1;stroke:#ffffff;stroke-width:1"
+       d="m 301.23352,54.068527 v 11.542965 48.418758 11.54296 c 0,0 16.13959,-1.00918 16.13959,-11.54296 V 65.611492 c 0,-10.533784 -16.13959,-11.542965 -16.13959,-11.542965 z" />
     <path
        id="path27"
        style="fill:#4ca742;fill-opacity:1;stroke:#ffffff;stroke-width:1;stroke-dasharray:none;stroke-opacity:1"
@@ -327,5 +352,37 @@
        inkscape:export-filename="src\main\resources\textures\capsule\arm_end.svg"
        inkscape:export-xdpi="96"
        inkscape:export-ydpi="96" />
+    <path
+       id="rect5"
+       style="fill:#e97d00;stroke:#ffffff;stroke-width:1"
+       d="M 255.58388 54.068534 L 255.58388 65.611499 L 255.58388 114.03025 L 255.58388 125.57321 C 255.58388 125.57321 271.72347 124.56403 271.72347 114.03025 L 271.72347 65.611499 C 271.72347 55.077715 255.58388 54.068534 255.58388 54.068534 z " />
+    <path
+       id="rect38"
+       style="fill:#16cbff;stroke:#ffffff;stroke-width:1;fill-opacity:1"
+       d="M 224.90152 54.068534 L 224.90152 65.611499 L 224.90152 114.03025 L 224.90152 125.57321 C 224.90152 125.57321 241.0411 124.56403 241.0411 114.03025 L 241.0411 65.611499 C 241.0411 55.077715 224.90152 54.068534 224.90152 54.068534 z " />
+    <text
+       xml:space="preserve"
+       style="font-size:9.04137px;font-family:Arial;-inkscape-font-specification:Arial;text-align:center;text-anchor:middle;fill:#ffffff;fill-opacity:1;stroke:#ffffff;stroke-width:0.17798"
+       x="89.471886"
+       y="-229.75278"
+       id="text43"
+       transform="rotate(90)"><tspan
+         sodipodi:role="line"
+         id="tspan43"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:Monofonto;-inkscape-font-specification:Monofonto;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:0.17798"
+         x="89.471886"
+         y="-229.75278">Movement</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:9.04137px;font-family:Arial;-inkscape-font-specification:Arial;text-align:center;text-anchor:middle;fill:#ffffff;fill-opacity:1;stroke:#ffffff;stroke-width:0.17798"
+       x="89.471886"
+       y="-260.4353"
+       id="text47"
+       transform="rotate(90)"><tspan
+         sodipodi:role="line"
+         id="tspan47"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:Monofonto;-inkscape-font-specification:Monofonto;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:0.17798"
+         x="89.471886"
+         y="-260.4353">Control</tspan></text>
   </g>
 </svg>

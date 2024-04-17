@@ -1,4 +1,4 @@
-package domain.clickable;
+package clickable;
 
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;

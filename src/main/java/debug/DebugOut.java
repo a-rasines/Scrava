@@ -2,7 +2,7 @@ package debug;
 
 import java.io.PrintStream;
 
-import ui.BlockPanel;
+import ui.components.BlockPanel;
 
 public class DebugOut extends PrintStream{
 

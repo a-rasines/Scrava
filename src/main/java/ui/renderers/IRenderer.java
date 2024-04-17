@@ -18,13 +18,13 @@ import java.util.Map;
 
 import javax.imageio.ImageIO;
 
-import domain.clickable.BlockClickable;
+import clickable.BlockClickable;
 import domain.models.interfaces.Clickable;
 import domain.models.interfaces.Clickable.Rect;
 import domain.models.interfaces.Translatable;
 import domain.models.interfaces.Valuable;
 import domain.models.types.CapsuleBlock;
-import ui.BlockPanel;
+import ui.components.BlockPanel;
 import ui.renderers.InvocableBlockRenderer.InvocableBlockRenderable;
 import ui.renderers.SimpleBlockRenderer.SimpleRenderable;
 
@@ -90,14 +90,20 @@ public interface IRenderer {
 			e.printStackTrace();
 			return null;
 		}
-//		if(DRAG_RENDS.get(b)== null)
-//			if(b instanceof SimpleRenderable)
-//				DRAG_RENDS.put(b, new SimpleBlockRenderer((SimpleRenderable)b));
-//			else if(b instanceof InvocableBlockRenderable)
-//				DRAG_RENDS.put(b, new InvocableBlockRenderer((InvocableBlockRenderable)b));
-//			else if(b instanceof CapsuleBlock)
-//				DRAG_RENDS.put(b, new CapsuleBlockRenderer((CapsuleBlock)b));
-//		return DRAG_RENDS.get(b);
+	}
+	/**
+	 * This function creates a new instance of the renderer without checking for singleton instances. Avoid using if possible.
+	 * @param b
+	 * @return {@link ui.renderers.IRenderer.DragableRenderer DragableRenderer} of the {@link ui.renderers.IRenderer.IRenderable IRenderable} passed as parameter.
+	 */
+	public static DragableRenderer getDetachedDragableRendererOf(IRenderable b) {
+		try {
+			if(b.getRenderer() != null && b.getRenderer().getParameterCount() == 1)
+				return (DragableRenderer) b.getRenderer().newInstance(b);
+		} catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
 	
 	public static SimpleBlockRenderer getDragableRendererOf(SimpleRenderable sbr) {
