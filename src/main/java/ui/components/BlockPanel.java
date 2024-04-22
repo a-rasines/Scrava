@@ -21,9 +21,10 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
+import javax.swing.ImageIcon;
 import javax.swing.JFrame;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
+import javax.swing.JLabel;
+import javax.swing.JLayeredPane;
 
 import clickable.BlockClickable;
 import debug.DebugOut;
@@ -44,10 +45,12 @@ import ui.renderers.IRenderer.DragableRenderer;
 import ui.renderers.IRenderer.IRenderable;
 import ui.renderers.InvocableBlockRenderer;
 
-public class BlockPanel extends JPanel{
+public class BlockPanel extends JLayeredPane{
 	
-	public static void main(String[] args) {
+	static {
 		DebugOut.setup();
+	}
+	public static void main(String[] args) {
 		JFrame p = new JFrame();
 		BlockPanel bp = BlockPanel.INSTANCE;
 		bp.addBlock(new AppendOperator().setValues(new AddOperator<Double>(new NumberLiteral<Double>(0.0), new NumberLiteral<Double>(0.0)), new StringLiteral("Test")));
@@ -71,30 +74,8 @@ public class BlockPanel extends JPanel{
 		p.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		p.setVisible(true);
 	}
-	
 	public static final boolean DEBUG_SHOW_HITBOXES = false;
-	public static final boolean DEBUG_SHOW_HASHES = false;
-	public static final List<String> DEBUG_MUTED_FUNCTIONS = List.of(
-		//block interaction
-		"addBlock",
-		"getBlockBundleIndex",
-		"moveTo",
-		"removeBlock",
-		"removeChild",
-		
-		//event
-		"mouseDragged",
-		"mousePressed",
-		"onClick",
-		"onHover",
-		"onHoverEnd",
-		
-		//paint
-		"paintComponent",
-		"patch",
-		"renderText"
-	);
-	
+	public static final boolean DEBUG_SHOW_HASHES = false;	
 	
 	private static final long serialVersionUID = 8172972493584077329L;
 	
@@ -113,7 +94,7 @@ public class BlockPanel extends JPanel{
 	private final List<DragableRenderer> blocks = new LinkedList<>();
 	private BlockClickable clicked = null;
 	private BlockClickable hovered = null;
-	private final JScrollPane blockPane;
+	private JLabel clickedLabel = new JLabel("");
 	public static BlockPanel INSTANCE = new BlockPanel();
 	
 	public void setClicked(BlockClickable cl) {
@@ -146,9 +127,15 @@ public class BlockPanel extends JPanel{
 	
 	private BlockPanel() {
 		super();
-		blockPane = new JScrollPane(BlockList.INSTANCE);
-		add(blockPane);
-		add(SectionList.INSTANCE);
+		setMinimumSize(new Dimension(400, 100));
+		clickedLabel.setOpaque(false);
+		clickedLabel.setDoubleBuffered(true);
+		//Empty layout to not mess with custom render system
+		setLayout(new LayoutManager() {public void addLayoutComponent(String name, Component comp) {} public void removeLayoutComponent(Component comp) {} public Dimension preferredLayoutSize(Container parent) {	return null; } public Dimension minimumLayoutSize(Container parent) { return null; } public void layoutContainer(Container parent) {}});
+		add(SectionList.INSTANCE, JLayeredPane.PALETTE_LAYER);
+		add(clickedLabel, JLayeredPane.MODAL_LAYER);
+		
+		setDoubleBuffered(false);
 		setIgnoreRepaint(true);
 		addMouseListener(new MouseController());
 		addMouseMotionListener(new MouseMotionController());
@@ -156,78 +143,99 @@ public class BlockPanel extends JPanel{
 
 			@Override
 			public void mouseWheelMoved(MouseWheelEvent e) {
+				if(e.getPoint().x > 2 * getWidth() / 3 - 10) // List / section selected
+					return;
 				zoom = Math.max(0.25, Math.min(zoom - e.getWheelRotation() * 0.05, 1));
 				repaint();
 			}
 			
 		});
-		//Empty layout to not mess with custom render system
-		setLayout(new LayoutManager() {public void addLayoutComponent(String name, Component comp) {} public void removeLayoutComponent(Component comp) {} public Dimension preferredLayoutSize(Container parent) {	return null; } public Dimension minimumLayoutSize(Container parent) { return null; } public void layoutContainer(Container parent) {}});
 		repaint();
-	}
-	@Override
-	public void repaint() {
-		if(getGraphics() != null)
-			paint(getGraphics());
-		else super.repaint();
 	}
 	
 	@Override
-	public void paint(Graphics g) {
-		//super.paint(g);
-		BufferedImage temp = new BufferedImage(getWidth(), getHeight(), BufferedImage.TYPE_3BYTE_BGR);
-		BlockList.INSTANCE.setBounds(2 * getWidth() / 3 - 10, 0, getWidth() / 3 - 20, getHeight() - 20);
-		blockPane.setBounds(2 * getWidth() / 3 - 10, 0, getWidth() / 3 - 10, getHeight() - 10);
-		BlockList.INSTANCE.paintComponents(g);
-		SectionList.INSTANCE.setBounds(getWidth() - 25, 0, 25, getHeight());
-		SectionList.INSTANCE.paintComponents(g);
-		paintComponent(temp.getGraphics());
-		temp = temp.getSubimage(0, 0, 2 * getWidth() / 3 - 10, getHeight());
-		g.drawImage(temp, 0, 0, null);
+	public void update(Graphics g) {
+		paint(g);
 	}
+	
+	BufferedImage rend = null;
+	@Override
+	public void repaint() {
+		rend = null;
+		super.repaint();
+	}
+	
+	private void adjustSizes() {
+		SectionList.INSTANCE.setBounds(getWidth() - 25, 0, 25, getHeight());
+	}
+	
+	private Dimension d = null;
+	private static final ImageIcon EMPTY_CLICKED = new ImageIcon(new BufferedImage(1,1, BufferedImage.TYPE_4BYTE_ABGR));
 	@Override
 	protected void paintComponent(Graphics g) {
-		try {
-			BufferedImage temp = new BufferedImage(getWidth(), getHeight(), BufferedImage.TYPE_3BYTE_BGR);
-			Graphics g0 = temp.getGraphics();
-			g0.setColor(Color.white);
-			g0.fillRect(0, 0, this.getWidth(), this.getHeight());
-			List<DragableRenderer> _temp = new ArrayList<>(blocks);
-			Collections.reverse(_temp);
-			((Graphics2D)g0).setStroke(new BasicStroke((int)Math.ceil(5 * zoom)));
-			System.out.println("▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓ Start repaint");
-			for (DragableRenderer b : _temp) {
-				System.out.println(b.getBlock().toString().replaceAll(".*\\.", ""));
-				if(blocks.contains(b)) {
-					g0.drawImage(b.getRenderable().getScaledInstance((int)(b.getRenderable().getWidth() * zoom), (int)(b.getRenderable().getHeight() * zoom), BufferedImage.SCALE_FAST), (int)((x + b.getX()) * zoom), (int)((y + b.getY()) * zoom), null);
-					if(DEBUG_SHOW_HITBOXES) {
-						g0.setColor(Color.green);
-						Rect hb = b.getClickable().getPosition();
-						g0.drawRect(hb.x + x, hb.y + y, hb.w, hb.h);
-						g0.setColor(Color.red);
-						g0.drawRect(b.getX() + x, b.getY() + y, b.getWidth(), b.getHeight());
+		if(d == null || d.getHeight() != getHeight() || d.getWidth() != getWidth()) adjustSizes();
+		if(clicked == null)
+			clickedLabel.setIcon(EMPTY_CLICKED);
+		else {
+			BufferedImage clk = clicked.getRenderer().getRenderable();
+			Rect pos = clicked.getPosition();
+			clickedLabel.setIcon(
+					new ImageIcon(
+							clk.getScaledInstance(
+								(int)(clk.getWidth() * zoom), 
+								(int)(clk.getHeight() * zoom), 
+								BufferedImage.SCALE_FAST)
+							)
+					);
+			clickedLabel.setBounds(
+					(int)((pos.x + x) * zoom), //X 
+					(int)((pos.y + y) * zoom), //Y
+					(int)(clk.getWidth() * zoom), //W
+					(int)(clk.getHeight() * zoom) ); //H
+		}
+		if(rend == null)
+			try {
+				rend = new BufferedImage(getWidth(), getHeight(), BufferedImage.TYPE_3BYTE_BGR);
+				Graphics g0 = rend.getGraphics();
+				g0.setColor(Color.white);
+				g0.fillRect(0, 0, this.getWidth(), this.getHeight());
+				List<DragableRenderer> _temp = new ArrayList<>(blocks);
+				Collections.reverse(_temp);
+				((Graphics2D)g0).setStroke(new BasicStroke((int)Math.ceil(5 * zoom)));
+				System.out.println("▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓ Start repaint");
+				for (DragableRenderer b : _temp) {
+					System.out.println(b.getBlock().toString().replaceAll(".*\\.", ""));
+					if(blocks.contains(b)) {
+						g0.drawImage(b.getRenderable().getScaledInstance((int)(b.getRenderable().getWidth() * zoom), (int)(b.getRenderable().getHeight() * zoom), BufferedImage.SCALE_FAST), (int)((x + b.getX()) * zoom), (int)((y + b.getY()) * zoom), null);
+						if(DEBUG_SHOW_HITBOXES) {
+							g0.setColor(Color.green);
+							Rect hb = b.getClickable().getPosition();
+							g0.drawRect(hb.x + x, hb.y + y, hb.w, hb.h);
+							g0.setColor(Color.red);
+							g0.drawRect(b.getX() + x, b.getY() + y, b.getWidth(), b.getHeight());
+						}
 					}
 				}
-			}
-			if(DEBUG_SHOW_HITBOXES) {
-				if(mouse != null)
-					g0.drawOval(mouse.x - 1, mouse.y - 1, 2, 2);
-				if(hpoint != null) {
-					g0.setColor(Color.blue);
-					g0.drawOval(hpoint.x - 1 + x, hpoint.y - 1 + y, 2, 2);
+				if(DEBUG_SHOW_HITBOXES) {
+					if(mouse != null)
+						g0.drawOval(mouse.x - 1, mouse.y - 1, 2, 2);
+					if(hpoint != null) {
+						g0.setColor(Color.blue);
+						g0.drawOval(hpoint.x - 1 + x, hpoint.y - 1 + y, 2, 2);
+					}
 				}
+			} catch(ArrayIndexOutOfBoundsException e) {
+				//Can't find the problem and a frame skipped is no big deal
+			} catch(Exception e) {
+				e.printStackTrace();
 			}
-			g.drawImage(temp, 0, 0, null);
-		} catch(ArrayIndexOutOfBoundsException e) {
-			//Can't find the problem and a frame skipped is no big deal
-		} catch(Exception e) {
-			e.printStackTrace();
-		}
+		g.drawImage(rend, 0, 0, null);
+		BlockSelectorPanel.INSTANCE.paintComponent(g);
 	}
 	private class MouseController extends MouseAdapter {
 		@Override
 		public void mousePressed(MouseEvent e) {
-			if(e.getPoint().x > 2 * getWidth() / 3) // List / section selected
+			if(e.getPoint().x > 2 * getWidth() / 3 - 10) // List / section selected
 				return;
 			clickPosition = e.getPoint().getLocation();
 			clickPosition.x /= zoom;

@@ -8,6 +8,8 @@ import java.awt.image.BufferedImage;
 import java.util.LinkedList;
 import java.util.List;
 
+import javax.swing.ImageIcon;
+
 import clickable.BlockClickable;
 import clickable.CapsuleBlockClickable;
 import domain.models.interfaces.Clickable.Rect;
@@ -146,6 +148,14 @@ public class BlockBundleRenderer implements CapsuleRenderer{
 		return bi;
 	}
 
+	private ImageIcon ii = null;
+	@Override
+	public ImageIcon asIcon() {
+		BufferedImage bi = getRenderable();
+		if(ii == null) ii = new ImageIcon(bi.getScaledInstance(bi.getWidth()/2, bi.getHeight()/2, BufferedImage.SCALE_SMOOTH));
+		return ii;
+	}
+	
 	@Override
 	public int getX() {
 		return parent.getX() + x;//x + parent.getX();
@@ -196,6 +206,7 @@ public class BlockBundleRenderer implements CapsuleRenderer{
 	
 	public void _update() {
 		this.rendered = null;
+		this.ii = null;
 		clickable.update();
 	 }
 

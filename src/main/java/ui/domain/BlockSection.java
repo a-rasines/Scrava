@@ -20,6 +20,7 @@ public enum BlockSection {
 			IRenderer.getDetachedDragableRendererOf(new MoveToBlock(null)),
 			IRenderer.getDetachedDragableRendererOf(new MoveXToBlock(null)),
 			IRenderer.getDetachedDragableRendererOf(new MoveYToBlock(null)),
+			
 	}),
 	CONTROL(0xffffda22, new IRenderer[] {
 			IRenderer.getDetachedDragableRendererOf(new IfBlock()),
@@ -32,9 +33,14 @@ public enum BlockSection {
 	
 	public final int color;
 	public final IRenderer[] blocks;
+	public final int totalY;
 	BlockSection(int color, IRenderer[] blocks) {
 		this.color = color;
 		this.blocks = blocks;
+		int temp = 0;
+		for(IRenderer block: blocks)
+			temp += block.getRenderable().getHeight();
+		this.totalY = temp;
 	}
 	
 	@Override

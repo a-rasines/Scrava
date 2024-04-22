@@ -9,6 +9,8 @@ import java.lang.reflect.Constructor;
 import java.util.LinkedList;
 import java.util.List;
 
+import javax.swing.ImageIcon;
+
 import clickable.BlockClickable;
 import domain.models.interfaces.Clickable.Rect;
 import domain.models.interfaces.Translatable;
@@ -95,53 +97,26 @@ public class SimpleBlockRenderer implements DragableRenderer{
 		BufferedImage start = block.getCategory().start;
 		BufferedImage text = renderText(block.getTitle(), start.getWidth(), getHeight());
 		BufferedImage end = block.getCategory().end;
-		//String title = block.getTitle();
-		//String[] parts = title.split("\\{\\{");
 		
 		BufferedImage rendered = new BufferedImage(start.getWidth() + text.getWidth() + end.getWidth(), getHeight(), BufferedImage.TYPE_INT_ARGB);
 		Graphics g = rendered.getGraphics();
 		
 		g.drawImage(start.getScaledInstance(start.getWidth(), getHeight(), BufferedImage.SCALE_SMOOTH), 0, 0, null);
 		
-//		int len = 0;
-//		int vari = 0;
-//		for(String part : parts) {
-//		
-//			if(part.split(" ")[0].contains("}}")) {
-//				String[] divided = part.split("}}");
-//				IRenderer rend = getChildren().get(vari++);
-//				BufferedImage subblock = rend.getRenderable();
-//				background(rendered, getHeight(), start.getWidth() + len, subblock.getWidth());
-//				rend.getClickable().setPosition(start.getWidth() + len - 1, (int)((getHeight()- subblock.getHeight())/2));
-//				g.drawImage(subblock, start.getWidth() + len - 1, (int)((getHeight()- subblock.getHeight())/2) , null);
-//				if(BlockPanel.DEBUG_SHOW_HITBOXES) {
-//					g.setColor(Color.green);
-//					((Graphics2D)g).setStroke(new BasicStroke(2));
-//					Rect r = rend.getClickable().getPosition();
-//					g.drawRect(r.x + 1, r.y + 1, r.w - 2, r.h - 2);
-//					g.setColor(Color.white);
-//				}
-//				len += subblock.getWidth();
-//			
-//				if(divided.length == 2) {
-//					background(rendered, getHeight(), start.getWidth() + len, divided[1].length() * FONT_WIDTH);
-//					g.drawString(divided[1], start.getWidth() + len, getHeight()/2 + 20);
-//					len += divided[1].length() * FONT_WIDTH;
-//				}
-//				
-//			} else {
-//				background(rendered, getHeight(), start.getWidth() + len, part.length() * FONT_WIDTH);
-//				g.drawString(part, start.getWidth() + len, getHeight()/2  + 20);
-//				len += part.length() * FONT_WIDTH;
-//			}
-//					
-//		}
 		background(rendered,getHeight(),start.getWidth(),text.getWidth());
 		g.drawImage(text, start.getWidth(), 0, null);
 		
 		g.drawImage(end.getScaledInstance(start.getWidth(), getHeight(), BufferedImage.SCALE_SMOOTH), start.getWidth() + text.getWidth(), 0, null);
 		rendered(rendered, true);
 		return rendered;
+	}
+	
+	private ImageIcon ii = null;
+	@Override
+	public ImageIcon asIcon() {
+		BufferedImage bi = getRenderable();
+		if(ii == null) ii = new ImageIcon(bi.getScaledInstance(bi.getWidth()/2, bi.getHeight()/2, BufferedImage.SCALE_SMOOTH));
+		return ii;
 	}
 	
 	@Override
@@ -175,6 +150,7 @@ public class SimpleBlockRenderer implements DragableRenderer{
 	@Override
 	public void update() {
 		rendered(null, true);
+		this.ii = null;
 		if(clickable.getParent() == null)
 			BlockPanel.INSTANCE.repaint();
 		else

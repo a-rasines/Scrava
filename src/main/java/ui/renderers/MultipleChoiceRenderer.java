@@ -8,6 +8,7 @@ import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
@@ -94,6 +95,14 @@ public class MultipleChoiceRenderer implements CapsuleRenderer {
 		return bi;
 	}
 	
+	private ImageIcon ii = null;
+	@Override
+	public ImageIcon asIcon() {
+		BufferedImage bi = getRenderable();
+		if(ii == null) ii = new ImageIcon(bi.getScaledInstance(bi.getWidth()/2, bi.getHeight()/2, BufferedImage.SCALE_SMOOTH));
+		return ii;
+	}
+	
 	public List<BlockBundleRenderer> getBlockBundles() {
 		if(bundles != null)
 			return bundles;
@@ -138,6 +147,7 @@ public class MultipleChoiceRenderer implements CapsuleRenderer {
 	@Override
 	public void update() {
 		rendered = null;
+		this.ii = null;
 		for(BlockBundleRenderer b : bundles)
 			b._update();
 		if(clickable.getParent() == null)

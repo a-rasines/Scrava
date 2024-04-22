@@ -9,6 +9,7 @@ import java.awt.image.BufferedImage;
 import java.util.LinkedList;
 import java.util.List;
 
+import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
@@ -143,6 +144,14 @@ public class CapsuleBlockRenderer implements CapsuleRenderer{
 		
 		return bi;
 	}
+	
+	private ImageIcon ii = null;
+	@Override
+	public ImageIcon asIcon() {
+		BufferedImage bi = getRenderable();
+		if(ii == null) ii = new ImageIcon(bi.getScaledInstance(bi.getWidth()/2, bi.getHeight()/2, BufferedImage.SCALE_SMOOTH));
+		return ii;
+	}
 
 	@Override
 	public int getX() {
@@ -181,6 +190,7 @@ public class CapsuleBlockRenderer implements CapsuleRenderer{
 	@Override
 	public void update() {
 		this.rendered = null;
+		this.ii = null;
 		clickable.update();
 		if(clickable.getParent() == null)
 			BlockPanel.INSTANCE.repaint();

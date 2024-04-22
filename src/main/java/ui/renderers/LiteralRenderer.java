@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
@@ -123,6 +124,14 @@ public class LiteralRenderer implements IRenderer {
 		return rendered;
 	}
 
+	private ImageIcon ii = null;
+	@Override
+	public ImageIcon asIcon() {
+		BufferedImage bi = getRenderable();
+		if(ii == null) ii = new ImageIcon(bi.getScaledInstance(bi.getWidth()/2, bi.getHeight()/2, BufferedImage.SCALE_SMOOTH));
+		return ii;
+	}
+	
 	@Override
 	public Translatable getBlock() {
 		return block;
@@ -131,6 +140,7 @@ public class LiteralRenderer implements IRenderer {
 	@Override
 	public void update() {
 		rendered = null;
+		this.ii = null;
 		if(clickable.getParent() == null)
 			BlockPanel.INSTANCE.repaint();
 		else

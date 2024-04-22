@@ -10,6 +10,7 @@ import java.lang.reflect.Constructor;
 import java.util.LinkedList;
 import java.util.List;
 
+import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
@@ -110,55 +111,18 @@ public class InvocableBlockRenderer implements DragableRenderer {
 		
 		BufferedImage text = renderText(title, LEFT_TOP.getWidth(), getHeight());
 		background(rendered, getHeight(), LEFT_TOP.getWidth(), text.getWidth());
-		g.drawImage(text, LEFT_TOP.getWidth(), 0, null);
-		
-//		int len = 0;
-//		int vari = 0;
-//		for(String part : parts) {
-//		
-//			if(part.split(" ")[0].contains("}}")) {
-//				String[] divided = part.split("}}");
-//				IRenderer rend = getChildren().get(vari++);
-//				BufferedImage subblock = rend.getRenderable();
-//				try {
-//					background(rendered, getHeight(), LEFT_TOP.getWidth() + len, subblock.getWidth());
-//				} catch(ArrayIndexOutOfBoundsException e) {
-//					System.out.println("part:"+part + " block:" +rend.getBlock().toString().replaceAll(".*\\.", "") + " w:" + subblock.getWidth());
-//					throw e;
-//				}
-//				rend.getClickable().setPosition(LEFT_TOP.getWidth() + len - 1, (int)((getHeight()- subblock.getHeight())/2));
-//				g.drawImage(subblock, LEFT_TOP.getWidth() + len - 1, (int)((getHeight()- subblock.getHeight())/2) , null);
-//				if(BlockPanel.DEBUG_SHOW_HITBOXES) {
-//					g.setColor(Color.green);
-//					((Graphics2D)g).setStroke(new BasicStroke(2));
-//					Rect r = rend.getClickable().getPosition();
-//					g.drawRect(r.x + 1, r.y + 1, r.w - 2, r.h - 2);
-//					g.setColor(Color.white);
-//				}
-//					
-//				len += subblock.getWidth();
-//			
-//				if(divided.length == 2) {
-//					background(rendered, getHeight(), LEFT_TOP.getWidth() + len, divided[1].length() * FONT_WIDTH);
-//					g.drawString(divided[1], LEFT_TOP.getWidth() + len, getHeight()/2 + 20);
-//					len += divided[1].length() * FONT_WIDTH;
-//				}
-//				
-//			} else {
-//				try {
-//				background(rendered, getHeight(), LEFT_TOP.getWidth() + len, part.length() * FONT_WIDTH);
-//				} catch(ArrayIndexOutOfBoundsException e) {
-//					System.out.println("part:"+part);
-//					throw e;
-//				}
-//				g.drawString(part, LEFT_TOP.getWidth() + len, getHeight()/2  + 20);
-//				len += part.length() * FONT_WIDTH;
-//			}
-//					
-//		}
+		g.drawImage(text, LEFT_TOP.getWidth(), 0, null);	
 		
 		g.drawImage(replaceColor(clone(RIGHT), block.getCategory().color).getScaledInstance(RIGHT.getWidth(), getHeight(), BufferedImage.SCALE_SMOOTH), LEFT_TOP.getWidth() + text.getWidth(), 0, null);
 		return rendered(rendered, true);
+	}
+	
+	private ImageIcon ii = null;
+	@Override
+	public ImageIcon asIcon() {
+		BufferedImage bi = getRenderable();
+		if(ii == null) ii = new ImageIcon(bi.getScaledInstance(bi.getWidth()/2, bi.getHeight()/2, BufferedImage.SCALE_SMOOTH));
+		return ii;
 	}
 	
 	@Override
@@ -193,6 +157,7 @@ public class InvocableBlockRenderer implements DragableRenderer {
 	public void update() {
 		height = -1;
 		width = -1;
+		this.ii = null;
 		rendered(null, true);
 		clickable.update();
 		if(clickable.getParent() == null)

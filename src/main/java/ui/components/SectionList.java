@@ -41,7 +41,7 @@ public class SectionList extends JList<BlockSection>{
 			@Override
 			public void valueChanged(ListSelectionEvent e) {
 				if(getSelectedIndex() > -1)
-					BlockList.INSTANCE.setPage(getSelectedValue());
+					BlockSelectorPanel.INSTANCE.setPage(getSelectedValue());
 			}
 		});
 	}
