@@ -29,22 +29,12 @@ import javax.swing.JLayeredPane;
 import clickable.BlockClickable;
 import clickable.InvocableClickable;
 import debug.DebugOut;
-import domain.blocks.conditional.bool.AndBlock;
-import domain.blocks.container.IfElseBlock;
-import domain.blocks.movement.MoveBlock;
-import domain.blocks.movement.MoveToBlock;
-import domain.blocks.movement.MoveXBlock;
-import domain.blocks.operators.AddOperator;
-import domain.blocks.operators.AppendOperator;
+import domain.Sprite;
 import domain.models.interfaces.Clickable.Rect;
-import domain.values.NumberLiteral;
-import domain.values.StringLiteral;
-import domain.values.Variable;
 import ui.FlashThread;
 import ui.renderers.IRenderer;
 import ui.renderers.IRenderer.DragableRenderer;
 import ui.renderers.IRenderer.IRenderable;
-import ui.renderers.InvocableBlockRenderer;
 
 public class BlockPanel extends JLayeredPane{
 	
@@ -54,21 +44,6 @@ public class BlockPanel extends JLayeredPane{
 	public static void main(String[] args) {
 		JFrame p = new JFrame();
 		BlockPanel bp = BlockPanel.INSTANCE;
-		bp.addBlock(new AppendOperator().setValues(new AddOperator(), new StringLiteral("Test")));
-		bp.addBlock(new MoveBlock(null, new NumberLiteral<Integer>(0), new NumberLiteral<Integer>(0)));
-		bp.addBlock(new IfElseBlock());
-		bp.addBlock(new AndBlock());
-		bp.addBlock(Variable.createGlobalVariable("Test", 0));
-		InvocableBlockRenderer mtb = IRenderer.getDragableRendererOf(new MoveToBlock(null, new NumberLiteral<Integer>(0), new NumberLiteral<Integer>(0)));
-		InvocableBlockRenderer mb = IRenderer.getDragableRendererOf(new MoveBlock(null, new NumberLiteral<Integer>(0), new NumberLiteral<Integer>(0)));
-		InvocableBlockRenderer mxb = IRenderer.getDragableRendererOf(new MoveXBlock(null, new NumberLiteral<Integer>(0)));
-		mtb.getClickable()
-		   .setNext(mb.getClickable())
-		   .setNext(mxb.getClickable());
-		
-		bp.addBlock(mtb);
-		bp.addBlock(mb);
-		bp.addBlock(mxb);
 		
 		p.setSize(1000, 1000);
 		p.add(bp, BorderLayout.CENTER);
@@ -91,6 +66,12 @@ public class BlockPanel extends JLayeredPane{
 	//Zoom of the blocks
 	public double zoom = 0.5;
 	
+	private Sprite actual = null;
+	
+	public Sprite getSprite() {
+		return actual;
+	}
+	
 	
 	private final List<DragableRenderer> blocks = new LinkedList<>();
 	private BlockClickable clicked = null;
@@ -98,6 +79,10 @@ public class BlockPanel extends JLayeredPane{
 	private JLabel clickedLabel = new JLabel("");
 	public static BlockPanel INSTANCE = new BlockPanel();
 	
+	/**
+	 * Marks the clickable for the mouse events
+	 * @param cl
+	 */
 	public void setClicked(BlockClickable cl) {
 		if(cl != null)
 			System.out.println("clicked set to " + cl.getBlock().toString().replaceAll(".*\\.", ""));
@@ -106,14 +91,35 @@ public class BlockPanel extends JLayeredPane{
 		clicked = cl;
 	}
 	
+	/**
+	 * Returns the clickable that interacts with the mouse events
+	 * @return
+	 */
 	public BlockClickable getClicked() {
 		return clicked;
 	}
 	
+	/**
+	 * Returns the virtual translation of the camera
+	 * @return
+	 */
+	public Point getTraslation() {
+		return new Point(x, y);
+	}
+	
+	/**
+	 * Adds a block to the top priority layer of the window
+	 * @param b
+	 */
 	public void addBlock(IRenderable b) {
 		System.out.println(""+b);
 		addBlock(IRenderer.getDragableRendererOf(b));
 	}
+	
+	/**
+	 * Adds a block to the top priority layer of the window
+	 * @param b
+	 */
 	public void addBlock(DragableRenderer b) {
 		System.out.println("adding " + b.getBlock().toString().replaceAll(".*\\.", ""));
 		if(!blocks.contains(b))
@@ -121,6 +127,10 @@ public class BlockPanel extends JLayeredPane{
 		System.out.println("newSize:" + blocks.size());
 	}
 	
+	/**
+	 * Adds a block to the top priority layer of the window
+	 * @param b
+	 */
 	public void removeBlock(DragableRenderer b) {
 		System.out.println("removing " + b.getBlock().toString().replaceAll(".*\\.", ""));
 		System.out.println("removed:"+ blocks.remove(b) +" newSize:" + blocks.size());
@@ -161,6 +171,11 @@ public class BlockPanel extends JLayeredPane{
 		repaint();
 	}
 	
+	/**
+	 * Updates the visuals of the window.
+	 * 
+	 * Better use {@link ui.components.BlockPanel#repaint() INSTANCE.repaint()}
+	 */
 	@Override
 	public void update(Graphics g) {
 		paint(g);

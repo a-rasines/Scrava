@@ -12,6 +12,8 @@ import java.awt.image.BufferedImage;
 import domain.models.interfaces.Clickable;
 import ui.domain.BlockSection;
 import ui.renderers.IRenderer;
+import ui.renderers.IRenderer.DragableRenderer;
+import ui.renderers.IRenderer.IRenderable;
 
 public class BlockSelectorPanel implements MouseListener, MouseWheelListener {
 	
@@ -47,9 +49,31 @@ public class BlockSelectorPanel implements MouseListener, MouseWheelListener {
 	public void mousePressed(MouseEvent e) {
 		Point click = e.getPoint();
 		int w = BlockPanel.INSTANCE.getWidth();
+		System.out.println("registered click");
 		if(click.x < (2 * w / 3 - 10) || click.x > w - 10) return;
-		
-		//implement click
+		System.out.println("verified click");
+		int y = -this.y + 10;
+		for(IRenderer block: selected.blocks) {	
+			if(y + block.getRenderable().getHeight() / 2 < 0) {
+				y += block.getRenderable().getHeight() / 2;
+				continue;
+			}
+			if(y < click.y && BlockPanel.INSTANCE.zoom * block.getRenderable().getHeight() + y > click.y) {
+				DragableRenderer dr = IRenderer.getDragableRendererOf((IRenderable) block.getBlock().create(BlockPanel.INSTANCE.getSprite()));
+				Point tras = BlockPanel.INSTANCE.getTraslation();
+				dr.moveTo((int)(2*BlockPanel.INSTANCE.getWidth()/(3*BlockPanel.INSTANCE.zoom) + tras.x), (int)(click.y/BlockPanel.INSTANCE.zoom + tras.y));
+				BlockPanel.INSTANCE.addBlock(dr);
+				BlockPanel.INSTANCE.setClicked(dr.getClickable());
+				BlockPanel.INSTANCE.repaint();
+				break;
+				
+			}
+			
+			//
+			
+			y += block.getRenderable().getHeight() / 2;
+			if(y > rendered.getHeight())break;
+		}
 	}
 	@Override
 	public void mouseReleased(MouseEvent e) {
