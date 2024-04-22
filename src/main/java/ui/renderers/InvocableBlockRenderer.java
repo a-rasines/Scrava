@@ -10,7 +10,6 @@ import java.lang.reflect.Constructor;
 import java.util.LinkedList;
 import java.util.List;
 
-import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
@@ -117,14 +116,6 @@ public class InvocableBlockRenderer implements DragableRenderer {
 		return rendered(rendered, true);
 	}
 	
-	private ImageIcon ii = null;
-	@Override
-	public ImageIcon asIcon() {
-		BufferedImage bi = getRenderable();
-		if(ii == null) ii = new ImageIcon(bi.getScaledInstance(bi.getWidth()/2, bi.getHeight()/2, BufferedImage.SCALE_SMOOTH));
-		return ii;
-	}
-	
 	@Override
 	public int getX() {
 		return x;
@@ -157,7 +148,6 @@ public class InvocableBlockRenderer implements DragableRenderer {
 	public void update() {
 		height = -1;
 		width = -1;
-		this.ii = null;
 		rendered(null, true);
 		clickable.update();
 		if(clickable.getParent() == null)
@@ -226,12 +216,20 @@ public class InvocableBlockRenderer implements DragableRenderer {
 
 	@Override
 	public void delete() {
-		this.clickable.delete();
-		for(IRenderer rend : getChildren())
+		System.out.println("delete " + getBlock());
+		BlockPanel.INSTANCE.removeBlock(this);
+		IRenderer.DRAG_RENDS.remove((IRenderable)getBlock());
+		for(IRenderer rend : getChildren()) {
 			rend.delete();
-		DRAG_RENDS.remove((IRenderable)this.getBlock());
-		
+		}
+		InvocableClickable next = ((InvocableClickable)getClickable()).next();
+		while(next != null) {
+			next.delete();
+			next = next.next();
+		}
 	}
+	
+	
 public static void main(String[] args) {
 		
 	 	InvocableBlockRenderer sampleImage = (InvocableBlockRenderer) IRenderer.getDragableRendererOf(new MoveBlock(null, new NumberLiteral<Integer>(0), new NumberLiteral<Integer>(0))); 	

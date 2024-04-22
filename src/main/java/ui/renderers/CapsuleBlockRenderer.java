@@ -9,13 +9,13 @@ import java.awt.image.BufferedImage;
 import java.util.LinkedList;
 import java.util.List;
 
-import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
 import clickable.BlockClickable;
 import clickable.CapsuleBlockClickable;
+import clickable.InvocableClickable;
 import domain.blocks.container.IfBlock;
 import domain.blocks.movement.MoveBlock;
 import domain.models.interfaces.Clickable.Rect;
@@ -144,14 +144,6 @@ public class CapsuleBlockRenderer implements CapsuleRenderer{
 		
 		return bi;
 	}
-	
-	private ImageIcon ii = null;
-	@Override
-	public ImageIcon asIcon() {
-		BufferedImage bi = getRenderable();
-		if(ii == null) ii = new ImageIcon(bi.getScaledInstance(bi.getWidth()/2, bi.getHeight()/2, BufferedImage.SCALE_SMOOTH));
-		return ii;
-	}
 
 	@Override
 	public int getX() {
@@ -190,7 +182,6 @@ public class CapsuleBlockRenderer implements CapsuleRenderer{
 	@Override
 	public void update() {
 		this.rendered = null;
-		this.ii = null;
 		clickable.update();
 		if(clickable.getParent() == null)
 			BlockPanel.INSTANCE.repaint();
@@ -222,7 +213,18 @@ public class CapsuleBlockRenderer implements CapsuleRenderer{
 
 	@Override
 	public void delete() {
-		// TODO Auto-generated method stub
+		System.out.println("delete " + getBlock());
+		BlockPanel.INSTANCE.removeBlock(this);
+		IRenderer.DRAG_RENDS.remove((IRenderable)getBlock());
+		for(IRenderer rend : getChildren())
+			rend.delete();
+		for(InvocableBlock rend : (CapsuleBlock)getBlock())
+			IRenderer.DRAG_RENDS.remove(rend);
+		InvocableClickable next = ((InvocableClickable)getClickable()).next();
+		while(next != null) {
+			next.delete();
+			next = next.next();
+		}
 		
 	}
 	
@@ -348,5 +350,6 @@ public class CapsuleBlockRenderer implements CapsuleRenderer{
 	public int bundleCount() {
 		return 1;
 	}
+	
 
 }

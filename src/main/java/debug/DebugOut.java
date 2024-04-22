@@ -17,11 +17,12 @@ public class DebugOut extends PrintStream{
 			"mouseDragged",
 			"mousePressed",
 			"onClick",
+			"onDrag",
 			"onHover",
 			"onHoverEnd",
 			
 			//paint
-			//"paintComponent",
+			"paintComponent",
 			"patch",
 			"renderText"
 		);

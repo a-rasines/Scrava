@@ -9,8 +9,6 @@ import java.lang.reflect.Constructor;
 import java.util.LinkedList;
 import java.util.List;
 
-import javax.swing.ImageIcon;
-
 import clickable.BlockClickable;
 import domain.models.interfaces.Clickable.Rect;
 import domain.models.interfaces.Translatable;
@@ -111,14 +109,6 @@ public class SimpleBlockRenderer implements DragableRenderer{
 		return rendered;
 	}
 	
-	private ImageIcon ii = null;
-	@Override
-	public ImageIcon asIcon() {
-		BufferedImage bi = getRenderable();
-		if(ii == null) ii = new ImageIcon(bi.getScaledInstance(bi.getWidth()/2, bi.getHeight()/2, BufferedImage.SCALE_SMOOTH));
-		return ii;
-	}
-	
 	@Override
 	public int getX() {
 		return x;
@@ -150,7 +140,6 @@ public class SimpleBlockRenderer implements DragableRenderer{
 	@Override
 	public void update() {
 		rendered(null, true);
-		this.ii = null;
 		if(clickable.getParent() == null)
 			BlockPanel.INSTANCE.repaint();
 		else
@@ -211,7 +200,8 @@ public class SimpleBlockRenderer implements DragableRenderer{
 
 	@Override
 	public void delete() {
-		this.clickable.delete();
+		System.out.println("delete " + getBlock());
+		BlockPanel.INSTANCE.removeBlock(this);
 		for(IRenderer rend : getChildren())
 			rend.delete();
 		DRAG_RENDS.remove((IRenderable)this.getBlock());

@@ -27,6 +27,7 @@ import javax.swing.JLabel;
 import javax.swing.JLayeredPane;
 
 import clickable.BlockClickable;
+import clickable.InvocableClickable;
 import debug.DebugOut;
 import domain.blocks.conditional.bool.AndBlock;
 import domain.blocks.container.IfElseBlock;
@@ -98,8 +99,15 @@ public class BlockPanel extends JLayeredPane{
 	public static BlockPanel INSTANCE = new BlockPanel();
 	
 	public void setClicked(BlockClickable cl) {
-		System.out.println("clicked set to " + cl.getBlock().toString().replaceAll(".*\\.", ""));
+		if(cl != null)
+			System.out.println("clicked set to " + cl.getBlock().toString().replaceAll(".*\\.", ""));
+		else
+			System.out.println("clicked cleared");
 		clicked = cl;
+	}
+	
+	public BlockClickable getClicked() {
+		return clicked;
 	}
 	
 	public void addBlock(IRenderable b) {
@@ -178,6 +186,25 @@ public class BlockPanel extends JLayeredPane{
 			clickedLabel.setIcon(EMPTY_CLICKED);
 		else {
 			BufferedImage clk = clicked.getRenderer().getRenderable();
+			if(clicked instanceof InvocableClickable) {
+				InvocableClickable next = (InvocableClickable) clicked;
+				int y = 0;
+				int w = 0;
+				while(next != null) {
+					y += next.getRenderer().getHeight();
+					w = Math.max(w, next.getRenderer().getWidth());
+					next = next.next();
+				}
+				next = (InvocableClickable) clicked;
+				clk = new BufferedImage(w, y, BufferedImage.TYPE_4BYTE_ABGR);
+				Graphics g0 = clk.getGraphics();
+				y = 0;
+				while(next != null) {
+					g0.drawImage(next.getRenderer().getRenderable(), 0, y, null);
+					y += next.getRenderer().getHeight();
+					next = next.next();
+				}
+			}
 			Rect pos = clicked.getPosition();
 			clickedLabel.setIcon(
 					new ImageIcon(
@@ -274,7 +301,6 @@ public class BlockPanel extends JLayeredPane{
 			if(hovered != null)
 				hovered.onHoverEnd(true, clicked);
 			hovered = null;
-			clicked = null;
 		}
 	}
 	private class MouseMotionController extends MouseMotionAdapter {

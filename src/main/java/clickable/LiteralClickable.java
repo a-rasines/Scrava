@@ -160,7 +160,7 @@ public class LiteralClickable implements Clickable{
 
 	@Override
 	public void delete() {
-		//TODO
+		getRenderer().delete();
 	}
 
 }

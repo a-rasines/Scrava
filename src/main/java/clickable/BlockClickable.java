@@ -24,7 +24,6 @@ public class BlockClickable implements Clickable{
 	private BlockClickable parent;
 	
 	public BlockClickable(DragableRenderer renderer, BlockClickable parent) {
-		//this.nestedClickables.addAll(Arrays.asList(children));
 		this.parent = parent;
 		this.renderer = renderer;
 	}
@@ -37,7 +36,6 @@ public class BlockClickable implements Clickable{
 			LiteralRenderable<?> lr = vh.removeVariable((Valuable<?>)child.getBlock());
 			LiteralRenderer.of(lr, lr.value(), this);
 		}
-		//renderer.update();
 	}
 	
 	public void removeParent() {
@@ -86,7 +84,6 @@ public class BlockClickable implements Clickable{
 			
 			return;
 		}
-		//System.out.println("[BlockClickable] (drag) " + renderer.getBlock().toString().replaceAll(".*\\.", "") + " x:" + x + " y:" + y + " xc:"+renderer.getX() + " xy:" + renderer.getY());
 			renderer.moveTo(x - cx, y - cy);		
 	}
 	protected void onDrag0(int x, int y) {
@@ -152,7 +149,6 @@ public class BlockClickable implements Clickable{
 	public void replaceVariable(Clickable cl, BlockClickable newValue) {
 		BlockPanel.INSTANCE.removeBlock(newValue.getRenderer());
 		((VariableHolder)this.getBlock()).replaceVariable((Valuable<?>) cl.getBlock(), (Valuable<?>)newValue.getBlock());
-		cl.getRenderer().delete();
 		getRenderer().update();
 	}
 
@@ -198,6 +194,7 @@ public class BlockClickable implements Clickable{
 
 	@Override
 	public void delete() {
+		getRenderer().delete();
 		//TODO		
 	}
 	

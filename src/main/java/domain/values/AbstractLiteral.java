@@ -73,4 +73,9 @@ public abstract class AbstractLiteral<T> implements LiteralRenderer.LiteralRende
 
 	@Override
 	public void getImports(Set<String> imports) {}
+	
+	@Override
+	public String toString() {
+		return getClass().getSimpleName() + "@" + Integer.toHexString(hashCode());
+	}
 }

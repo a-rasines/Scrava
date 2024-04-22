@@ -43,15 +43,23 @@ public class BlockSelectorPanel implements MouseListener, MouseWheelListener {
 	}
 
 	@Override
-	public void mouseClicked(MouseEvent e) {}
-
-	@Override
 	public void mousePressed(MouseEvent e) {
 		Point click = e.getPoint();
 		int w = BlockPanel.INSTANCE.getWidth();
 		if(click.x < (2 * w / 3 - 10) || click.x > w - 10) return;
 		
 		//implement click
+	}
+	@Override
+	public void mouseReleased(MouseEvent e) {
+		if(BlockPanel.INSTANCE.getClicked() != null) {
+			int x = e.getPoint().x;
+			if(x + BlockPanel.INSTANCE.getClicked().getRenderer().getWidth() / 2 > 2 * BlockPanel.INSTANCE.getWidth() / 3 - 10) { 
+				BlockPanel.INSTANCE.getClicked().delete();
+				BlockPanel.INSTANCE.repaint();
+			}
+		}
+		BlockPanel.INSTANCE.setClicked(null);
 	}
 
 	@Override
@@ -91,14 +99,14 @@ public class BlockSelectorPanel implements MouseListener, MouseWheelListener {
 	}
 	
 	// Empty functions
+
+	@Override
+	public void mouseEntered(MouseEvent e) {}
+
+	@Override
+	public void mouseExited(MouseEvent e) {}
 	
 	@Override
-	public void mouseReleased(MouseEvent e) {} //MouseController takes over
-
-	@Override
-	public void mouseEntered(MouseEvent e) {} // N/A
-
-	@Override
-	public void mouseExited(MouseEvent e) {} // N/A
+	public void mouseClicked(MouseEvent e) {}
 
 }
