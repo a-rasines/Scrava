@@ -1,5 +1,6 @@
 package domain.blocks.operators;
 
+import domain.Sprite;
 import domain.models.interfaces.Valuable;
 import domain.models.types.OperatorBlock;
 import domain.values.StringLiteral;
@@ -8,6 +9,11 @@ public class AppendOperator extends OperatorBlock<Object, String>{
 
 	private static final long serialVersionUID = 4634547651800943320L;
 
+	@Override
+	public AppendOperator create(Sprite s) {
+		return new AppendOperator();
+	}
+	
 	public AppendOperator() {
 		super(StringLiteral.nullValue(), StringLiteral.nullValue());
 	}

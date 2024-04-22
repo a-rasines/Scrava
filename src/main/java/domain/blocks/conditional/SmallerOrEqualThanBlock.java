@@ -1,18 +1,23 @@
 package domain.blocks.conditional;
 
+import domain.Sprite;
 import domain.models.interfaces.Valuable;
 import domain.models.types.ComparatorBlock;
+import domain.values.NumberLiteral;
 
 public class SmallerOrEqualThanBlock extends ComparatorBlock<Number>{
 
 	private static final long serialVersionUID = 6869296443645564800L;
-
+	
 	@Override
-	public boolean compare(Number left, Number right) {
-		return left.longValue() == right.longValue()? 
-				   left.doubleValue() <= right.doubleValue() 
-				 : left.longValue() <= right.longValue();
-		}
+	public SmallerOrEqualThanBlock create(Sprite s) {
+		return new SmallerOrEqualThanBlock();
+	}
+	
+	
+	public SmallerOrEqualThanBlock() {
+		super(new NumberLiteral<Double>(0.), new NumberLiteral<Double>(0.));
+	}
 	
 	public SmallerOrEqualThanBlock(Valuable<? extends Number> left, Valuable<? extends Number> right) {
 		super(left, right);
@@ -32,5 +37,12 @@ public class SmallerOrEqualThanBlock extends ComparatorBlock<Number>{
 	public String getTitle() {
 		return VARIABLE_NUM + " is smaller or equal to " + VARIABLE_NUM;
 	}
+	
+	@Override
+	public boolean compare(Number left, Number right) {
+		return left.longValue() == right.longValue()? 
+				   left.doubleValue() <= right.doubleValue() 
+				 : left.longValue() <= right.longValue();
+		}
 
 }

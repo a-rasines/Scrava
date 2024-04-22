@@ -1,12 +1,23 @@
 package domain.blocks.operators;
 
+import domain.Sprite;
 import domain.models.interfaces.Valuable;
 import domain.models.types.OperatorBlock;
+import domain.values.NumberLiteral;
 
 public class MultiplyOperator extends OperatorBlock<Number, Number>{
 
 	private static final long serialVersionUID = -4688568223164399232L;
 
+	@Override
+	public MultiplyOperator create(Sprite s) {
+		return new MultiplyOperator();
+	}
+	
+	public MultiplyOperator() {
+		super(new NumberLiteral<Double>(0.), new NumberLiteral<Double>(0.));
+	}
+	
 	public MultiplyOperator(Valuable<? extends Number> left, Valuable<? extends Number> right) {
 		super(left, right);
 	}

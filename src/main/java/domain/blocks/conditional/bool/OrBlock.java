@@ -1,13 +1,24 @@
 package domain.blocks.conditional.bool;
 
+import domain.Sprite;
 import domain.models.interfaces.Valuable;
 import domain.models.types.ConditionalBlock;
 import domain.models.types.OperatorBlock;
+import domain.values.BooleanLiteral;
 
 public class OrBlock extends ConditionalBlock<Boolean> {
 
 	private static final long serialVersionUID = 8665747159545035777L;
 
+	@Override
+	public OrBlock create(Sprite s) {
+		return new OrBlock();
+	}
+	
+	public OrBlock() {
+		super(new BooleanLiteral(true), new BooleanLiteral(true));
+	}
+	
 	public OrBlock(Valuable<Boolean> left, Valuable<Boolean> right) {
 		super(left, right);
 	}

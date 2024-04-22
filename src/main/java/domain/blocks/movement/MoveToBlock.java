@@ -7,12 +7,17 @@ import domain.values.NumberHelper;
 public class MoveToBlock extends CoordinateBlock{
 	private static final long serialVersionUID = 633807958335477657L;
 	
-	public MoveToBlock(Sprite s, Valuable<? extends Number> x, Valuable<? extends Number> y) {
-		super(s, x, y);
+	@Override
+	public MoveToBlock create(Sprite s) {
+		return new MoveToBlock(s);
 	}
 	
 	public MoveToBlock(Sprite s) {
 		super(s);
+	}
+	
+	public MoveToBlock(Sprite s, Valuable<? extends Number> x, Valuable<? extends Number> y) {
+		super(s, x, y);
 	}
 
 	@Override

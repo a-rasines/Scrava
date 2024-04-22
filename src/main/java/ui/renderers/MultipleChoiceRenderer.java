@@ -267,7 +267,6 @@ public class MultipleChoiceRenderer implements CapsuleRenderer {
 	
 	@Override
 	public boolean remove(int bundle, DragableRenderer block) {
-		System.out.println("remove block");
 		return  ((MultipleOptionCapsuleBlock) getBlock()).get(bundle).remove(block.getBlock());
 	}
 	@Override

@@ -1,11 +1,22 @@
 package domain.blocks.operators;
 
+import domain.Sprite;
 import domain.models.interfaces.Valuable;
 import domain.models.types.OperatorBlock;
+import domain.values.NumberLiteral;
 
 public class DivideOperator  extends OperatorBlock<Number, Number>{
 
 	private static final long serialVersionUID = 1594693481058875785L;
+	
+	@Override
+	public DivideOperator create(Sprite s) {
+		return new DivideOperator();
+	}
+	
+	public DivideOperator() {
+		super(new NumberLiteral<Double>(0.), new NumberLiteral<Double>(0.));
+	}
 
 	public DivideOperator(Valuable<? extends Number> left, Valuable<? extends Number> right) {
 		super(left, right);

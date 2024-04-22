@@ -24,6 +24,11 @@ public class Variable<T> extends AbstractLiteral<T> implements SimpleRenderable 
 	 */
 	private static HashMap<Sprite, HashMap<String, Variable<?>>> variables = new HashMap<>();
 	
+	@Override
+	public Variable<?> create(Sprite s) {
+		return null;
+	}
+	
 	/**
 	 * Creates a global variable of the desired type with the desired initial value
 	 * @param <T> Type of the variable

@@ -1,5 +1,6 @@
 package domain.blocks.container;
 
+import domain.Sprite;
 import domain.models.interfaces.InvocableBlock;
 import domain.models.interfaces.Valuable;
 import domain.models.types.CapsuleBlock;
@@ -11,6 +12,16 @@ public class IfBlock extends CapsuleBlock {
 	
 	private Valuable<Boolean> defVal = new BooleanLiteral(true);
 	private Valuable<Boolean> condition;
+	
+	@Override
+	public IfBlock create(Sprite s) {
+		return new IfBlock();
+	}
+	
+	public IfBlock() {
+		this.condition = new BooleanLiteral(true);
+	}
+	
 	public IfBlock(Valuable<Boolean> condition) {
 		this.condition = condition;
 	}
@@ -20,9 +31,6 @@ public class IfBlock extends CapsuleBlock {
 		addAll(initialValues);
 	}
 	
-	public IfBlock() {
-		this.condition = new BooleanLiteral(true);
-	}
 	public IfBlock(InvocableBlock... initialValues) {
 		this.condition = new BooleanLiteral(true);
 		addAll(initialValues);

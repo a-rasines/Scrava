@@ -9,6 +9,7 @@ import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 import java.awt.image.BufferedImage;
 
+import domain.models.interfaces.Clickable;
 import ui.domain.BlockSection;
 import ui.renderers.IRenderer;
 
@@ -53,9 +54,9 @@ public class BlockSelectorPanel implements MouseListener, MouseWheelListener {
 	@Override
 	public void mouseReleased(MouseEvent e) {
 		if(BlockPanel.INSTANCE.getClicked() != null) {
-			int x = e.getPoint().x;
-			if(x + BlockPanel.INSTANCE.getClicked().getRenderer().getWidth() / 2 > 2 * BlockPanel.INSTANCE.getWidth() / 3 - 10) { 
-				BlockPanel.INSTANCE.getClicked().delete();
+			Clickable clicked = BlockPanel.INSTANCE.getClicked();
+			if(BlockPanel.INSTANCE.zoom * (clicked.getPosition().x + clicked.getPosition().w / 2) > 2 * BlockPanel.INSTANCE.getWidth() / 3 - 10) { 
+				clicked.delete();
 				BlockPanel.INSTANCE.repaint();
 			}
 		}

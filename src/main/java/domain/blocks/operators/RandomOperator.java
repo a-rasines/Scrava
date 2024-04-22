@@ -3,14 +3,25 @@ package domain.blocks.operators;
 import java.util.Random;
 import java.util.Set;
 
+import domain.Sprite;
 import domain.models.interfaces.Valuable;
 import domain.models.types.OperatorBlock;
 import domain.values.NumberHelper;
+import domain.values.NumberLiteral;
 
 public class RandomOperator extends OperatorBlock<Number, Number>{
 	
 	private static final long serialVersionUID = 2400959582373684302L;
 
+	@Override
+	public RandomOperator create(Sprite s) {
+		return new RandomOperator();
+	}
+	
+	public RandomOperator() {
+		super(new NumberLiteral<Double>(0.), new NumberLiteral<Double>(0.));
+	}
+	
 	public RandomOperator(Valuable<? extends Number> left, Valuable<? extends Number> right) {
 		super(left, right);
 	}

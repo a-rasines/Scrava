@@ -3,12 +3,19 @@ package domain.blocks.operators.parser;
 import java.util.Set;
 
 import domain.BlockInvokationException;
+import domain.Sprite;
+import domain.models.interfaces.Translatable;
 import domain.models.interfaces.Valuable;
 import domain.models.types.ValuableModifier;
 
 public class StringToDecimalNumberParser extends ValuableModifier<String, Double> {
 	private static final long serialVersionUID = -2316860509271581027L;
 
+	@Override
+	public Translatable create(Sprite s) {
+		return new StringToDecimalNumberParser();
+	}
+	
 	@Override
 	public String getCode() {
 		return "Double.parseDouble(\""+value.value()+"\")";

@@ -8,12 +8,17 @@ import domain.values.NumberLiteral;
 public class MoveXBlock extends MoveBlock{
 	private static final long serialVersionUID = -2626208983124778899L;
 
-	public MoveXBlock(Sprite s, Valuable<? extends Number> x) {
-		super(s, x, new NumberLiteral<Byte>((byte)0));
+	@Override
+	public MoveXBlock create(Sprite s) {
+		return new MoveXBlock(s);
 	}
 	
 	public MoveXBlock(Sprite s) {
 		super(s, AbstractLiteral.getDefault(0), new NumberLiteral<Byte>((byte)0));
+	}
+	
+	public MoveXBlock(Sprite s, Valuable<? extends Number> x) {
+		super(s, x, new NumberLiteral<Byte>((byte)0));
 	}
 	
 	@Override

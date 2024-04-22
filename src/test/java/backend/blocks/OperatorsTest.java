@@ -32,14 +32,14 @@ public class OperatorsTest {
 	private final NumberLiteral<Float> NUMBERF3 = new NumberLiteral<>(3.0f);
 	@Test
 	public void addTest() {
-		assertEquals(new AddOperator<Number>(NUMBER1, NUMBER1).value(), 2l);
-		assertTrue(new EqualsBlock(NUMBER2, new AddOperator<Number>(NUMBER1, NUMBER1)).value());
-		assertTrue(new EqualsBlock(NUMBER2, new AddOperator<Number>(NUMBER1, NUMBERD1)).value());
-		assertTrue(new BiggerOrEqualThanBlock(new AddOperator<Number>(NUMBERD1, NUMBERD1), NUMBER1).value());
+		assertEquals(new AddOperator(NUMBER1, NUMBER1).value(), 2l);
+		assertTrue(new EqualsBlock(NUMBER2, new AddOperator(NUMBER1, NUMBER1)).value());
+		assertTrue(new EqualsBlock(NUMBER2, new AddOperator(NUMBER1, NUMBERD1)).value());
+		assertTrue(new BiggerOrEqualThanBlock(new AddOperator(NUMBERD1, NUMBERD1), NUMBER1).value());
 	
 		assertEquals(new AppendOperator().setValues(new StringLiteral("a"), new StringLiteral("b")).value(), "ab");
 	
-		assertEquals(new EqualsBlock(NUMBER2, new AddOperator<Number>(NUMBER1, NUMBER1)).getCode(), "2 == 1 + 1");
+		assertEquals(new EqualsBlock(NUMBER2, new AddOperator(NUMBER1, NUMBER1)).getCode(), "2 == 1 + 1");
 	}
 	
 	@Test

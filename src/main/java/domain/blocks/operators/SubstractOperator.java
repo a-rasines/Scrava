@@ -1,12 +1,23 @@
 package domain.blocks.operators;
 
+import domain.Sprite;
 import domain.models.interfaces.Valuable;
 import domain.models.types.OperatorBlock;
+import domain.values.NumberLiteral;
 
 public class SubstractOperator extends OperatorBlock<Number, Number>{
 
 	private static final long serialVersionUID = -4532995180329907254L;
 
+	@Override
+	public SubstractOperator create(Sprite s) {
+		return new SubstractOperator();
+	}
+	
+	public SubstractOperator() {
+		super(new NumberLiteral<Double>(0.), new NumberLiteral<Double>(0.));
+	}
+	
 	public SubstractOperator(Valuable<? extends Number> left, Valuable<? extends Number> right) {
 		super(left, right);
 	}

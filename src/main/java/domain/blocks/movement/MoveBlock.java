@@ -1,20 +1,25 @@
 package domain.blocks.movement;
 
 import domain.Sprite;
+import domain.models.interfaces.Translatable;
 import domain.models.interfaces.Valuable;
 import domain.values.NumberHelper;
 
 public class MoveBlock extends CoordinateBlock{
 	private static final long serialVersionUID = 633807958335477657L;
 	
-	public MoveBlock(Sprite s, Valuable<? extends Number> x, Valuable<? extends Number> y) {
-		super(s, x, y);
+	@Override
+	public Translatable create(Sprite s) {
+		return new MoveBlock(s);
 	}
 	
 	public MoveBlock(Sprite s) {
 		super(s);
 	}
-
+	
+	public MoveBlock(Sprite s, Valuable<? extends Number> x, Valuable<? extends Number> y) {
+		super(s, x, y);
+	}
 
 	@Override
 	public String getTitle() {

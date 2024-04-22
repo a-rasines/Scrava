@@ -54,7 +54,7 @@ public class BlockPanel extends JLayeredPane{
 	public static void main(String[] args) {
 		JFrame p = new JFrame();
 		BlockPanel bp = BlockPanel.INSTANCE;
-		bp.addBlock(new AppendOperator().setValues(new AddOperator<Double>(new NumberLiteral<Double>(0.0), new NumberLiteral<Double>(0.0)), new StringLiteral("Test")));
+		bp.addBlock(new AppendOperator().setValues(new AddOperator(), new StringLiteral("Test")));
 		bp.addBlock(new MoveBlock(null, new NumberLiteral<Integer>(0), new NumberLiteral<Integer>(0)));
 		bp.addBlock(new IfElseBlock());
 		bp.addBlock(new AndBlock());

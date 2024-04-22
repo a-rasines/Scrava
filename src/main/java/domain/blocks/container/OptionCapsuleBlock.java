@@ -3,6 +3,8 @@ package domain.blocks.container;
 import java.util.ArrayList;
 import java.util.List;
 
+import domain.Sprite;
+import domain.models.interfaces.Translatable;
 import domain.models.interfaces.Valuable;
 import domain.models.types.CapsuleBlock;
 import ui.renderers.LiteralRenderer.LiteralRenderable;
@@ -82,4 +84,7 @@ public class OptionCapsuleBlock extends CapsuleBlock {
 	public boolean attachable() {
 		return attachable;
 	}
+
+	@Override
+	public Translatable create(Sprite s) {return null;} // N/A
 }

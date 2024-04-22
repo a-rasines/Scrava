@@ -2,13 +2,24 @@ package domain.blocks.operators;
 
 import java.util.Set;
 
+import domain.Sprite;
 import domain.models.interfaces.Valuable;
 import domain.models.types.OperatorBlock;
+import domain.values.NumberLiteral;
 
 public class MinOperator  extends OperatorBlock<Number, Number>{
 
 	private static final long serialVersionUID = -3518067417852159122L;
 
+	@Override
+	public MinOperator create(Sprite s) {
+		return new MinOperator();
+	}
+	
+	public MinOperator() {
+		super(new NumberLiteral<Double>(0.), new NumberLiteral<Double>(0.));
+	}
+	
 	public MinOperator(Valuable<? extends Number> left, Valuable<? extends Number> right) {
 		super(left, right);
 	}

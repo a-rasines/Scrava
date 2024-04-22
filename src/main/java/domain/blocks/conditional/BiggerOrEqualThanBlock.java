@@ -1,7 +1,9 @@
 package domain.blocks.conditional;
 
+import domain.Sprite;
 import domain.models.interfaces.Valuable;
 import domain.models.types.ComparatorBlock;
+import domain.values.NumberLiteral;
 
 public class BiggerOrEqualThanBlock extends ComparatorBlock<Number>{
 
@@ -12,6 +14,15 @@ public class BiggerOrEqualThanBlock extends ComparatorBlock<Number>{
 		return left.longValue() == right.longValue()? 
 			   left.doubleValue() >= right.doubleValue() 
 			 : left.longValue() >= right.longValue();
+	}
+	
+	@Override
+	public BiggerOrEqualThanBlock create(Sprite s) {
+		return new BiggerOrEqualThanBlock();		
+	}
+	
+	public BiggerOrEqualThanBlock() {
+		super(new NumberLiteral<Double>(0.),new NumberLiteral<Double>(0.));
 	}
 
 	public BiggerOrEqualThanBlock(Valuable<? extends Number> left, Valuable<? extends Number> right) {

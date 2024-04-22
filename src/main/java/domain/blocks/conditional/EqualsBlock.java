@@ -1,19 +1,22 @@
 package domain.blocks.conditional;
 
+import domain.Sprite;
 import domain.models.interfaces.Valuable;
 import domain.models.types.ComparatorBlock;
+import domain.values.StringLiteral;
 
 @SuppressWarnings("rawtypes")
 public class EqualsBlock extends ComparatorBlock<Object> {
 
 	private static final long serialVersionUID = 1788835095568306325L;
-
+	
 	@Override
-	public boolean compare(Object left, Object right) {
-		return left.equals(right) 
-			   || left instanceof Number 
-			   	  && ((Number)left).longValue() == ((Number)right).longValue()
-	   			  && ((Number)left).doubleValue() == ((Number)right).doubleValue();
+	public EqualsBlock create(Sprite s) {
+		return new EqualsBlock();
+	}
+	
+	public EqualsBlock() {
+		super(new StringLiteral(""), new StringLiteral(""));
 	}
 	
 	public EqualsBlock(Valuable<? extends Object> left, Valuable<? extends Object> right) {
@@ -41,5 +44,12 @@ public class EqualsBlock extends ComparatorBlock<Object> {
 	public String getTitle() {
 		return VARIABLE_ANY + " is equal to " + VARIABLE_ANY;
 	}
-
+	
+	@Override
+	public boolean compare(Object left, Object right) {
+		return left.equals(right) 
+			   || left instanceof Number 
+			   	  && ((Number)left).longValue() == ((Number)right).longValue()
+	   			  && ((Number)left).doubleValue() == ((Number)right).doubleValue();
+	}
 }

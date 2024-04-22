@@ -1,35 +1,43 @@
 package domain.blocks.operators;
 
+import domain.Sprite;
 import domain.models.interfaces.Valuable;
 import domain.models.types.OperatorBlock;
+import domain.values.NumberLiteral;
 
-public class AddOperator<T extends Number> extends OperatorBlock<T, T>{
+public class AddOperator extends OperatorBlock<Number, Number>{
 
 	private static final long serialVersionUID = 4634547651800943320L;
 
-	public AddOperator(Valuable<? extends T> left, Valuable<? extends T> right) {
+	public AddOperator create(Sprite s) {
+		return new AddOperator();
+	}
+	public AddOperator() {
+		super(new NumberLiteral<Double>(0.), new NumberLiteral<Double>(0.));
+	}
+	
+	public AddOperator(Valuable<? extends Number> left, Valuable<? extends Number> right) {
 		super(left, right);
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
-	public T value(Valuable<? extends T> left, Valuable<? extends T> right) {
+	public Number value(Valuable<? extends Number> left, Valuable<? extends Number> right) {
 		if (left.value() instanceof Float || left.value() instanceof Double) {
 			if(right.value() instanceof Float || right.value() instanceof Double)
-				return (T)(Double)(((Number)left.value()).doubleValue() + ((Number)right.value()).doubleValue());
+				return (Double)(((Number)left.value()).doubleValue() + ((Number)right.value()).doubleValue());
 			else if(right.value() instanceof Number)
-				return (T)(Double)(((Number)left.value()).doubleValue() + ((Number)right.value()).longValue());
+				return (Double)(((Number)left.value()).doubleValue() + ((Number)right.value()).longValue());
 		} else if (left.value() instanceof Number)
 			if(right.value() instanceof Float || right.value() instanceof Double)
-				return (T)(Double)(((Number)left.value()).longValue() + ((Number)right.value()).doubleValue());
+				return (Double)(((Number)left.value()).longValue() + ((Number)right.value()).doubleValue());
 			else if(right.value() instanceof Number)
-				return (T)(Long)(((Number)left.value()).longValue() + ((Number)right.value()).longValue());
+				return (Long)(((Number)left.value()).longValue() + ((Number)right.value()).longValue());
 		return null;
 	
 	}
 
 	@Override
-	public String getCode(Valuable<? extends T> left, Valuable<? extends T> right) {
+	public String getCode(Valuable<? extends Number> left, Valuable<? extends Number> right) {
 		return left.getCode() + " + " + right.getCode();
 	}
 	

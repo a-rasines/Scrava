@@ -1,22 +1,29 @@
 package domain.blocks.container;
 
+import domain.Sprite;
 import domain.models.interfaces.Valuable;
 import domain.models.types.CapsuleBlock;
 import domain.values.BooleanLiteral;
 import ui.renderers.LiteralRenderer.LiteralRenderable;
 
 public class WhileBlock extends CapsuleBlock{
-private static final long serialVersionUID = 6422542828725824534L;
+	private static final long serialVersionUID = 6422542828725824534L;
 	
+	@Override
+	public WhileBlock create(Sprite s) {
+		return new WhileBlock();
+	}
+
 	private Valuable<Boolean> condition;
 	private Valuable<Boolean> defCondition;
-	public WhileBlock(Valuable<Boolean> condition) {
-		this.condition = condition;
-		this.defCondition = condition;
-	}
 	
 	public WhileBlock() {
 		this(new BooleanLiteral(true));
+	}
+	
+	public WhileBlock(Valuable<Boolean> condition) {
+		this.condition = condition;
+		this.defCondition = condition;
 	}
 
 	public Valuable<Boolean> getCondition() {

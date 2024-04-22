@@ -1,5 +1,6 @@
 package domain.blocks.conditional.bool;
 
+import domain.Sprite;
 import domain.models.interfaces.Valuable;
 import domain.models.types.ConditionalBlock;
 import domain.values.BooleanLiteral;
@@ -7,13 +8,18 @@ import domain.values.BooleanLiteral;
 public class AndBlock extends ConditionalBlock<Boolean> {
 
 	private static final long serialVersionUID = 2845362572824036201L;
-
-	public AndBlock(Valuable<Boolean> left, Valuable<Boolean> right) {
-		super(left, right);
+	
+	@Override
+	public AndBlock create(Sprite s) {
+		return new AndBlock();
 	}
-
+	
 	public AndBlock() {
 		super(new BooleanLiteral(true), new BooleanLiteral(true));
+	}
+	
+	public AndBlock(Valuable<Boolean> left, Valuable<Boolean> right) {
+		super(left, right);
 	}
 
 	@Override

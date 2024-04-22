@@ -2,13 +2,24 @@ package domain.blocks.operators;
 
 import java.util.Set;
 
+import domain.Sprite;
 import domain.models.interfaces.Valuable;
 import domain.models.types.OperatorBlock;
+import domain.values.NumberLiteral;
 
 public class MaxOperator  extends OperatorBlock<Number, Number>{
 
 	private static final long serialVersionUID = 6618139741671057603L;
 
+	@Override
+	public MaxOperator create(Sprite s) {
+		return new MaxOperator();
+	}
+	
+	public MaxOperator() {
+		super(new NumberLiteral<Double>(0.), new NumberLiteral<Double>(0.));
+	}
+	
 	public MaxOperator(Valuable<? extends Number> left, Valuable<? extends Number> right) {
 		super(left, right);
 	}

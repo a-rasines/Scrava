@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import domain.Sprite;
 import domain.models.interfaces.InvocableBlock;
 import domain.models.interfaces.Valuable;
 import domain.models.types.MultipleOptionCapsuleBlock;
@@ -12,6 +13,11 @@ import ui.renderers.LiteralRenderer.LiteralRenderable;
 
 public class IfElseBlock extends MultipleOptionCapsuleBlock{
 	private static final long serialVersionUID = 3713535728781224292L;
+	
+	@Override
+	public IfElseBlock create(Sprite s) {
+		return new IfElseBlock();
+	}
 	
 	public IfElseBlock() {
 		super("If "+VARIABLE_BOOL, "else");

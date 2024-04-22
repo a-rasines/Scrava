@@ -8,6 +8,11 @@ import domain.values.NumberLiteral;
 public class MoveYToBlock extends MoveToBlock{
 	private static final long serialVersionUID = -2626208983124778899L;
 
+	@Override
+	public MoveYToBlock create(Sprite s) {
+		return new MoveYToBlock(s);
+	}
+	
 	public MoveYToBlock(Sprite s, Valuable<? extends Number> y) {
 		super(s, new NumberLiteral<Byte>((byte)0), y);
 	}
