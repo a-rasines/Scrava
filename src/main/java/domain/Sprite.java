@@ -1,5 +1,12 @@
 package domain;
 
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+
+import domain.blocks.event.OnStartEventBlock;
+import domain.models.types.EventBlock;
 import domain.values.Variable;
 
 /**
@@ -9,6 +16,19 @@ public class Sprite {
 	private String name;
 	private Variable<Long> xPos = Variable.createVariable(this, "x", 0l, true);
 	private Variable<Long> yPos = Variable.createVariable(this, "y", 0l, true);
+	private Map<Class<? extends EventBlock>, List<EventBlock>> eventMap = new HashMap<>();
+	
+	
+	public void registerEvent(EventBlock event) {
+		eventMap.putIfAbsent(event.getClass(), new LinkedList<>());
+		eventMap.get(event.getClass()).add(event);
+	}
+	
+	public void onStart() {
+		for(EventBlock eb : eventMap.get(OnStartEventBlock.class)) {
+			new Thread(() -> eb.invoke()).start();
+		}
+	}
 	
 	/**
 	 * Gets the Sprite's unique name

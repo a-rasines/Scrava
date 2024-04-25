@@ -198,6 +198,16 @@ public class BlockClickable implements Clickable{
 		//TODO		
 	}
 	
+	/**
+	 * Sets the offset of where the click has happened
+	 * @param x
+	 * @param y
+	 */
+	public void setOffset(int x, int y) {
+		this.cx = x;
+		this.cy = y;
+	}
+	
 	protected Collection<Clickable> getNestedClickables() {
 		List<Clickable> lst = new ArrayList<>();
 		for(IRenderer ir : getRenderer().getChildren())

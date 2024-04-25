@@ -61,15 +61,15 @@ public class BlockSelectorPanel implements MouseListener, MouseWheelListener {
 			if(y < click.y && BlockPanel.INSTANCE.zoom * block.getRenderable().getHeight() + y > click.y) {
 				DragableRenderer dr = IRenderer.getDragableRendererOf((IRenderable) block.getBlock().create(BlockPanel.INSTANCE.getSprite()));
 				Point tras = BlockPanel.INSTANCE.getTraslation();
-				dr.moveTo((int)(2*BlockPanel.INSTANCE.getWidth()/(3*BlockPanel.INSTANCE.zoom) + tras.x), (int)(click.y/BlockPanel.INSTANCE.zoom + tras.y));
+				dr.moveTo((int)(2*BlockPanel.INSTANCE.getWidth()/(3*BlockPanel.INSTANCE.zoom) + tras.x), (int)(y/BlockPanel.INSTANCE.zoom + tras.y));
+				int Ax = (int) ((click.x - (2*BlockPanel.INSTANCE.getWidth()/3)) / BlockPanel.INSTANCE.zoom);
+				dr.getClickable().setOffset(Ax, click.y - y);
 				BlockPanel.INSTANCE.addBlock(dr);
 				BlockPanel.INSTANCE.setClicked(dr.getClickable());
 				BlockPanel.INSTANCE.repaint();
 				break;
 				
 			}
-			
-			//
 			
 			y += block.getRenderable().getHeight() / 2;
 			if(y > rendered.getHeight())break;
@@ -133,5 +133,6 @@ public class BlockSelectorPanel implements MouseListener, MouseWheelListener {
 	
 	@Override
 	public void mouseClicked(MouseEvent e) {}
+	
 
 }

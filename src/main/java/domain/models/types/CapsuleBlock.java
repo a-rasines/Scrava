@@ -27,6 +27,12 @@ public abstract class CapsuleBlock extends LinkedList<InvocableBlock> implements
 			ib.invoke();
 	}
 	
+	/**
+	 * Returns the wrapper string in java code.
+	 * 
+	 * Example: if(*condition*) {
+	 * @return
+	 */
 	public abstract String getHead();
 	
 	@Override
@@ -47,4 +53,9 @@ public abstract class CapsuleBlock extends LinkedList<InvocableBlock> implements
 	}
 	
 	public abstract boolean attachable();
+	
+	@Override
+	public int hashCode() {
+		return System.identityHashCode(this);
+	}
 }

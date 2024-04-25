@@ -1,4 +1,4 @@
-# Scrava: Diseño y desarrollo de una aplicacion de escritorio Java similar a Scratch
+# Scrava: diseño y desarrollo de una aplicacion de escritorio Java similar a Scratch
 Scrava es una aplicación de escritorio similar a Scratch pero con el añadido de que el código generado con bloques es exportable a código funcional en Java.
 
 Scratch es una aplicación tanto web como de escritorio en la cual se programan videojuegos y otras aplicaciones basadas en la animación de objetos (animaciones, simulaciones...) mediante un lenguaje de programación BOP (Block Oriented Programming)

@@ -3,6 +3,7 @@ package ui.domain;
 import domain.blocks.container.IfBlock;
 import domain.blocks.container.IfElseBlock;
 import domain.blocks.container.WhileBlock;
+import domain.blocks.event.OnStartEventBlock;
 import domain.blocks.movement.MoveBlock;
 import domain.blocks.movement.MoveToBlock;
 import domain.blocks.movement.MoveXBlock;
@@ -26,6 +27,10 @@ public enum BlockSection {
 			IRenderer.getDetachedDragableRendererOf(new IfBlock()),
 			IRenderer.getDetachedDragableRendererOf(new IfElseBlock()),
 			IRenderer.getDetachedDragableRendererOf(new WhileBlock()),
+	}),
+	
+	EVENT(0xffe97d00, new IRenderer[] {
+			IRenderer.getDetachedDragableRendererOf(new OnStartEventBlock())
 	})
 	
 	;

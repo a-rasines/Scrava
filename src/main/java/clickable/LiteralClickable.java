@@ -153,7 +153,6 @@ public class LiteralClickable implements Clickable{
 				System.out.println("parent: (" + parent.getClass().getSimpleName() + ".java:0)");
 				System.out.println("parent renderer: (" + parent.getRenderer().getClass().getSimpleName() + ".java:0)");
 				getParent().getRenderer().update();
-				System.out.println();
 			}
 		}
 	}

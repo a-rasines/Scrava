@@ -66,10 +66,10 @@ public class BlockPanel extends JLayeredPane{
 	//Zoom of the blocks
 	public double zoom = 0.5;
 	
-	private Sprite actual = null;
+	private Sprite actualSprite = new Sprite();
 	
 	public Sprite getSprite() {
-		return actual;
+		return actualSprite;
 	}
 	
 	
