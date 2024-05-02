@@ -99,10 +99,13 @@ public class CapsuleBlockClickable extends InvocableClickable {
 			if(hovered != null) {
 				Rect r1 = hovered.getPosition();
 				if(x > r1.x && y > r1.y && x < r1.x + r1.w && y < r1.y + r1.h + InvocableBlockRenderer.CONNECTOR.getHeight()) {
-					hovered.onHover(x, y, clicked);
+					System.out.println("px:" + x + " py:" + y + " hx:" + hovered.getPosition().x + " hy:" + hovered.getPosition().y + " rx:" + r.x + " ry:" + r.y);
+					hovered.onHover(x - hovered.getPosition().x, y - hovered.getPosition().y, clicked);
 					return;
-				} else
+				} else {
+					hovered.onHoverEnd(false, clicked);
 					hovered = null;
+				}
 			}
 			if(index < 0) {
 				System.out.println("no bundle");
@@ -122,7 +125,7 @@ public class CapsuleBlockClickable extends InvocableClickable {
 				break;
 			}
 			if(hovered != null)
-				hovered.onHover(x, y, clicked);
+				hovered.onHover(x - hovered.getPosition().x - r.x, y - hovered.getPosition().y - r.y, clicked);
 		}
 		
 	}
@@ -154,7 +157,7 @@ public class CapsuleBlockClickable extends InvocableClickable {
 		
 		else if(!(clicked instanceof InvocableClickable)) { //If block gonna be added
 			if(hovered != null) { //This block isn't the one hovered
-				System.out.println(hovered.getBlock().toString().replaceAll(".*\\.", ""));
+				System.out.println("hovered:" + hovered.getBlock().toString().replaceAll(".*\\.", ""));
 				hovered.onHoverEnd(click, clicked);
 			}
 		} else {

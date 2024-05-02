@@ -154,7 +154,7 @@ public class InvocableClickable extends BlockClickable{
 					((InvocableClickable) clicked).setNext(next);
 			}
 			BlockPanel.INSTANCE.repaint();
-		} else {
+		} else { //inside
 			System.out.println(append);
 			if(!append)
 				super.onHoverEnd(click, clicked);
