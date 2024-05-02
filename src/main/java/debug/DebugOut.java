@@ -99,6 +99,7 @@ public class DebugOut extends PrintStream{
 	}
 	
 	public static void printStackTrace() {
+		if(!(System.out instanceof DebugOut)) return;
 		StackTraceElement[] caller = Thread.currentThread().getStackTrace();
 		String out = "";
 		for(StackTraceElement element : caller) {

@@ -106,20 +106,21 @@ public class CapsuleBlockRenderer implements CapsuleRenderer{
 		
 		int h = getTitleHeight();
 		blockRect.y = h;
-		for(InvocableBlock ib : block) {
-			DragableRenderer rend = IRenderer.getDragableRendererOf((IRenderable) ib);
-//			verticalBackground(bi, 0, ARM_BLOCK.getWidth(), h/* == getTitleHeight()?h+ARM_START.getHeight():h*/, rend.getHeight());
-//			leftClone(bi, 0, Math.max(getTitleHeight() + ARM_START.getHeight(), h), 10, ARM_BLOCK.getHeight(), ARM_BLOCK.getWidth());
+		if(block.size() > 0) {
+			DragableRenderer rend = IRenderer.getDragableRendererOf((IRenderable)block.get(0));
 			rend.getClickable().setPosition(ARM_BLOCK.getWidth() - 4, h);
 			rend.getClickable().setParent(this.getClickable());
-			if(BlockPanel.DEBUG_SHOW_HITBOXES) {
-				Rect hb = rend.getClickable().getPosition();
-				((Graphics2D)g).setStroke(new BasicStroke(2));
-				g.setColor(Color.green);
-				g.drawRect(hb.x, hb.y, hb.w, hb.h);
+			for(InvocableBlock ib : block) {
+				rend = IRenderer.getDragableRendererOf((IRenderable) ib);
+				if(BlockPanel.DEBUG_SHOW_HITBOXES) {
+					Rect hb = rend.getClickable().getPosition();
+					((Graphics2D)g).setStroke(new BasicStroke(2));
+					g.setColor(Color.green);
+					g.drawRect(hb.x, hb.y, hb.w, hb.h);
+				}
+				g.drawImage(rend.getRenderable(), ARM_BLOCK.getWidth() - 4, h, null);
+				h += rend.getHeight();
 			}
-			g.drawImage(rend.getRenderable(), ARM_BLOCK.getWidth() - 4, h, null);
-			h += rend.getHeight();
 		}
 		g.drawImage(ARM_BLOCK.getScaledInstance(ARM_BLOCK.getWidth(), h - getTitleHeight() - ARM_START.getHeight() + 3, BufferedImage.SCALE_FAST), -1, ARM_START.getHeight() + getTitleHeight() - 3, null);
 		

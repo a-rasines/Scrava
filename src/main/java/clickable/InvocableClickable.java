@@ -12,6 +12,14 @@ public class InvocableClickable extends BlockClickable{
 	private InvocableClickable next = null;
 	private InvocableClickable prev = null;
 	
+	@Override
+	public void setParent(BlockClickable c) {
+		super.setParent(c);
+		if(next != null) {
+			next.setParent(c);
+		}
+	}
+	
 	public InvocableClickable setNext(InvocableClickable next) {
 		if(next == this) return this;
 		System.out.println(getBlock().toString().replaceAll(".*\\.", "") + " > " + (next==null?"null":next.getBlock().toString().replaceAll(".*\\.", "")));
@@ -30,7 +38,6 @@ public class InvocableClickable extends BlockClickable{
 
 	@Override
 	public void setPosition(int x, int y) {
-//		((DebugOut)System.out).printStackTrace();
 		System.out.println(toString() + " x:" + getRenderer().getX() + " y:" + y + " h:" + getRenderer().getHeight() + " next:" + (next==null?"null":next.toString()));
 		super.setPosition(x, y);
 		if(next != null)
