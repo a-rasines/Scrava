@@ -33,6 +33,7 @@ import debug.DebugOut;
 import domain.Sprite;
 import domain.models.interfaces.Clickable.Rect;
 import ui.FlashThread;
+import ui.VariableCreator;
 import ui.renderers.IRenderer;
 import ui.renderers.IRenderer.DragableRenderer;
 import ui.renderers.IRenderer.IRenderable;
@@ -161,6 +162,7 @@ public class BlockPanel extends JLayeredPane{
 		add(BOTON_VARIABLES, JLayeredPane.PALETTE_LAYER);
 		add(clickedLabel, JLayeredPane.MODAL_LAYER);
 		
+		BOTON_VARIABLES.addActionListener((v)-> new VariableCreator().setVisible(true));
 		BOTON_VARIABLES.setVisible(false);
 	
 		setDoubleBuffered(false);

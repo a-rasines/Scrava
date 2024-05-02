@@ -41,10 +41,13 @@ public class BlockSelectorPanel implements MouseListener, MouseWheelListener {
 			b = 0xff;
 		this.selected = page;
 		background = new Color(0xff000000 | r | g | b);
-		this.rendered = null;
 		BlockPanel.INSTANCE.BOTON_VARIABLES.setVisible(page == BlockSection.VARIABLE);
+		update();
+	}
+	public void update() {
+		this.rendered = null;
 		BlockPanel.INSTANCE.repaint();
-		
+
 	}
 
 	@Override

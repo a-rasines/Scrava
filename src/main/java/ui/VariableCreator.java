@@ -20,6 +20,7 @@ import javax.swing.JTextField;
 
 import domain.values.Variable;
 import ui.components.BlockPanel;
+import ui.components.BlockSelectorPanel;
 
 public class VariableCreator extends JFrame {
 
@@ -148,13 +149,19 @@ public class VariableCreator extends JFrame {
 				if(Variable.getGlobalVariable(nameField.getText()) != null) {
 					JOptionPane.showMessageDialog(null, "Variable with that name already exists");
 					return;
-				}else
+				}else {
 					Variable.createGlobalVariable(nameField.getText(), ((VariableType)valueType.getSelectedItem()).parser.apply(valueField.getText()));
+					BlockSelectorPanel.INSTANCE.update();
+					dispose();
+				}
 			} else if(Variable.getVariable(BlockPanel.INSTANCE.getSprite(), nameField.getText()) != null) {
 				JOptionPane.showMessageDialog(null, "Variable with that name already exists");
 				return;
-			}else
+			}else {
 				Variable.createVariable(BlockPanel.INSTANCE.getSprite(), nameField.getText(), ((VariableType)valueType.getSelectedItem()).parser.apply(valueField.getText()));
+				BlockSelectorPanel.INSTANCE.update();
+				dispose();
+			}
 			
 			
 				
@@ -174,7 +181,7 @@ public class VariableCreator extends JFrame {
 	private static final Function<Character, Boolean> DECIMAL_FILTER = (v)->v >= '0' && v <= '9' || v == '.';
 	private static final Function<String, String> EMPTY_PARSER = (v)->v;
 	private static enum VariableType {
-		// TYPE                            DESC                              FILTER          PARSER
+		// TYPE                    VAL RANGE / DESC                           FILTER          PARSER
 		_GENERAL_DIVIDER("GENERAL",                                      DIVIDER_FILTER, EMPTY_PARSER),
 		
 		TEXT(            "'' -> Your computer's ram",                    STRING_FILTER,  EMPTY_PARSER),
@@ -197,8 +204,24 @@ public class VariableCreator extends JFrame {
 		DOUBLE(          Double.MIN_VALUE + " -> " + Double.MAX_VALUE,   DECIMAL_FILTER, Double::parseDouble),
 		FLOAT(           Float.MIN_VALUE + " -> " + Float.MAX_VALUE,     DECIMAL_FILTER, Float::parseFloat);
 		
+		/**
+		 * This is a free string to be used with the value.
+		 * 
+		 * For all values ending in DIVIDER is the group over which it is.
+		 * 
+		 * For all the rest of values, it's the range.
+		 */
 		private final String desc;
+		/**
+		 * This is a filter to make parseable strings
+		 * @param char character to check
+		 * @return true if that character can be transformed by the parser
+		 */
 		public final Function<Character, Boolean> keyFilter;
+		/**
+		 * This is an indirect call to the parser of the class.
+		 * @return the input string in the value's format
+		 */
 		public final Function<String, ? extends Object> parser;
 		VariableType(String desc, Function<Character, Boolean> keyFilter, Function<String, ? extends Object> parser){
 			this.desc = desc;
