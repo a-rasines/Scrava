@@ -125,7 +125,7 @@ public class CapsuleBlockClickable extends InvocableClickable {
 				break;
 			}
 			if(hovered != null)
-				hovered.onHover(x - hovered.getPosition().x - r.x, y - hovered.getPosition().y - r.y, clicked);
+				hovered.onHover(x - hovered.getPosition().x, y - hovered.getPosition().y, clicked);
 		}
 		
 	}
