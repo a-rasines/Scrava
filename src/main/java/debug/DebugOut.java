@@ -7,7 +7,7 @@ public class DebugOut extends PrintStream{
 	
 	public static final List<String> DEBUG_MUTED_FUNCTIONS = List.of(
 			//block interaction
-			"addBlock",
+			//"addBlock",
 			"getBlockBundleIndex",
 			"moveTo",
 			"removeBlock",
@@ -98,13 +98,13 @@ public class DebugOut extends PrintStream{
 		super.println(prefix(caller) + x);
 	}
 	
-	public void printStackTrace() {
+	public static void printStackTrace() {
 		StackTraceElement[] caller = Thread.currentThread().getStackTrace();
 		String out = "";
 		for(StackTraceElement element : caller) {
-			out += prefix(element) + "\n";
+			out += ((DebugOut) System.out).prefix(element) + "\n";
 		}
-		super.println(out);
+		System.out.println(out);
 		
 	}
 	

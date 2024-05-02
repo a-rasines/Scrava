@@ -169,12 +169,10 @@ public class CapsuleBlockClickable extends InvocableClickable {
 			if(hovered == null) {
 				System.out.println("adding to queue");
 				InvocableClickable cl = null;
-				Rect pos = getRenderer().getBlockBundlesSize().get(index);
-				clicked.setPosition(pos.x, pos.y + pos.h);
 				while(clicked != null) {
 					cl = (InvocableClickable) clicked;
 					BlockPanel.INSTANCE.removeBlock(clicked.getRenderer());
-					nestClickable(index, i++, clicked);
+					nestClickable(index, clicked);
 					clicked = ((InvocableClickable) clicked).next();
 				}
 				if(getRenderer().sizeOf(index) > i)
@@ -200,11 +198,12 @@ public class CapsuleBlockClickable extends InvocableClickable {
 				}
 			}
 			getRenderer().update();
-			System.out.println("Update Chaneeeel");
+			System.out.println("Update Chaneeeel"); //@BellosoAsier wanted to add his touch to the debug process
 		}
 	}
 	
 	public void nestClickable(int index, BlockClickable child) {
+		child.setParent(this);
 		if(child.getBlock() instanceof InvocableBlock && !getRenderer().contains(index, child.getRenderer()))
 			getRenderer().add(index, -1, child.getRenderer());
 	}

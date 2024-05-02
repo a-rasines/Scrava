@@ -38,6 +38,8 @@ public class InvocableClickable extends BlockClickable{
 	}
 	
 	private void updateHierarchy() {
+		if(getParent() != null)
+			return;
 		if(prev != null) 
 			prev.updateHierarchy();
 		else

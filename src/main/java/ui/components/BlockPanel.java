@@ -130,7 +130,7 @@ public class BlockPanel extends JLayeredPane{
 		if(!blocks.contains(b))
 			blocks.add(0, b); //Last to spawn first to grab
 
-		System.out.println("Hola");
+		System.out.println("Hola");// @EnekoHernando wanted to take part in the debug process 
 		System.out.println("newSize:" + blocks.size());
 	}
 	
