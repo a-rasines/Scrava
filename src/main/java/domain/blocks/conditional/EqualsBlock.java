@@ -42,7 +42,7 @@ public class EqualsBlock extends ComparatorBlock<Object> {
 
 	@Override
 	public String getTitle() {
-		return VARIABLE_ANY + " is equal to " + VARIABLE_ANY;
+		return VARIABLE_ANY + " = " + VARIABLE_ANY;
 	}
 	
 	@Override

@@ -1,15 +1,17 @@
 package ui.domain;
 
-import domain.blocks.container.IfBlock;
-import domain.blocks.container.IfElseBlock;
-import domain.blocks.container.WhileBlock;
-import domain.blocks.event.OnStartEventBlock;
-import domain.blocks.movement.MoveBlock;
-import domain.blocks.movement.MoveToBlock;
-import domain.blocks.movement.MoveXBlock;
-import domain.blocks.movement.MoveXToBlock;
-import domain.blocks.movement.MoveYBlock;
-import domain.blocks.movement.MoveYToBlock;
+import java.util.List;
+import java.util.function.Supplier;
+
+import domain.blocks.conditional.*;
+import domain.blocks.conditional.bool.*;
+import domain.blocks.container.*;
+import domain.blocks.event.*;
+import domain.blocks.movement.*;
+import domain.blocks.operators.*;
+import domain.blocks.operators.parser.*;
+
+import domain.values.Variable;
 import ui.renderers.IRenderer;
 
 public enum BlockSection {
@@ -31,14 +33,47 @@ public enum BlockSection {
 	
 	EVENT(0xffe97d00, new IRenderer[] {
 			IRenderer.getDetachedDragableRendererOf(new OnStartEventBlock())
-	})
+	}),
 	
+	VARIABLE(0xffe97d00, () -> {
+		List<Variable<?>> variables = Variable.getVisibleVariables();
+		IRenderer[] output = new IRenderer[variables.size()];
+		for(int i = 0; i < variables.size(); i++)
+			output[i] = IRenderer.getDetachedDragableRendererOf(variables.get(i));
+		return output;
+	}),
+	OPERATOR(0xff4ca742, new IRenderer[] {
+		IRenderer.getDetachedDragableRendererOf(new BiggerOrEqualThanBlock()),
+		IRenderer.getDetachedDragableRendererOf(new BiggerThanBlock()),
+		IRenderer.getDetachedDragableRendererOf(new EqualsBlock()),
+		IRenderer.getDetachedDragableRendererOf(new SmallerThanBlock()),
+		IRenderer.getDetachedDragableRendererOf(new SmallerOrEqualThanBlock()),
+		
+		IRenderer.getDetachedDragableRendererOf(new AndBlock()),
+		IRenderer.getDetachedDragableRendererOf(new OrBlock()),
+		
+		IRenderer.getDetachedDragableRendererOf(new AppendOperator()),
+		IRenderer.getDetachedDragableRendererOf(new RandomOperator()),
+		
+		IRenderer.getDetachedDragableRendererOf(new AddOperator()),
+		IRenderer.getDetachedDragableRendererOf(new SubstractOperator()),
+		IRenderer.getDetachedDragableRendererOf(new MultiplyOperator()),
+		IRenderer.getDetachedDragableRendererOf(new DivideOperator()),
+		IRenderer.getDetachedDragableRendererOf(new ModulusOperator()),
+		
+		IRenderer.getDetachedDragableRendererOf(new MaxOperator()),
+		IRenderer.getDetachedDragableRendererOf(new MinOperator()),
+		
+		IRenderer.getDetachedDragableRendererOf(new StringToDecimalNumberParser()),
+		IRenderer.getDetachedDragableRendererOf(new StringToIntegerNumberParser())
+	}),
 	;
 	
 	
 	public final int color;
-	public final IRenderer[] blocks;
-	public final int totalY;
+	private final IRenderer[] blocks;
+	public int totalY;
+	private final Supplier<IRenderer[]> blockGetter;
 	BlockSection(int color, IRenderer[] blocks) {
 		this.color = color;
 		this.blocks = blocks;
@@ -46,6 +81,30 @@ public enum BlockSection {
 		for(IRenderer block: blocks)
 			temp += block.getRenderable().getHeight();
 		this.totalY = temp;
+		this.blockGetter = this::_gb;
+	}
+	
+	private IRenderer[] _gb() {
+		return blocks;
+	}
+	
+	BlockSection(int color, Supplier<IRenderer[]> dinList) {
+		System.out.println("dinlist:"+dinList);
+		this.color = color;
+		this.blockGetter = dinList;
+		this.totalY = 0;
+		this.blocks = new IRenderer[0];
+	}
+	public int getTotalY() {
+		if(totalY != 0) return totalY;
+		int temp = 0;
+		for(IRenderer block: getBlocks())
+			temp += block.getRenderable().getHeight();
+		return temp;
+	}
+	
+	public IRenderer[] getBlocks() {
+		return blockGetter.get();
 	}
 	
 	@Override

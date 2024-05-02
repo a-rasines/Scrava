@@ -144,14 +144,16 @@ public class CapsuleBlockClickable extends InvocableClickable {
 	public void onHoverEnd(boolean click, BlockClickable clicked) {
 		if(click)
 			System.out.println("▓▓ hover end " + this.getBlock().toString().replaceAll(".*\\.", "") + " inside=" + inside + " append=" + append);
-		if(inside && (append || clicked.getBlock() instanceof Valuable)) {
+		if(inside && (append || clicked.getBlock() instanceof Valuable)) { //Invocable behaviour
 			System.out.println("Hovered bar");
 			super.onHoverEnd(click, clicked);
 			return;
 		}
-		if(!click)return;
-		else if(!(clicked instanceof InvocableClickable)) {
-			if(hovered != null) {
+		
+		if(!click)return; //No action needed if hover has just changed block
+		
+		else if(!(clicked instanceof InvocableClickable)) { //If block gonna be added
+			if(hovered != null) { //This block isn't the one hovered
 				System.out.println(hovered.getBlock().toString().replaceAll(".*\\.", ""));
 				hovered.onHoverEnd(click, clicked);
 			}
@@ -180,7 +182,7 @@ public class CapsuleBlockClickable extends InvocableClickable {
 			} else {
 				i = getRenderer().indexOf(index, (DragableRenderer) hovered.getRenderer()) + 1;
 				System.out.println("Hovered " + hovered.getBlock().toString().replaceAll(".*\\.", "") + " endIndex:" + i);
-				InvocableClickable end = getRenderer().sizeOf(index) > i?(InvocableClickable) getRenderer().get(index, i).getClickable():null;
+				InvocableClickable end = getRenderer().sizeOf(index) > i ? (InvocableClickable) getRenderer().get(index, i).getClickable():null;
 				((InvocableClickable) hovered).setNext((InvocableClickable) clicked);
 				while(true) {
 					BlockPanel.INSTANCE.removeBlock(clicked.getRenderer());
@@ -188,6 +190,8 @@ public class CapsuleBlockClickable extends InvocableClickable {
 					clicked.getRenderer().moveTo(pos.x, pos.y + pos.h);
 					if(end != null)
 						nestClickable(index, i++, clicked);
+					else
+						nestClickable(-1, i++, clicked);
 					if(((InvocableClickable) clicked).next() == null) {
 						((InvocableClickable) clicked).setNext(end);
 						break;
@@ -196,6 +200,7 @@ public class CapsuleBlockClickable extends InvocableClickable {
 				}
 			}
 			getRenderer().update();
+			System.out.println("Update Chaneeeel");
 		}
 	}
 	

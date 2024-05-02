@@ -29,6 +29,7 @@ public class BlockSelectorPanel implements MouseListener, MouseWheelListener {
 		setPage(BlockSection.values()[0]);		
 	}
 	public void setPage(BlockSection page) {
+		y = 0;
 		int r = (page.color & 0xff0000) + 0x330000;
 		if((r & 0xff000000) != 0)
 			r = 0xff0000;
@@ -41,6 +42,7 @@ public class BlockSelectorPanel implements MouseListener, MouseWheelListener {
 		this.selected = page;
 		background = new Color(0xff000000 | r | g | b);
 		this.rendered = null;
+		BlockPanel.INSTANCE.BOTON_VARIABLES.setVisible(page == BlockSection.VARIABLE);
 		BlockPanel.INSTANCE.repaint();
 		
 	}
@@ -53,7 +55,7 @@ public class BlockSelectorPanel implements MouseListener, MouseWheelListener {
 		if(click.x < (2 * w / 3 - 10) || click.x > w - 10) return;
 		System.out.println("verified click");
 		int y = -this.y + 10;
-		for(IRenderer block: selected.blocks) {	
+		for(IRenderer block: selected.getBlocks()) {	
 			if(y + block.getRenderable().getHeight() / 2 < 0) {
 				y += block.getRenderable().getHeight() / 2;
 				continue;
@@ -109,7 +111,7 @@ public class BlockSelectorPanel implements MouseListener, MouseWheelListener {
 			g0.setColor(background);
 			g0.fillRect(0, 0, w / 3, BlockPanel.INSTANCE.getHeight());
 			int y = -this.y + 10;
-			for(IRenderer block: selected.blocks) {	
+			for(IRenderer block: selected.getBlocks()) {	
 				if(y + block.getRenderable().getHeight() / 2 < 0) {
 					y += block.getRenderable().getHeight() / 2;
 					continue;

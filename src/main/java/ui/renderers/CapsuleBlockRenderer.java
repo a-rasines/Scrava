@@ -310,7 +310,8 @@ public class CapsuleBlockRenderer implements CapsuleRenderer{
 	
 	@Override
 	public void add(int bundle, int index, DragableRenderer block) {
-		if(index < 0) {
+		System.out.println("adding block");
+		if(index < 0 || index == ((CapsuleBlock) getBlock()).size()) {
 			((CapsuleBlock) getBlock()).add((InvocableBlock) block.getBlock());
 		} else {
 			((CapsuleBlock) getBlock()).add(index, (InvocableBlock) block.getBlock());

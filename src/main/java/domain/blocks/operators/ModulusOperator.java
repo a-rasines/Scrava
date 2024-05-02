@@ -46,6 +46,6 @@ public class ModulusOperator  extends OperatorBlock<Number, Number>{
 
 	@Override
 	public String getTitle() {
-		return "Modulus of " + VARIABLE_NUM + " when divided by " + VARIABLE_NUM;
+		return "Modulus of " + VARIABLE_NUM + " ÷ " + VARIABLE_NUM;
 	}
 }

@@ -65,6 +65,6 @@ public class RandomOperator extends OperatorBlock<Number, Number>{
 
 	@Override
 	public String getTitle() {
-		return "Random number between " + VARIABLE_NUM + " and " + VARIABLE_NUM;
+		return "Random between " + VARIABLE_NUM + " and " + VARIABLE_NUM;
 	}
 }

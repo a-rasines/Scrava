@@ -64,8 +64,7 @@ public class InvocableClickable extends BlockClickable{
 			InvocableClickable parent = (InvocableClickable)getParent();
 			super.onClick(x, y);
 			if(parent != null && clicked == null) {
-				//parent.removeChild(this);
-				BlockPanel.INSTANCE.addBlock(next.getRenderer());
+				if(next!=null)BlockPanel.INSTANCE.addBlock(next.getRenderer());
 				parent.getRenderer().update();
 				System.out.println();
 			}

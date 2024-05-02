@@ -5,10 +5,14 @@ import java.util.Set;
 import domain.Sprite;
 import domain.models.interfaces.Valuable;
 import domain.models.types.ValuableModifier;
+import domain.values.StringLiteral;
 
 public class StringToIntegerNumberParser extends ValuableModifier<String, Long> {
 	private static final long serialVersionUID = -2316860509271581027L;
 
+	public StringToIntegerNumberParser() {
+		value = new StringLiteral("");
+	}
 	@Override
 	public StringToIntegerNumberParser create(Sprite s) {
 		return new StringToIntegerNumberParser();
@@ -29,7 +33,7 @@ public class StringToIntegerNumberParser extends ValuableModifier<String, Long> 
 
 	@Override
 	public String getTitle() {
-		return "to integer numer " + VARIABLE_STR;
+		return "to integer number " + VARIABLE_STR;
 	}
 
 	@Override

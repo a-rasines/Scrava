@@ -7,10 +7,15 @@ import domain.Sprite;
 import domain.models.interfaces.Translatable;
 import domain.models.interfaces.Valuable;
 import domain.models.types.ValuableModifier;
+import domain.values.StringLiteral;
 
 public class StringToDecimalNumberParser extends ValuableModifier<String, Double> {
 	private static final long serialVersionUID = -2316860509271581027L;
 
+	public StringToDecimalNumberParser() {
+		value = new StringLiteral("");
+	}
+	
 	@Override
 	public Translatable create(Sprite s) {
 		return new StringToDecimalNumberParser();
@@ -35,7 +40,7 @@ public class StringToDecimalNumberParser extends ValuableModifier<String, Double
 
 	@Override
 	public String getTitle() {
-		return "to decimal numer " + VARIABLE_STR;
+		return "to decimal number " + VARIABLE_STR;
 	}
 
 	@Override

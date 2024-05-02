@@ -1,12 +1,15 @@
 package domain.values;
 
 import java.lang.reflect.Constructor;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Set;
 
 import domain.Sprite;
 import domain.models.interfaces.Valuable;
 import ui.renderers.LiteralRenderer.LiteralRenderable;
+import ui.components.BlockPanel;
 import ui.renderers.SimpleBlockRenderer;
 import ui.renderers.SimpleBlockRenderer.SimpleRenderable;
 
@@ -24,9 +27,17 @@ public class Variable<T> extends AbstractLiteral<T> implements SimpleRenderable 
 	 */
 	private static HashMap<Sprite, HashMap<String, Variable<?>>> variables = new HashMap<>();
 	
+	static {
+		variables.put(null, new HashMap<>());
+	}
+	
+	public static void registerSprite(Sprite s) {
+		variables.putIfAbsent(s, new HashMap<>());
+	}
+	
 	@Override
 	public Variable<?> create(Sprite s) {
-		return null;
+		return this;
 	}
 	
 	/**
@@ -55,6 +66,12 @@ public class Variable<T> extends AbstractLiteral<T> implements SimpleRenderable 
 	
 	public static Variable<?> getVariable(Sprite s, String name) {
 		return variables.get(s).get(name);
+	}
+	
+	public static List<Variable<?>> getVisibleVariables() {
+		List<Variable<?>> output = new ArrayList<>(variables.get(null).values());
+		output.addAll(variables.get(BlockPanel.INSTANCE.getSprite()).values());
+		return output;
 	}
 	
 	

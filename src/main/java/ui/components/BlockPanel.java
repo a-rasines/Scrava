@@ -22,6 +22,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import javax.swing.ImageIcon;
+import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JLayeredPane;
@@ -41,6 +42,7 @@ public class BlockPanel extends JLayeredPane{
 	static {
 		DebugOut.setup();
 	}
+	
 	public static void main(String[] args) {
 		JFrame p = new JFrame();
 		BlockPanel bp = BlockPanel.INSTANCE;
@@ -50,8 +52,9 @@ public class BlockPanel extends JLayeredPane{
 		p.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		p.setVisible(true);
 	}
+	
 	public static final boolean DEBUG_SHOW_HITBOXES = false;
-	public static final boolean DEBUG_SHOW_HASHES = false;	
+	public static final boolean DEBUG_SHOW_HASHES = true;	
 	
 	private static final long serialVersionUID = 8172972493584077329L;
 	
@@ -65,6 +68,8 @@ public class BlockPanel extends JLayeredPane{
 	
 	//Zoom of the blocks
 	public double zoom = 0.5;
+	
+	public final JButton BOTON_VARIABLES = new JButton("Create new Variable");
 	
 	private Sprite actualSprite = new Sprite();
 	
@@ -124,6 +129,8 @@ public class BlockPanel extends JLayeredPane{
 		System.out.println("adding " + b.getBlock().toString().replaceAll(".*\\.", ""));
 		if(!blocks.contains(b))
 			blocks.add(0, b); //Last to spawn first to grab
+
+		System.out.println("Hola");
 		System.out.println("newSize:" + blocks.size());
 	}
 	
@@ -150,9 +157,12 @@ public class BlockPanel extends JLayeredPane{
 		clickedLabel.setDoubleBuffered(true);
 		//Empty layout to not mess with custom render system
 		setLayout(new LayoutManager() {public void addLayoutComponent(String name, Component comp) {} public void removeLayoutComponent(Component comp) {} public Dimension preferredLayoutSize(Container parent) {	return null; } public Dimension minimumLayoutSize(Container parent) { return null; } public void layoutContainer(Container parent) {}});
-		add(SectionList.INSTANCE, JLayeredPane.PALETTE_LAYER);
+		add(SectionList.INSTANCE, JLayeredPane.DEFAULT_LAYER);
+		add(BOTON_VARIABLES, JLayeredPane.PALETTE_LAYER);
 		add(clickedLabel, JLayeredPane.MODAL_LAYER);
 		
+		BOTON_VARIABLES.setVisible(false);
+	
 		setDoubleBuffered(false);
 		setIgnoreRepaint(true);
 		addMouseListener(new MouseController());
@@ -190,6 +200,7 @@ public class BlockPanel extends JLayeredPane{
 	
 	private void adjustSizes() {
 		SectionList.INSTANCE.setBounds(getWidth() - 25, 0, 25, getHeight());
+		BOTON_VARIABLES.setBounds(getWidth() * 2 / 3, getHeight() - 70, getWidth() / 3 - 30, 50);
 	}
 	
 	private Dimension d = null;

@@ -41,7 +41,7 @@ public class BiggerThanBlock extends ComparatorBlock<Number>{
 
 	@Override
 	public String getTitle() {
-		return VARIABLE_NUM + "is bigger than " + VARIABLE_NUM;
+		return VARIABLE_NUM + " > " + VARIABLE_NUM;
 	}
 
 }

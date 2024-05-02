@@ -46,7 +46,7 @@ public class DivideOperator  extends OperatorBlock<Number, Number>{
 
 	@Override
 	public String getTitle() {
-		return VARIABLE_NUM + " / " + VARIABLE_NUM;
+		return VARIABLE_NUM + " ÷ " + VARIABLE_NUM;
 	}
 
 }

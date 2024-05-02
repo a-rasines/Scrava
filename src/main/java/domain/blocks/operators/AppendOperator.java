@@ -35,6 +35,6 @@ public class AppendOperator extends OperatorBlock<Object, String>{
 
 	@Override
 	public String getTitle() {
-		return "Join " + VARIABLE_ANY + ", " + VARIABLE_ANY;
+		return "Join " + VARIABLE_ANY + " " + VARIABLE_ANY;
 	}
 }
