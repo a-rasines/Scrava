@@ -81,9 +81,12 @@ public class LiteralClickable implements Clickable{
 				renderer.update();
 			} else {
 				JTextField textField = new JTextField(value.value().toString());
-				if(value.value() instanceof Number)
+				ValueSelector vs;
+				if(value.value() instanceof Number) {
 					textField.addKeyListener(new NumberKeyListener(value.value() instanceof Double || value.value() instanceof Float, textField));
-				ValueSelector vs = new ValueSelector(textField);
+					vs = new ValueSelector(textField, ValueSelector.DECIMAL_NUMBERS + ((value.value() instanceof Double || value.value() instanceof Float)?ValueSelector.DECIMAL_NUMBERS : 0));
+				} else 
+					vs = new ValueSelector(textField, ValueSelector.STRING);
 				vs.setVisible(true);
 				vs.addWindowListener(new WindowAdapter() {
 					@Override
