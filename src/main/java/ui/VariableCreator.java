@@ -14,8 +14,12 @@ import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+
+import domain.values.Variable;
+import ui.components.BlockPanel;
 
 public class VariableCreator extends JFrame {
 
@@ -64,7 +68,7 @@ public class VariableCreator extends JFrame {
 			
 			@Override
 			public void keyTyped(KeyEvent e) {
-				if(e.getKeyChar() != ' ' && e.getKeyChar() != '_' && (e.getKeyChar() < 'A' || e.getKeyChar() > 'Z' && e.getKeyChar() < 'a' || e.getKeyChar() > 'z'))
+				if(e.getKeyChar() != '_' && (e.getKeyChar() < 'A' || e.getKeyChar() > 'Z' && e.getKeyChar() < 'a' || e.getKeyChar() > 'z'))
 					e.consume();
 			}
 		});
@@ -132,6 +136,30 @@ public class VariableCreator extends JFrame {
 		
 		JButton createButton = new JButton("Create");
 		createButton.addActionListener((v) -> {
+			if(nameField.getText().length() == 0){
+				JOptionPane.showMessageDialog(null, "Variable needs a name");
+				return;
+			}
+			if(valueField.getText().length() == 0){
+				JOptionPane.showMessageDialog(null, "Variable needs a value");
+				return;
+			}
+			if(globalVariable.isSelected()) {
+				if(Variable.getGlobalVariable(nameField.getText()) != null) {
+					JOptionPane.showMessageDialog(null, "Variable with that name already exists");
+					return;
+				}else
+					Variable.createGlobalVariable(nameField.getText(), ((VariableType)valueType.getSelectedItem()).parser.apply(valueField.getText()));
+			} else if(Variable.getVariable(BlockPanel.INSTANCE.getSprite(), nameField.getText()) != null) {
+				JOptionPane.showMessageDialog(null, "Variable with that name already exists");
+				return;
+			}else
+				Variable.createVariable(BlockPanel.INSTANCE.getSprite(), nameField.getText(), ((VariableType)valueType.getSelectedItem()).parser.apply(valueField.getText()));
+			
+			
+				
+			
+			
 			
 		});
 		panel_1.add(createButton);
@@ -144,27 +172,38 @@ public class VariableCreator extends JFrame {
 	private static final Function<Character, Boolean> DIVIDER_FILTER = (v)->true;
 	private static final Function<Character, Boolean> INTEGER_FILTER = (v)->v >= '0' && v <= '9';
 	private static final Function<Character, Boolean> DECIMAL_FILTER = (v)->v >= '0' && v <= '9' || v == '.';
+	private static final Function<String, String> EMPTY_PARSER = (v)->v;
 	private static enum VariableType {
-		_GENERAL_DIVIDER("GENERAL", DIVIDER_FILTER),
-		TEXT("", STRING_FILTER),
-		NUMBER(Long.MIN_VALUE + " -> " + Long.MAX_VALUE, INTEGER_FILTER),
-		DECIMAL_NUMBER(Double.MIN_VALUE + " -> " + Double.MAX_VALUE, DECIMAL_FILTER),
-		_STR_DIVIDER("TEXT", DIVIDER_FILTER),
-		STRING("", STRING_FILTER),
-		_INT_DIVIDER("INTEGERS", DIVIDER_FILTER),
-		LONG(Long.MIN_VALUE + " -> " + Long.MAX_VALUE, INTEGER_FILTER),
-		INT(Integer.MIN_VALUE + " -> " + Integer.MAX_VALUE, INTEGER_FILTER),
-		SHORT(Short.MIN_VALUE + " -> " + Short.MAX_VALUE, INTEGER_FILTER),
-		BYTE(Byte.MIN_VALUE + " -> " + Byte.MAX_VALUE, INTEGER_FILTER),
-		_DEC_DIVIDER("DECIMALS", DIVIDER_FILTER),
-		DOUBLE(Double.MIN_VALUE + " -> " + Double.MAX_VALUE, DECIMAL_FILTER),
-		FLOAT(Float.MIN_VALUE + " -> " + Float.MAX_VALUE, DECIMAL_FILTER);
+		// TYPE                            DESC                              FILTER          PARSER
+		_GENERAL_DIVIDER("GENERAL",                                      DIVIDER_FILTER, EMPTY_PARSER),
+		
+		TEXT(            "'' -> Your computer's ram",                    STRING_FILTER,  EMPTY_PARSER),
+		NUMBER(          Long.MIN_VALUE + " -> " + Long.MAX_VALUE,       INTEGER_FILTER, Long::parseLong),
+		DECIMAL_NUMBER(  Double.MIN_VALUE + " -> " + Double.MAX_VALUE,   DECIMAL_FILTER, Double::parseDouble),
+		
+		_STR_DIVIDER(    "TEXT",                                         DIVIDER_FILTER, EMPTY_PARSER),
+		
+		STRING(          "'' -> Your computer's ram",                    STRING_FILTER,  EMPTY_PARSER),
+		
+		_INT_DIVIDER(    "INTEGERS",                                     DIVIDER_FILTER, EMPTY_PARSER),
+		
+		LONG(            Long.MIN_VALUE + " -> " + Long.MAX_VALUE,       INTEGER_FILTER, Long::parseLong),
+		INT(             Integer.MIN_VALUE + " -> " + Integer.MAX_VALUE, INTEGER_FILTER, Integer::parseInt),
+		SHORT(           Short.MIN_VALUE + " -> " + Short.MAX_VALUE,     INTEGER_FILTER, Short::parseShort),
+		BYTE(            Byte.MIN_VALUE + " -> " + Byte.MAX_VALUE,       INTEGER_FILTER, Byte::parseByte),
+		
+		_DEC_DIVIDER(    "DECIMALS",                                     DIVIDER_FILTER, EMPTY_PARSER),
+		
+		DOUBLE(          Double.MIN_VALUE + " -> " + Double.MAX_VALUE,   DECIMAL_FILTER, Double::parseDouble),
+		FLOAT(           Float.MIN_VALUE + " -> " + Float.MAX_VALUE,     DECIMAL_FILTER, Float::parseFloat);
 		
 		private final String desc;
 		public final Function<Character, Boolean> keyFilter;
-		VariableType(String desc, Function<Character, Boolean> keyFilter){
+		public final Function<String, ? extends Object> parser;
+		VariableType(String desc, Function<Character, Boolean> keyFilter, Function<String, ? extends Object> parser){
 			this.desc = desc;
 			this.keyFilter = keyFilter;
+			this.parser = parser;
 		}
 		
 		public String toString() {

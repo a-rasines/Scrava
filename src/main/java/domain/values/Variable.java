@@ -50,9 +50,27 @@ public class Variable<T> extends AbstractLiteral<T> implements SimpleRenderable 
 	public static <T> Variable<T> createGlobalVariable(String name, T value) {
 		return createVariable(null, name, value);
 	}
+	
+	/**
+	 * Create a local variable with the desired name and the default value
+	 * @param <T> Type of the variable
+	 * @param s Sprite where the variable is stored
+	 * @param name name of the variable
+	 * @param value initial value of the variable
+	 * @return
+	 */
 	public static <T> Variable<T> createVariable(Sprite s, String name, T value) {
 		return createVariable(s, name, value, false);
 	}
+	/**
+	 * Create a local variable with the desired name and the default value with the option of creating it native (not deletable)
+	 * @param <T> Type of the variable
+	 * @param s Sprite where the variable is stored
+	 * @param name name of the variable
+	 * @param value initial value of the variable
+	 * @param whether it must be inmune to variable deleting
+	 * @return
+	 */
 	public static <T> Variable<T> createVariable(Sprite s, String name, T value, boolean nat) {
 		Variable<T> var = new Variable<T>(name, value, s, nat);
 		variables.putIfAbsent(s, new HashMap<>());
@@ -169,4 +187,5 @@ public class Variable<T> extends AbstractLiteral<T> implements SimpleRenderable 
 		else
 			return BlockCategory.STRING_VARIABLE;
 	}
+
 }
