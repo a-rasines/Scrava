@@ -37,40 +37,21 @@ public class NumberHelper {
 	 */
 	@SuppressWarnings("unchecked")
 	public static <T extends Number> T castTo(Number n, Class<T> end) {
-		Method m = null;
 		try {
-			for(Method a : end.getDeclaredMethods()) {
-				if(a.getName().equals("valueOf") && !a.getParameters()[0].getType().equals(String.class)) {
-					m = a;
-					break;
-				}
-			} 
-		} catch (SecurityException e) {
-			e.printStackTrace();
-		}
-		try {
-			return (T) m.invoke(null, n);
-		} catch (IllegalArgumentException e) {
-			try {
-				Class<?> equivalent = getEquivalent(end);
-				for(Method a : n.getClass().getDeclaredMethods()) {
-					if(a.getName().endsWith("Value") && (a.getReturnType().equals(end) || a.getReturnType().equals(equivalent)))
+			Class<?> equivalent = getEquivalent(end);
+			for(Method a : n.getClass().getDeclaredMethods()) {
+				if(a.getName().endsWith("Value") && (a.getReturnType().equals(end) || a.getReturnType().equals(equivalent)))
 						return (T) a.invoke(n);
-				}
-				for(Method a : getEquivalent(n.getClass()).getDeclaredMethods()) {
-					if(a.getName().endsWith("Value") && (a.getReturnType().equals(end) || a.getReturnType().equals(equivalent)))
-						return (T) a.invoke(n);
-				}
-				throw new RuntimeException();
-			} catch (IllegalAccessException | InvocationTargetException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-				return null;
+			}
+			for(Method a : getEquivalent(n.getClass()).getDeclaredMethods()) {
+				if(a.getName().endsWith("Value") && (a.getReturnType().equals(end) || a.getReturnType().equals(equivalent)))
+					return (T) a.invoke(n);
 			}
 		} catch (IllegalAccessException | InvocationTargetException e) {
 			e.printStackTrace();
-			return null;
+			throw new RuntimeException();
 		}
+		throw new NullPointerException();
 	}
 	
 	@SuppressWarnings("unchecked")
