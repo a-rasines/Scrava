@@ -1,14 +1,10 @@
 package ui.components;
 
 import java.awt.BasicStroke;
-import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Component;
-import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.LayoutManager;
 import java.awt.Point;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -23,15 +19,14 @@ import java.util.List;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JLayeredPane;
 
 import clickable.BlockClickable;
 import clickable.InvocableClickable;
-import debug.DebugOut;
 import domain.Sprite;
 import domain.models.interfaces.Clickable.Rect;
+import ui.EmptyLayout;
 import ui.FlashThread;
 import ui.VariableCreator;
 import ui.renderers.IRenderer;
@@ -40,19 +35,19 @@ import ui.renderers.IRenderer.IRenderable;
 
 public class BlockPanel extends JLayeredPane{
 	
-	static {
-		DebugOut.setup();
-	}
-	
-	public static void main(String[] args) {
-		JFrame p = new JFrame();
-		BlockPanel bp = BlockPanel.INSTANCE;
-		
-		p.setSize(1000, 1000);
-		p.add(bp, BorderLayout.CENTER);
-		p.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		p.setVisible(true);
-	}
+//	static {
+//		DebugOut.setup();
+//	}
+//	
+//	public static void main(String[] args) {
+//		JFrame p = new JFrame();
+//		BlockPanel bp = BlockPanel.INSTANCE;
+//		
+//		p.setSize(1000, 1000);
+//		p.add(bp, BorderLayout.CENTER);
+//		p.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+//		p.setVisible(true);
+//	}
 	
 	public static final boolean DEBUG_SHOW_HITBOXES = false;
 	public static final boolean DEBUG_SHOW_HASHES = true;	
@@ -156,8 +151,7 @@ public class BlockPanel extends JLayeredPane{
 		setMinimumSize(new Dimension(400, 100));
 		clickedLabel.setOpaque(false);
 		clickedLabel.setDoubleBuffered(true);
-		//Empty layout to not mess with custom render system
-		setLayout(new LayoutManager() {public void addLayoutComponent(String name, Component comp) {} public void removeLayoutComponent(Component comp) {} public Dimension preferredLayoutSize(Container parent) {	return null; } public Dimension minimumLayoutSize(Container parent) { return null; } public void layoutContainer(Container parent) {}});
+		setLayout(new EmptyLayout());
 		add(SectionList.INSTANCE, JLayeredPane.DEFAULT_LAYER);
 		add(BOTON_VARIABLES, JLayeredPane.PALETTE_LAYER);
 		add(clickedLabel, JLayeredPane.MODAL_LAYER);

@@ -22,17 +22,52 @@ public class AddOperator extends OperatorBlock<Number, Number>{
 
 	@Override
 	public Number value(Valuable<? extends Number> left, Valuable<? extends Number> right) {
-		if (left.value() instanceof Float || left.value() instanceof Double) {
-			if(right.value() instanceof Float || right.value() instanceof Double)
-				return (Double)(((Number)left.value()).doubleValue() + ((Number)right.value()).doubleValue());
-			else if(right.value() instanceof Number)
-				return (Double)(((Number)left.value()).doubleValue() + ((Number)right.value()).longValue());
-		} else if (left.value() instanceof Number)
-			if(right.value() instanceof Float || right.value() instanceof Double)
-				return (Double)(((Number)left.value()).longValue() + ((Number)right.value()).doubleValue());
-			else if(right.value() instanceof Number)
-				return (Long)(((Number)left.value()).longValue() + ((Number)right.value()).longValue());
-		return null;
+		
+		if(left.value() instanceof Float || left.value() instanceof Double ||
+		   right.value() instanceof Float || right.value() instanceof Double) {
+			
+			var lft = switch(left.value()) {
+				case Double dl -> dl;
+				case Float fl -> fl;
+				case Long ll -> ll;
+				case Integer il -> il;
+				case Short sl -> sl;
+				case Byte bl -> bl;
+				default -> 0;
+			};
+			
+			var rgt = switch(right.value()) {
+				case Double dl -> dl;
+				case Float fl -> fl;
+				case Long ll -> ll;
+				case Integer il -> il;
+				case Short sl -> sl;
+				case Byte bl -> bl;
+				default -> 0;
+			};
+			
+			return lft + rgt;
+		
+		} else {
+			
+			var lft = switch(left.value()) {
+				case Long ll -> ll;
+				case Integer il -> il;
+				case Short sl -> sl;
+				case Byte bl -> bl;
+				default -> 0;
+			};
+			
+			var rgt = switch(right.value()) {
+				case Long ll -> ll;
+				case Integer il -> il;
+				case Short sl -> sl;
+				case Byte bl -> bl;
+				default -> 0;
+			};
+			return lft + rgt;
+		}
+		
 	
 	}
 
@@ -49,5 +84,9 @@ public class AddOperator extends OperatorBlock<Number, Number>{
 	@Override
 	public String getTitle() {
 		return VARIABLE_NUM + " + " + VARIABLE_NUM;
+	}
+	
+	public static void main(String[] args) {
+		System.out.println(new AddOperator(new NumberLiteral<Float>(1.f), new NumberLiteral<Integer>(1)).value().getClass());
 	}
 }

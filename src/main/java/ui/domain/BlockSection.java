@@ -89,7 +89,6 @@ public enum BlockSection {
 	}
 	
 	BlockSection(int color, Supplier<IRenderer[]> dinList) {
-		System.out.println("dinlist:"+dinList);
 		this.color = color;
 		this.blockGetter = dinList;
 		this.totalY = 0;

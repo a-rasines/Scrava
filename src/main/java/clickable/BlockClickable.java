@@ -31,9 +31,9 @@ public class BlockClickable implements Clickable{
 	public void removeChild(BlockClickable child) {
 		System.out.println(getClass().getSimpleName() + " remove child");
 		child.setParent(null);
-		if(child.getBlock() instanceof Valuable) {
+		if(child.getBlock() instanceof Valuable vBlock) {
 			VariableHolder vh = (VariableHolder)getBlock();
-			LiteralRenderable<?> lr = vh.removeVariable((Valuable<?>)child.getBlock());
+			LiteralRenderable<?> lr = vh.removeVariable(vBlock);
 			LiteralRenderer.of(lr, lr.value(), this);
 		}
 	}
@@ -133,7 +133,7 @@ public class BlockClickable implements Clickable{
 	
 	@Override
 	public boolean equals(Object obj) {
-		return obj instanceof BlockClickable && renderer.equals(((BlockClickable)obj).renderer);
+		return obj instanceof BlockClickable bc && renderer.equals(bc.renderer);
 	}
 
 	@Override

@@ -36,9 +36,9 @@ public class CapsuleBlockClickable extends InvocableClickable {
 			if(getRenderer().remove(bundle, child.getRenderer())) {
 				System.out.println("inside");				
 				child.setParent(null);
-				if(child.getBlock() instanceof Valuable) {
+				if(child.getBlock() instanceof Valuable vBlock) {
 					VariableHolder vh = (VariableHolder)getBlock();
-					LiteralRenderable<?> lr = vh.removeVariable((Valuable<?>)child.getBlock());
+					LiteralRenderable<?> lr = vh.removeVariable(vBlock);
 					LiteralRenderer.of(lr, lr.value(), this);
 				}
 				System.out.println("removed child " + child + " newSize:" + getRenderer().sizeOf(bundle));
@@ -47,9 +47,9 @@ public class CapsuleBlockClickable extends InvocableClickable {
 				
 				
 				while(bc != null) {
-					if(bc.getBlock() instanceof Valuable) {
+					if(bc.getBlock() instanceof Valuable vBlock) {
 						VariableHolder vh = (VariableHolder)getBlock();
-						LiteralRenderable<?> lr = vh.removeVariable((Valuable<?>)child.getBlock());
+						LiteralRenderable<?> lr = vh.removeVariable(vBlock);
 						LiteralRenderer.of(lr, lr.value(), this);
 					}
 					bc.setParent(null);

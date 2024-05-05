@@ -139,19 +139,19 @@ public class InvocableClickable extends BlockClickable{
 	@Override
 	public void onHoverEnd(boolean click, BlockClickable clicked) {
 		System.out.println("ended " + this.getBlock().toString().replaceAll(".*\\.", "") + " append=" + append);
-		if(click && append && clicked instanceof InvocableClickable) { //next
+		if(click && append && clicked instanceof InvocableClickable cl) { //next
 			System.out.println("append " + toString() + " -> " + clicked.getBlock().toString().replaceAll(".*\\.", ""));
 			
 			InvocableClickable next = this.next;
-			setNext((InvocableClickable) clicked);
+			setNext(cl);
 			if(next != null) {
-				InvocableClickable clickedNext = ((InvocableClickable) clicked).next();
+				InvocableClickable clickedNext = cl.next();
 				if(clickedNext != null) {
 					while(clickedNext.next() != null)
 						clickedNext = clickedNext.next();
 					clickedNext.setNext(next);
 				} else
-					((InvocableClickable) clicked).setNext(next);
+					cl.setNext(next);
 			}
 			BlockPanel.INSTANCE.repaint();
 		} else { //inside

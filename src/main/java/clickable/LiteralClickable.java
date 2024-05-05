@@ -147,10 +147,9 @@ public class LiteralClickable implements Clickable{
 	public void onHoverEnd(boolean click, BlockClickable clicked) {
 		System.out.println(toString().replaceAll(".*\\.", "") + " clicked:"+click);
 		FlashThread.INSTANCE.setHovered(null);
-		if(clicked.getBlock() instanceof Valuable && click) {
-			System.out.println(toString().replaceAll(".*\\.", "") + " <- " + clicked.getBlock().toString().replaceAll(".*\\.", "") + " ?");
-			Valuable<?> value = (Valuable<?>) clicked.getBlock();
-			if(((VariableHolder)parent.getRenderer().getBlock()).isAplicable(value)) {
+		if(clicked.getBlock() instanceof Valuable vBlock && click) {
+			System.out.println(toString().replaceAll(".*\\.", "") + " <- " + vBlock.toString().replaceAll(".*\\.", "") + " ?");
+			if(((VariableHolder)parent.getRenderer().getBlock()).isAplicable(vBlock)) {
 				System.out.println(toString().replaceAll(".*\\.", "") + " nesting " + clicked.getBlock().toString().replaceAll(".*\\.", ""));
 				this.parent.replaceVariable(this, clicked);
 				System.out.println("parent: (" + parent.getClass().getSimpleName() + ".java:0)");

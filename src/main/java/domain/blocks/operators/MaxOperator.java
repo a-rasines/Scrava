@@ -27,19 +27,50 @@ public class MaxOperator  extends OperatorBlock<Number, Number>{
 	@Override
 	public Number value(Valuable<? extends Number> left, Valuable<? extends Number> right) {
 		
-		if (left.value() instanceof Float || left.value() instanceof Double) {
-			
-			if(right.value() instanceof Float || right.value() instanceof Double)
-				return Math.max(left.value().doubleValue(), right.value().doubleValue());
-			else
-				return Math.max(left.value().doubleValue(), right.value().longValue());
-			
-		} else
-			
-			if(right.value() instanceof Float || right.value() instanceof Double)
-				return Math.max(left.value().longValue(), right.value().doubleValue());
-			else
-				return Math.max(left.value().longValue(), right.value().longValue());
+		if(left.value() instanceof Float || left.value() instanceof Double ||
+				   right.value() instanceof Float || right.value() instanceof Double) {
+					
+					var lft = switch(left.value()) {
+						case Double dl -> dl;
+						case Float fl -> fl;
+						case Long ll -> ll;
+						case Integer il -> il;
+						case Short sl -> sl;
+						case Byte bl -> bl;
+						default -> 0;
+					};
+					
+					var rgt = switch(right.value()) {
+						case Double dl -> dl;
+						case Float fl -> fl;
+						case Long ll -> ll;
+						case Integer il -> il;
+						case Short sl -> sl;
+						case Byte bl -> bl;
+						default -> 0;
+					};
+					
+					return Math.max(lft, rgt);
+				
+				} else {
+					
+					var lft = switch(left.value()) {
+						case Long ll -> ll;
+						case Integer il -> il;
+						case Short sl -> sl;
+						case Byte bl -> bl;
+						default -> 0;
+					};
+					
+					var rgt = switch(right.value()) {
+						case Long ll -> ll;
+						case Integer il -> il;
+						case Short sl -> sl;
+						case Byte bl -> bl;
+						default -> 0;
+					};
+					return Math.max(lft, rgt);
+				}
 	}
 
 	@Override
