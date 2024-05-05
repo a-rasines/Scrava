@@ -21,7 +21,7 @@ public class DebugOut extends PrintStream{
 			"onHover",
 			"onHoverEnd",
 			
-			"paintComponent",
+			//"paintComponent",
 			"patch",
 			"renderText"
 		);

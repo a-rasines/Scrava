@@ -4,14 +4,17 @@ import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.JFrame;
 
 import debug.DebugOut;
+import domain.Sprite;
 import ui.EmptyLayout;
 
 public class ProjectFrame extends JFrame {
-	private static final long serialVersionUID = -4157218152821931601L;
+	
 	static {
 		DebugOut.setup();
 	}
@@ -19,25 +22,47 @@ public class ProjectFrame extends JFrame {
 	public static void main(String[] args) {
 //		for (long longVal = 4946144450195624L; longVal > 0; longVal >>= 5)
 //			System.out.print((char) (((longVal & 31 | 64) % 95) + 32));
-		JFrame p = new ProjectFrame();
-		p.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		p.setVisible(true);
+		INSTANCE.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		INSTANCE.setVisible(true);
 	}
 	
-	public ProjectFrame() {
+	public static final ProjectFrame INSTANCE = new ProjectFrame();
+	private static final long serialVersionUID = -4157218152821931601L;
+
+	public String projectName;
+	private static List<Sprite> projectSprites;
+	
+	private ProjectFrame() {
+		projectName = "Untitled";
+		projectSprites = new ArrayList<>();
+		projectSprites.add(new Sprite());
 		setLayout(new EmptyLayout());
 		add(BlockPanel.INSTANCE);
+		add(ActionPanel.INSTANCE);
 		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 		setBounds(0, 0, (int)screenSize.getWidth(), (int)screenSize.getHeight());
+		setMinimumSize(new Dimension(Math.max(700, (int)screenSize.getWidth() / 2), Math.max(500, (int)screenSize.getHeight() / 2)));
 		
 		addComponentListener(new ComponentAdapter() {
 			@Override
 			public void componentResized(ComponentEvent e) {
-				BlockPanel.INSTANCE.setBounds((int) (getWidth()*2/5)+20, 0, (int) (getWidth()*3/5) - 40, getHeight());
+				BlockPanel.INSTANCE.setBounds((int) (getWidth()*2/5)+10, 0, (int) (getWidth()*3/5) - 25, getHeight());
+				int w = (int) (getWidth()*2/5);
+				ActionPanel.INSTANCE.setBounds(0, 0, w, w * 2 / 3);
 			}
 		});
 	}
 	
+	public void loadProject(List<Sprite> newSprites) {
+		
+	}
+	
+	public static  Sprite getDefSprite() {
+		return projectSprites.get(0);
+	}
+	public static List<Sprite> getSprites() {
+		return new ArrayList<>(projectSprites);
+	}
 	@Override
 	public void setSize(Dimension d) {}
 

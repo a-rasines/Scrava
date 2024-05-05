@@ -34,6 +34,15 @@ public class Sprite {
 		eventMap.get(event.getClass()).add(event);
 	}
 	
+	public void deleteEvent(EventBlock event) {
+		eventMap.get(event.getClass()).remove(event);
+	}
+	
+	public void runEvent(Class<? extends EventBlock> type) {
+		for(EventBlock eb : eventMap.get(type))
+			eb.invoke();
+	}
+	
 	public BufferedImage getRendered() {
 		return textures.get(selectedTexture);
 	}

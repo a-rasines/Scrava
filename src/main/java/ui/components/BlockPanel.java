@@ -50,7 +50,7 @@ public class BlockPanel extends JLayeredPane{
 //	}
 	
 	public static final boolean DEBUG_SHOW_HITBOXES = false;
-	public static final boolean DEBUG_SHOW_HASHES = true;	
+	public static final boolean DEBUG_SHOW_HASHES = false;	
 	
 	private static final long serialVersionUID = 8172972493584077329L;
 	
@@ -67,7 +67,7 @@ public class BlockPanel extends JLayeredPane{
 	
 	public final JButton BOTON_VARIABLES = new JButton("Create new Variable");
 	
-	private Sprite actualSprite = new Sprite();
+	private Sprite actualSprite = ProjectFrame.getDefSprite();
 	
 	public Sprite getSprite() {
 		return actualSprite;

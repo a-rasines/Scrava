@@ -23,6 +23,7 @@ import domain.models.interfaces.InvocableBlock;
 import domain.models.interfaces.Translatable;
 import domain.models.interfaces.Valuable;
 import domain.models.types.CapsuleBlock;
+import domain.models.types.EventBlock;
 import domain.values.AbstractLiteral;
 import domain.values.BooleanLiteral;
 import ui.components.BlockPanel;
@@ -217,6 +218,8 @@ public class CapsuleBlockRenderer implements CapsuleRenderer{
 		System.out.println("delete " + getBlock());
 		BlockPanel.INSTANCE.removeBlock(this);
 		IRenderer.DRAG_RENDS.remove((IRenderable)getBlock());
+		if(getBlock() instanceof EventBlock eb)
+			BlockPanel.INSTANCE.getSprite().deleteEvent(eb);
 		for(IRenderer rend : getChildren())
 			rend.delete();
 		for(InvocableBlock rend : (CapsuleBlock)getBlock())
