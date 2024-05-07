@@ -39,8 +39,9 @@ public class Sprite {
 	}
 	
 	public void runEvent(Class<? extends EventBlock> type) {
-		for(EventBlock eb : eventMap.get(type))
-			eb.invoke();
+		if(eventMap.containsKey(type))
+			for(EventBlock eb : eventMap.get(type))
+				eb.invoke();
 	}
 	
 	public BufferedImage getRendered() {

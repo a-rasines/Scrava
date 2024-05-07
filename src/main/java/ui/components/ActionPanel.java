@@ -21,8 +21,6 @@ public class ActionPanel extends JPanel{
 		g.setColor(Color.white);
 		g.fillRect(0, 0, getWidth(), getHeight());
 		for(Sprite s : ProjectFrame.getSprites()) {
-			System.out.println(s.getX().value());
-			System.out.println(s.getY().value());
 			g.drawImage(
 					s.getRendered().getScaledInstance(
 							s.getRendered().getWidth() * getWidth() / 1000, 

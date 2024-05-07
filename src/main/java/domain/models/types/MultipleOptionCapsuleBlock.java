@@ -50,8 +50,16 @@ public abstract class MultipleOptionCapsuleBlock extends ArrayList<OptionCapsule
 		Integer o = getInvocationObjectIndex();
 		if(o == null || o < 0) return;
 		get(o).invoke();
-		
 	}	
+	
+	@Override
+	public boolean tick() {
+		return get(getInvocationObjectIndex()).tick();
+	}
+	@Override
+	public void firstTick() {
+		get(getInvocationObjectIndex()).firstTick();
+	}
 	
 	/**
 	 * Returns the index of the capsule to execute

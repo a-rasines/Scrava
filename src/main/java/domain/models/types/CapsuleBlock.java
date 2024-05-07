@@ -1,6 +1,7 @@
 package domain.models.types;
 
 import java.lang.reflect.Constructor;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Set;
 
@@ -25,6 +26,26 @@ public abstract class CapsuleBlock extends LinkedList<InvocableBlock> implements
 	public void invoke() {
 		for(InvocableBlock ib : this)
 			ib.invoke();
+	}
+	
+	private InvocableBlock actualTick = null;
+	private Iterator<InvocableBlock> it;
+	@Override
+	public boolean tick() {
+		if(it == null)
+			it = iterator();
+		if(actualTick == null) {
+			actualTick = it.next();
+			actualTick.firstTick();
+		} else if(actualTick.tick())
+			actualTick = null;
+		return !it.hasNext() && actualTick == null;
+	};
+	
+	@Override
+	public void firstTick() {
+		it = iterator();
+		tick();
 	}
 	
 	/**

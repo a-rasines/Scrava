@@ -37,12 +37,12 @@ public class LiteralClickable implements Clickable{
 		}
 		
 		public boolean woDec(char c) {
-			return c >= '0' && c <= '9';
+			return (c >= '0' && c <= '9') || c == '-' && (container.getText().length() == 0 || container.getSelectedText().equals(container.getText()));
 		}
 		
 		private boolean wDec(char c) {
 			return woDec(c) //Number
-				   || c == '.' && container.getText().indexOf(".") == -1; // decimal point
+				   || c == '.' && container.getText().indexOf(".") == -1 && container.getText().length() != 0 && !container.getSelectedText().equals(container.getText()); // decimal point
 		}
 		
 		@Override

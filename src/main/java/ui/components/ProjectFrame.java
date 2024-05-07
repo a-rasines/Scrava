@@ -7,10 +7,12 @@ import java.awt.event.ComponentEvent;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.swing.JButton;
 import javax.swing.JFrame;
 
 import debug.DebugOut;
 import domain.Sprite;
+import domain.blocks.event.OnStartEventBlock;
 import ui.EmptyLayout;
 
 public class ProjectFrame extends JFrame {
@@ -33,12 +35,14 @@ public class ProjectFrame extends JFrame {
 	private static List<Sprite> projectSprites;
 	
 	private ProjectFrame() {
+		JButton startButton = new JButton("Start");
 		projectName = "Untitled";
 		projectSprites = new ArrayList<>();
 		projectSprites.add(new Sprite());
 		setLayout(new EmptyLayout());
 		add(BlockPanel.INSTANCE);
 		add(ActionPanel.INSTANCE);
+		add(startButton);
 		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 		setBounds(0, 0, (int)screenSize.getWidth(), (int)screenSize.getHeight());
 		setMinimumSize(new Dimension(Math.max(700, (int)screenSize.getWidth() / 2), Math.max(500, (int)screenSize.getHeight() / 2)));
@@ -49,7 +53,14 @@ public class ProjectFrame extends JFrame {
 				BlockPanel.INSTANCE.setBounds((int) (getWidth()*2/5)+10, 0, (int) (getWidth()*3/5) - 25, getHeight());
 				int w = (int) (getWidth()*2/5);
 				ActionPanel.INSTANCE.setBounds(0, 0, w, w * 2 / 3);
+				startButton.setBounds(0, w * 2/3, 100, 20);
 			}
+		});
+		
+		startButton.addActionListener((e) -> {
+			for(Sprite s : getSprites())
+				s.runEvent(OnStartEventBlock.class);
+			ActionPanel.INSTANCE.repaint();
 		});
 	}
 	

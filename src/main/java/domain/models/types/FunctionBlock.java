@@ -14,5 +14,14 @@ public abstract class FunctionBlock implements InvocableBlockRenderable{
 	public Sprite getSprite() {
 		return s;
 	}
+	@Override
+	public boolean tick() {
+		invoke();
+		return true;
+	}
+	@Override
+	public void firstTick() {
+		invoke();
+	}
 
 }
