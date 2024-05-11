@@ -1,9 +1,11 @@
 package domain.models.interfaces;
 
+import java.io.Serializable;
+
 import clickable.BlockClickable;
 import ui.renderers.IRenderer;
 
-public interface Clickable {
+public interface Clickable extends Serializable{
 
 	public static class Rect {
 		@Override

@@ -69,6 +69,10 @@ public abstract class AbstractLiteral<T> implements LiteralRenderer.LiteralRende
 		this.value = initialValue;
 	}
 	
+	/**
+	 * Checks whether the value is the 0 equivalent in the corresponding class
+	 * @return
+	 */
 	public abstract boolean isEmpty();
 
 	@Override

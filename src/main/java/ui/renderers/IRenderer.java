@@ -10,6 +10,7 @@ import java.awt.GraphicsEnvironment;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.Serializable;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
@@ -28,10 +29,10 @@ import ui.components.BlockPanel;
 import ui.renderers.InvocableBlockRenderer.InvocableBlockRenderable;
 import ui.renderers.SimpleBlockRenderer.SimpleRenderable;
 
-public interface IRenderer {
+public interface IRenderer extends Serializable {
 	public static final int FONT_WIDTH = 28;
 	
-	public static interface IRenderable {
+	public static interface IRenderable extends Serializable {
 		/**
 		 * Returns the prefered renderer for the block type
 		 * @return

@@ -28,6 +28,9 @@ import ui.components.BlockPanel;
 import ui.renderers.IRenderer.DragableRenderer;
 
 public class InvocableBlockRenderer implements DragableRenderer {
+	
+	private static final long serialVersionUID = -1092485586518514545L;
+	
 	public static interface InvocableBlockRenderable extends Translatable, IRenderable, VariableHolder, InvocableBlock{
 		@Override
 		public default Constructor<InvocableBlockRenderer> getRenderer() throws NoSuchMethodException, SecurityException {
@@ -56,17 +59,17 @@ public class InvocableBlockRenderer implements DragableRenderer {
 		}
 	}
 	
-	private static final BufferedImage LEFT_TOP = IRenderer.getRes("textures/function/left_top.svg");
-	private static final BufferedImage LEFT_BOTTOM = IRenderer.getRes("textures/function/left_bottom.svg");
-	private static final BufferedImage LEFT_BOTTOM_C = IRenderer.getRes("textures/function/left_bottom_c.svg");
-	private static final BufferedImage RIGHT = IRenderer.getRes("textures/function/right.svg");
-	public static final BufferedImage CONNECTOR = IRenderer.getRes("textures/function/connector.svg");
+	private transient static final BufferedImage LEFT_TOP = IRenderer.getRes("textures/function/left_top.svg");
+	private transient static final BufferedImage LEFT_BOTTOM = IRenderer.getRes("textures/function/left_bottom.svg");
+	private transient static final BufferedImage LEFT_BOTTOM_C = IRenderer.getRes("textures/function/left_bottom_c.svg");
+	private transient static final BufferedImage RIGHT = IRenderer.getRes("textures/function/right.svg");
+	public transient static final BufferedImage CONNECTOR = IRenderer.getRes("textures/function/connector.svg");
 	
 	
 	private int x;
 	private int y;
 	protected final InvocableBlockRenderable block;
-	protected BufferedImage rendred = null;
+	protected transient BufferedImage rendred = null;
 	protected final InvocableClickable clickable;
 	
 	private synchronized BufferedImage rendered(BufferedImage set, boolean w) {

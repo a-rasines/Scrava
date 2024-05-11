@@ -20,6 +20,8 @@ import ui.renderers.IRenderer.DragableRenderer;
 import ui.renderers.SimpleBlockRenderer.SimpleRenderable.BlockCategory;
 
 public class SimpleBlockRenderer implements DragableRenderer{
+	private static final long serialVersionUID = 2111348834794671783L;
+	
 	public static interface SimpleRenderable extends Translatable, IRenderable, VariableHolder{
 		@Override
 		public default Constructor<SimpleBlockRenderer> getRenderer() throws NoSuchMethodException, SecurityException {
@@ -63,7 +65,7 @@ public class SimpleBlockRenderer implements DragableRenderer{
 	private int x;
 	private int y;
 	protected final SimpleRenderable block;
-	protected BufferedImage rendred = null;
+	protected transient BufferedImage rendred = null;
 	protected final BlockClickable clickable;
 	
 	private synchronized BufferedImage rendered(BufferedImage set, boolean w) {
@@ -85,7 +87,7 @@ public class SimpleBlockRenderer implements DragableRenderer{
 		this.clickable = new BlockClickable(this, null);
 	}
 	
-	private static final int FONT_WIDTH = 25;
+	private transient static final int FONT_WIDTH = 25;
 	
 	@Override
 	public BufferedImage getRenderable() {

@@ -29,9 +29,11 @@ import ui.components.BlockPanel;
 
 public class MultipleChoiceRenderer implements CapsuleRenderer {
 
-	private static final BufferedImage BODY_END_CONN    = IRenderer.getRes("textures/capsule/end_body_conn.svg");//under arm end
-	private static final BufferedImage BODY_END         = IRenderer.getRes("textures/capsule/end_body.svg");//under arm end
-	private static final BufferedImage HEAD_END         = IRenderer.getRes("textures/capsule/end.svg"); // right of head
+	private static final long serialVersionUID = 1971495825159916256L;
+	
+	private transient static final BufferedImage BODY_END_CONN    = IRenderer.getRes("textures/capsule/end_body_conn.svg");//under arm end
+	private transient static final BufferedImage BODY_END         = IRenderer.getRes("textures/capsule/end_body.svg");//under arm end
+	private transient static final BufferedImage HEAD_END         = IRenderer.getRes("textures/capsule/end.svg"); // right of head
 	
 	private int x;
 	private int y;
@@ -59,7 +61,7 @@ public class MultipleChoiceRenderer implements CapsuleRenderer {
 		}
 	}	
 	
-	private BufferedImage rendered = null;
+	private transient BufferedImage rendered = null;
 	
 	@Override
 	public BufferedImage getRenderable() {

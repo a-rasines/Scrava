@@ -20,25 +20,29 @@ import ui.components.BlockPanel;
 
 public class BlockBundleRenderer implements CapsuleRenderer{
 	
+	private static final long serialVersionUID = 1357212915853145926L;
+	
 	private int x;
 	private int y;
 	
-	private static final BufferedImage ARM_BLOCK        = IRenderer.getRes("textures/capsule/arm_block.svg"); //left of block
-	private static final BufferedImage ARM_END          = IRenderer.getRes("textures/capsule/arm_end.svg"); //between arm block & body end
+	private transient final BufferedImage ARM_BLOCK        = IRenderer.getRes("textures/capsule/arm_block.svg"); //left of block
+	private transient static final BufferedImage ARM_END          = IRenderer.getRes("textures/capsule/arm_end.svg"); //between arm block & body end
 	//private static final BufferedImage BODY_END_CONN    = IRenderer.getRes("textures/capsule/end_body_conn.svg");//under arm end
 	//private static final BufferedImage BODY_END         = IRenderer.getRes("textures/capsule/end_body.svg");//under arm end
-	private static final BufferedImage HEAD_END         = IRenderer.getRes("textures/capsule/end.svg"); // right of head
-	private static final BufferedImage MIDDLE_BODY    = IRenderer.getRes("textures/capsule/middle_body.svg");
-	private static final BufferedImage ARM_START        = IRenderer.getRes("textures/capsule/start_arm.svg"); //Under head
-	private static final BufferedImage BODY_START_CONN  = IRenderer.getRes("textures/capsule/start_body_conn.svg");//left top of head
-	private static final BufferedImage BODY_START       = IRenderer.getRes("textures/capsule/start_body.svg");//left top of head
+	private transient static final BufferedImage HEAD_END         = IRenderer.getRes("textures/capsule/end.svg"); // right of head
+	private transient static final BufferedImage MIDDLE_BODY    = IRenderer.getRes("textures/capsule/middle_body.svg");
+	private transient static final BufferedImage ARM_START        = IRenderer.getRes("textures/capsule/start_arm.svg"); //Under head
+	private transient static final BufferedImage BODY_START_CONN  = IRenderer.getRes("textures/capsule/start_body_conn.svg");//left top of head
+	private transient static final BufferedImage BODY_START       = IRenderer.getRes("textures/capsule/start_body.svg");//left top of head
 	
 	// HEAD = BODY_START + SimpleRenderer + HEAD_END
 	private CapsuleBlock block;
-	private CapsuleBlockClickable clickable;
 	private DragableRenderer parent;
-	private Rect blockRect = null;
 	private boolean isFirst;
+	
+	private final CapsuleBlockClickable clickable;
+	private transient Rect blockRect = null;
+	private transient BufferedImage rendered = null;
 	
 	public BlockBundleRenderer(DragableRenderer parent, CapsuleBlock b, boolean isFirst) {
 		this.parent = parent;
@@ -55,8 +59,6 @@ public class BlockBundleRenderer implements CapsuleRenderer{
 		this.isFirst = isFirst;
 		this.clickable = new CapsuleBlockClickable(this, null);	
 		}
-	
-	private BufferedImage rendered = null;
 	
 	@Override
 	public BufferedImage getRenderable() {
@@ -196,7 +198,7 @@ public class BlockBundleRenderer implements CapsuleRenderer{
 	
 	public void _update() {
 		this.rendered = null;
-		clickable.update();
+		getClickable().update();
 	 }
 
 	@Override
@@ -217,7 +219,7 @@ public class BlockBundleRenderer implements CapsuleRenderer{
 	}
 
 	@Override
-	public BlockClickable getClickable() {
+	public CapsuleBlockClickable getClickable() {
 		return clickable;
 	}
 

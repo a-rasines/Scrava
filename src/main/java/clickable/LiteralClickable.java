@@ -6,6 +6,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.function.Function;
 
+import javax.swing.JComboBox;
 import javax.swing.JTextField;
 
 import domain.models.interfaces.Clickable;
@@ -13,6 +14,8 @@ import domain.models.interfaces.Translatable;
 import domain.models.interfaces.Valuable;
 import domain.models.interfaces.VariableHolder;
 import domain.values.AbstractLiteral;
+import domain.values.BooleanLiteral;
+import domain.values.EnumLiteral;
 import ui.FlashThread;
 import ui.ValueSelector;
 import ui.renderers.IRenderer;
@@ -20,6 +23,8 @@ import ui.renderers.LiteralRenderer;
 
 public class LiteralClickable implements Clickable{
 
+	private static final long serialVersionUID = 1400645991321183219L;
+	
 	private final LiteralRenderer renderer;
 	private final Rect hitbox;
 	private AbstractLiteral<?> value;
@@ -71,31 +76,44 @@ public class LiteralClickable implements Clickable{
 		return this.hitbox;
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public void onClick(int x, int y) {
 		System.out.println("literal clicked");
 		try {
-			if(value.value() instanceof Boolean) {
-				((AbstractLiteral<Boolean>)value).setValue("" + !((AbstractLiteral<Boolean>)value).value);
-				renderer.update();
-			} else {
-				JTextField textField = new JTextField(value.value().toString());
-				ValueSelector vs;
-				if(value.value() instanceof Number) {
-					textField.addKeyListener(new NumberKeyListener(value.value() instanceof Double || value.value() instanceof Float, textField));
-					vs = new ValueSelector(textField, ValueSelector.DECIMAL_NUMBERS + ((value.value() instanceof Double || value.value() instanceof Float)?ValueSelector.DECIMAL_NUMBERS : 0));
-				} else 
-					vs = new ValueSelector(textField, ValueSelector.STRING);
-				vs.setVisible(true);
-				vs.addWindowListener(new WindowAdapter() {
-					@Override
-					public void windowClosed(WindowEvent e) {
-						value.setValue(textField.getText());
-						renderer.update();
-					}
-				});
+			ValueSelector vs;
+			switch(value) {
+				case BooleanLiteral b :
+					b.setValue("" + !b.value);
+					renderer.update();
+					break;
+				case EnumLiteral<?> e:
+					@SuppressWarnings({ "unchecked", "rawtypes" }) 
+					JComboBox cb = new JComboBox(e.possibleValues());
+					vs = new ValueSelector(cb, e.value());
+					vs.addWindowListener(new WindowAdapter() {
+						@Override
+						public void windowClosed(WindowEvent e) {
+							value.setValue(cb.getSelectedItem().toString());
+							renderer.update();
+						}
+					});
+				default:
+					JTextField textField = new JTextField(value.value().toString());
+					if(value.value() instanceof Number) {
+						textField.addKeyListener(new NumberKeyListener(value.value() instanceof Double || value.value() instanceof Float, textField));
+						vs = new ValueSelector(textField, ValueSelector.DECIMAL_NUMBERS + ((value.value() instanceof Double || value.value() instanceof Float)?ValueSelector.DECIMAL_NUMBERS : 0));
+					} else 
+						vs = new ValueSelector(textField, ValueSelector.STRING);
+					vs.setVisible(true);
+					vs.addWindowListener(new WindowAdapter() {
+						@Override
+						public void windowClosed(WindowEvent e) {
+							value.setValue(textField.getText());
+							renderer.update();
+						}
+					});
 			}
+		
 		} catch(NullPointerException e) {} //Cancel button pressed
 	}
 

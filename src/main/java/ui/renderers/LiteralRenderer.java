@@ -27,7 +27,9 @@ import ui.components.BlockPanel;
 
 public class LiteralRenderer implements IRenderer {
 	
-	private final static Map<LiteralRenderable<?>, LiteralRenderer> RENDS_MAP = new HashMap<>();
+	private static final long serialVersionUID = 4947025860653468394L;
+	
+	private transient final static Map<LiteralRenderable<?>, LiteralRenderer> RENDS_MAP = new HashMap<>();
 	public float opacity = 1f;
 	
 	public static LiteralRenderer of(LiteralRenderable<?> block, String type, BlockClickable parent) {
@@ -58,7 +60,8 @@ public class LiteralRenderer implements IRenderer {
 	private final LiteralRenderable<?> block;
 	private final LiteralClickable clickable;
 	private String type;
-	private BufferedImage rendered = null;
+	private transient BufferedImage rendered = null;
+	
 	private LiteralRenderer(LiteralRenderable<?> block, String type, BlockClickable parent) {
 		this.block = block;
 		if(!type.startsWith("{{"))
@@ -68,12 +71,12 @@ public class LiteralRenderer implements IRenderer {
 		this.type = type;
 		this.clickable = new LiteralClickable(this, (AbstractLiteral<?>)block, parent);
 	}
-	public static final BufferedImage STRING_VAR_START = IRenderer.getRes("textures/variable/stringstart.svg");
-	public static final BufferedImage STRING_VAR_END = IRenderer.getRes("textures/variable/stringend.svg");
-	public static final BufferedImage NUM_VAR_START = IRenderer.getRes("textures/variable/numstart.svg");
-	public static final BufferedImage NUM_VAR_END = IRenderer.getRes("textures/variable/numend.svg");
-	public static final BufferedImage BOOLEAN_VAR_START = IRenderer.getRes("textures/variable/booleanstart.svg");
-	public static final BufferedImage BOOLEAN_VAR_END = IRenderer.getRes("textures/variable/booleanend.svg");
+	public transient static final BufferedImage STRING_VAR_START = IRenderer.getRes("textures/variable/stringstart.svg");
+	public transient static final BufferedImage STRING_VAR_END = IRenderer.getRes("textures/variable/stringend.svg");
+	public transient static final BufferedImage NUM_VAR_START = IRenderer.getRes("textures/variable/numstart.svg");
+	public transient static final BufferedImage NUM_VAR_END = IRenderer.getRes("textures/variable/numend.svg");
+	public transient static final BufferedImage BOOLEAN_VAR_START = IRenderer.getRes("textures/variable/booleanstart.svg");
+	public transient static final BufferedImage BOOLEAN_VAR_END = IRenderer.getRes("textures/variable/booleanend.svg");
 
 	@Override
 	public BufferedImage getRenderable() {

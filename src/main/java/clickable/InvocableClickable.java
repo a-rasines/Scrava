@@ -5,6 +5,8 @@ import ui.renderers.IRenderer.DragableRenderer;
 
 public class InvocableClickable extends BlockClickable{
 
+	private static final long serialVersionUID = -6018479786578438948L;
+
 	public InvocableClickable(DragableRenderer renderer, BlockClickable parent) {
 		super(renderer, parent);
 	}
@@ -92,7 +94,7 @@ public class InvocableClickable extends BlockClickable{
 		}
 	}
 	
-	protected boolean append = false;
+	protected transient boolean append = false;
 	@Override
 	public void onHover(int x, int y, BlockClickable clicked) {
 		System.out.println(this.getBlock().toString().replaceAll(".*\\.", "") + 

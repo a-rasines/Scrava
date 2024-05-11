@@ -17,9 +17,11 @@ import ui.renderers.LiteralRenderer.LiteralRenderable;
 
 public class BlockClickable implements Clickable{
 	
+	private static final long serialVersionUID = -2583313341134986120L;
+	
 	//protected final Set<Clickable> nestedClickables = new HashSet<>();
-	protected Clickable clicked;
-	protected Clickable hovered;
+	protected transient Clickable clicked;
+	protected transient Clickable hovered;
 	private DragableRenderer renderer;
 	private BlockClickable parent;
 	
@@ -46,8 +48,8 @@ public class BlockClickable implements Clickable{
 		return v <= max && v >= min;
 	}
 	
-	protected int cx;
-	protected int cy;
+	protected transient int cx;
+	protected transient int cy;
 	
 	@Override
 	public void onClick(int x, int y) {

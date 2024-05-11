@@ -18,6 +18,8 @@ import ui.renderers.LiteralRenderer.LiteralRenderable;
 
 public class CapsuleBlockClickable extends InvocableClickable {
 
+	private static final long serialVersionUID = -2966714178244994567L;
+	
 	public CapsuleBlockClickable(DragableRenderer renderer, BlockClickable parent) {
 		super(renderer, parent);
 	}
@@ -76,7 +78,7 @@ public class CapsuleBlockClickable extends InvocableClickable {
 		super.removeChild(child);
 	}
 	
-	private boolean inside = false;
+	private transient boolean inside = false;
 	@Override
 	public void onHover(int x, int y, BlockClickable clicked) {
 		if(hovered == clicked)
