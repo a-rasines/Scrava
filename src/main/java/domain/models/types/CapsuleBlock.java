@@ -6,17 +6,19 @@ import java.util.LinkedList;
 import java.util.Set;
 
 import domain.models.interfaces.InvocableBlock;
-import domain.models.interfaces.Translatable;
 import domain.models.interfaces.VariableHolder;
 import ui.renderers.CapsuleBlockRenderer;
-import ui.renderers.IRenderer.IRenderable;
 
 /**
  * This class represents an abstract {@link domain.models.interfaces.InvocableBlock InvocableBlock} that can contain other {@link domain.models.interfaces.InvocableBlock InvocableBlock}s inside
  */
-public abstract class CapsuleBlock extends LinkedList<InvocableBlock> implements IRenderable, Translatable, InvocableBlock, VariableHolder {
+public abstract class CapsuleBlock extends LinkedList<InvocableBlock> implements InvocableBlock, VariableHolder {
 	private static final long serialVersionUID = 3038954472222407623L;
 	
+	/**
+	 * Returns the title to render of the capsule block
+	 * @return
+	 */
 	public abstract String getTitle();
 	public Constructor<CapsuleBlockRenderer> getRenderer() throws NoSuchMethodException, SecurityException {
 		return CapsuleBlockRenderer.class.getConstructor(CapsuleBlock.class);

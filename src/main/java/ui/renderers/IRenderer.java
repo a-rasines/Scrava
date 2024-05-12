@@ -43,6 +43,7 @@ public interface IRenderer extends Serializable {
 		public static final String VARIABLE_NUM = "{{numvar}}";
 		public static final String VARIABLE_STR = "{{strvar}}";
 		public static final String VARIABLE_BOOL = "{{bvar}}";
+		public static final String VARIABLE_ENUM = "{{evar}}";
 		
 	}
 	

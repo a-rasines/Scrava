@@ -3,13 +3,15 @@ package domain.values;
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
 import domain.Sprite;
 import domain.models.interfaces.Valuable;
-import ui.renderers.LiteralRenderer.LiteralRenderable;
 import ui.components.BlockPanel;
+import ui.renderers.LiteralRenderer.LiteralRenderable;
 import ui.renderers.SimpleBlockRenderer;
 import ui.renderers.SimpleBlockRenderer.SimpleRenderable;
 
@@ -38,6 +40,35 @@ public class Variable<T> extends AbstractLiteral<T> implements SimpleRenderable 
 	@Override
 	public Variable<?> create(Sprite s) {
 		return this;
+	}
+	
+	/**
+	 * Returns an {@link domain.values.EnumLiteral EnumLiteral} version of the variables' map
+	 * @return
+	 */
+	public static EnumLiteral<Variable<?>> getEnumLiteral() {
+		
+		return new EnumLiteral<>((s) -> {
+			Variable<?> v = variables.get(null).get(s);
+			if(v == null)
+				v = variables.get(BlockPanel.INSTANCE.getSprite()).get(s);
+			return v;
+		}, () -> {
+			Variable<?>[] var = new Variable<?>[variables.get(null).size() + variables.get(BlockPanel.INSTANCE.getSprite()).size()];
+			Iterator<Variable<?>> it = variables.get(null).values().iterator();
+			for(int i = 0; i < variables.get(null).size(); i++)
+				var[i] = (Variable<?>) it.next();
+			it = variables.get(BlockPanel.INSTANCE.getSprite()).values().iterator();
+			for(int i = variables.get(null).size(); i < variables.get(null).size() + variables.get(BlockPanel.INSTANCE.getSprite()).size(); i++)
+				var[i] = (Variable<?>) it.next();
+			return var;
+		},
+		() -> {
+			HashSet<String> s = new HashSet<>();
+			s.addAll(variables.get(null).keySet());
+			s.addAll(variables.get(BlockPanel.INSTANCE.getSprite()).keySet());
+			return s.toArray(new String[s.size()]);
+		});
 	}
 	
 	/**

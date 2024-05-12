@@ -22,6 +22,7 @@ import domain.models.interfaces.Clickable.Rect;
 import domain.models.interfaces.Translatable;
 import domain.models.interfaces.Valuable;
 import domain.values.AbstractLiteral;
+import domain.values.EnumLiteral;
 import domain.values.NumberLiteral;
 import ui.components.BlockPanel;
 
@@ -77,12 +78,14 @@ public class LiteralRenderer implements IRenderer {
 	public transient static final BufferedImage NUM_VAR_END = IRenderer.getRes("textures/variable/numend.svg");
 	public transient static final BufferedImage BOOLEAN_VAR_START = IRenderer.getRes("textures/variable/booleanstart.svg");
 	public transient static final BufferedImage BOOLEAN_VAR_END = IRenderer.getRes("textures/variable/booleanend.svg");
+	public transient static final BufferedImage ENUM_VAR_START = IRenderer.getRes("textures/variable/enumstart.svg");
+	public transient static final BufferedImage ENUM_VAR_END = IRenderer.getRes("textures/variable/enumend.svg");
 
 	@Override
 	public BufferedImage getRenderable() {
 		if(rendered != null)
 			return rendered;
-		String value = this.block.getCode();
+		String value = (this.block instanceof EnumLiteral el)?el.name():this.block.getCode();
 		BufferedImage left;
 		BufferedImage right;
 		switch(type) {
@@ -100,6 +103,11 @@ public class LiteralRenderer implements IRenderer {
 		case IRenderable.VARIABLE_NUM:
 			left = NUM_VAR_START;
 			right = NUM_VAR_END;
+			break;
+		case IRenderable.VARIABLE_ENUM:
+			left = ENUM_VAR_START;
+			right = ENUM_VAR_END;
+			
 			break;
 		default:
 			left = STRING_VAR_START;
@@ -120,6 +128,8 @@ public class LiteralRenderer implements IRenderer {
 		g.setFont(new Font( font.getName(), Font.PLAIN, 51 ));
 		g.setColor(Color.black);
 		background(rendered, left.getHeight(), left.getWidth()-1, value.length() * FONT_WIDTH + 2);
+		if(this.block instanceof EnumLiteral el)
+			g.setColor(Color.white);
 		g.drawString(value, left.getWidth(), left.getHeight()/2 + 20);
 		
 		g.drawImage(right, left.getWidth() + value.length() * FONT_WIDTH, 0, null);

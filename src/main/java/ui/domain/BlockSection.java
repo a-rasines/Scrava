@@ -3,14 +3,35 @@ package ui.domain;
 import java.util.List;
 import java.util.function.Supplier;
 
-import domain.blocks.conditional.*;
-import domain.blocks.conditional.bool.*;
-import domain.blocks.container.*;
-import domain.blocks.event.*;
-import domain.blocks.movement.*;
-import domain.blocks.operators.*;
-import domain.blocks.operators.parser.*;
-
+import domain.blocks.conditional.BiggerOrEqualThanBlock;
+import domain.blocks.conditional.BiggerThanBlock;
+import domain.blocks.conditional.EqualsBlock;
+import domain.blocks.conditional.SmallerOrEqualThanBlock;
+import domain.blocks.conditional.SmallerThanBlock;
+import domain.blocks.conditional.bool.AndBlock;
+import domain.blocks.conditional.bool.OrBlock;
+import domain.blocks.container.IfBlock;
+import domain.blocks.container.IfElseBlock;
+import domain.blocks.container.WhileBlock;
+import domain.blocks.event.OnKeyPressEventBlock;
+import domain.blocks.event.OnStartEventBlock;
+import domain.blocks.movement.MoveBlock;
+import domain.blocks.movement.MoveToBlock;
+import domain.blocks.movement.MoveXBlock;
+import domain.blocks.movement.MoveXToBlock;
+import domain.blocks.movement.MoveYBlock;
+import domain.blocks.movement.MoveYToBlock;
+import domain.blocks.operators.AddOperator;
+import domain.blocks.operators.AppendOperator;
+import domain.blocks.operators.DivideOperator;
+import domain.blocks.operators.MaxOperator;
+import domain.blocks.operators.MinOperator;
+import domain.blocks.operators.ModulusOperator;
+import domain.blocks.operators.MultiplyOperator;
+import domain.blocks.operators.RandomOperator;
+import domain.blocks.operators.SubstractOperator;
+import domain.blocks.operators.parser.StringToDecimalNumberParser;
+import domain.blocks.operators.parser.StringToIntegerNumberParser;
 import domain.values.Variable;
 import ui.renderers.IRenderer;
 
@@ -32,7 +53,8 @@ public enum BlockSection {
 	}),
 	
 	EVENT(0xffe97d00, new IRenderer[] {
-			IRenderer.getDetachedDragableRendererOf(new OnStartEventBlock())
+			IRenderer.getDetachedDragableRendererOf(new OnStartEventBlock()),
+			IRenderer.getDetachedDragableRendererOf(new OnKeyPressEventBlock())
 	}),
 	
 	VARIABLE(0xffe97d00, () -> {

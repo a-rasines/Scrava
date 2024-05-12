@@ -5,7 +5,7 @@ import domain.models.interfaces.Valuable;
 import domain.models.types.EventBlock;
 import ui.renderers.LiteralRenderer.LiteralRenderable;
 
-public class OnStartEventBlock extends EventBlock{
+public class OnStartEventBlock extends EventBlock {
 
 	private static final long serialVersionUID = -2162143069703779118L;
 

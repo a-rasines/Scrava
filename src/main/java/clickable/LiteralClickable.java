@@ -87,9 +87,9 @@ public class LiteralClickable implements Clickable{
 					renderer.update();
 					break;
 				case EnumLiteral<?> e:
-					@SuppressWarnings({ "unchecked", "rawtypes" }) 
-					JComboBox cb = new JComboBox(e.possibleValues());
-					vs = new ValueSelector(cb, e.value());
+					JComboBox<String> cb = new JComboBox<>(e.names());
+					vs = new ValueSelector(cb);
+					vs.setVisible(true);
 					vs.addWindowListener(new WindowAdapter() {
 						@Override
 						public void windowClosed(WindowEvent e) {
@@ -97,6 +97,7 @@ public class LiteralClickable implements Clickable{
 							renderer.update();
 						}
 					});
+					break;
 				default:
 					JTextField textField = new JTextField(value.value().toString());
 					if(value.value() instanceof Number) {
