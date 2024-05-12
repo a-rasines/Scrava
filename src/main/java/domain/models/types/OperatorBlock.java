@@ -126,6 +126,11 @@ public abstract class OperatorBlock<T, R> implements Translatable, Valuable<R>, 
 			values[1] = (Valuable<? extends T>) v;
 	}
 	
+	@Override
+	public void reset() {
+		for(Valuable<?> v : values) v.reset();
+	}
+	
 	public OperatorBlock<T, R>setValues(Valuable<? extends T> left, Valuable<? extends T> right) {
 		values = new Valuable[] {left, right};
 		return this;

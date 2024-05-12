@@ -7,7 +7,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import debug.DebugOut;
 import domain.blocks.event.OnStartEventBlock;
 import domain.models.types.EventBlock;
 import domain.values.Variable;
@@ -31,9 +30,16 @@ public class Sprite {
 	}
 	
 	public void registerEvent(EventBlock event) {
-		DebugOut.printStackTrace();
 		eventMap.putIfAbsent(event.getClass(), new LinkedList<>());
 		eventMap.get(event.getClass()).add(event);
+	}
+	
+	public void reset() {
+		xPos.reset();
+		yPos.reset();
+		for(List<EventBlock> l : eventMap.values())
+			for(EventBlock eb : l)
+				eb.reset();
 	}
 	
 	public void deleteEvent(EventBlock event) {

@@ -29,6 +29,7 @@ import domain.blocks.operators.MinOperator;
 import domain.blocks.operators.ModulusOperator;
 import domain.blocks.operators.MultiplyOperator;
 import domain.blocks.operators.RandomOperator;
+import domain.blocks.operators.SetValueBlock;
 import domain.blocks.operators.SubstractOperator;
 import domain.blocks.operators.parser.StringToDecimalNumberParser;
 import domain.blocks.operators.parser.StringToIntegerNumberParser;
@@ -59,9 +60,10 @@ public enum BlockSection {
 	
 	VARIABLE(0xffe97d00, () -> {
 		List<Variable<?>> variables = Variable.getVisibleVariables();
-		IRenderer[] output = new IRenderer[variables.size()];
+		IRenderer[] output = new IRenderer[variables.size() + 1];
+		output[0] = IRenderer.getDetachedDragableRendererOf(new SetValueBlock(null));
 		for(int i = 0; i < variables.size(); i++)
-			output[i] = IRenderer.getDetachedDragableRendererOf(variables.get(i));
+			output[i + 1] = IRenderer.getDetachedDragableRendererOf(variables.get(i));
 		return output;
 	}),
 	OPERATOR(0xff4ca742, new IRenderer[] {

@@ -47,7 +47,8 @@ public class InvocableBlockRenderer implements DragableRenderer {
 		 * This enum represents the different block texture groups
 		 */
 		public enum BlockCategory {
-				MOVEMENT(0xff16cbff)
+				MOVEMENT(0xff16cbff),
+				VARIABLE(0xffe97d00)
 				;			
 			/**
 			 * Left end of the block

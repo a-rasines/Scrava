@@ -36,6 +36,8 @@ public class ProjectFrame extends JFrame {
 	
 	private ProjectFrame() {
 		JButton startButton = new JButton("Start");
+		JButton tickButton = new JButton("Tick");
+		JButton endButton = new JButton("End");
 		projectName = "Untitled";
 		projectSprites = new ArrayList<>();
 		projectSprites.add(new Sprite());
@@ -43,6 +45,8 @@ public class ProjectFrame extends JFrame {
 		add(BlockPanel.INSTANCE);
 		add(ActionPanel.INSTANCE);
 		add(startButton);
+		add(tickButton);
+		add(endButton);
 		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 		setBounds(0, 0, (int)screenSize.getWidth(), (int)screenSize.getHeight());
 		setMinimumSize(new Dimension(Math.max(700, (int)screenSize.getWidth() / 2), Math.max(500, (int)screenSize.getHeight() / 2)));
@@ -54,6 +58,8 @@ public class ProjectFrame extends JFrame {
 				int w = (int) (getWidth()*2/5);
 				ActionPanel.INSTANCE.setBounds(0, 0, w, w * 2 / 3);
 				startButton.setBounds(0, w * 2/3, 100, 20);
+				tickButton.setBounds(100, w * 2/3, 100, 20);
+				endButton.setBounds(200, w * 2/3, 100, 20);
 			}
 		});
 		

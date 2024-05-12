@@ -6,6 +6,7 @@ import java.util.LinkedList;
 import java.util.Set;
 
 import domain.models.interfaces.InvocableBlock;
+import domain.models.interfaces.Valuable;
 import domain.models.interfaces.VariableHolder;
 import ui.renderers.CapsuleBlockRenderer;
 
@@ -76,6 +77,14 @@ public abstract class CapsuleBlock extends LinkedList<InvocableBlock> implements
 	}
 	
 	public abstract boolean attachable();
+	
+	@Override
+	public void reset() {
+		for(InvocableBlock ib : this)
+			ib.reset();
+		for(Valuable<?> v : getAllVariables())
+			v.reset();
+	}
 	
 	@Override
 	public int hashCode() {

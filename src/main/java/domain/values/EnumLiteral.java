@@ -4,6 +4,7 @@ import java.lang.reflect.Array;
 import java.lang.reflect.Method;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
@@ -16,6 +17,7 @@ public class EnumLiteral<T> extends AbstractLiteral<T> {
 	private transient final Function<String, T> VALUE_OF;
 	private transient final Supplier<T[]> VALUES;
 	private transient final Supplier<String[]> NAMES;
+	private BiConsumer<String, T> valueListener = (a,b)->{}; 
 	private String name;
 	
 	
@@ -94,10 +96,15 @@ public class EnumLiteral<T> extends AbstractLiteral<T> {
 		return null;
 	}
 
+	public void setValueListener(BiConsumer<String, T> bc) {
+		this.valueListener = bc;
+	}
+	
 	@Override
 	public void setValue(String str) {
 		name = str;
 		setValue(VALUE_OF.apply(str), true);
+		valueListener.accept(str, value);
 	}
 	
 	public T[] possibleValues() {

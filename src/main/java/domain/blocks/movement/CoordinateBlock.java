@@ -110,6 +110,11 @@ public abstract class CoordinateBlock extends FunctionBlock{
 		}
 		
 	}
+	@Override
+	public void reset() {
+		x.reset();
+		y.reset();
+	}
 	
 	@Override
 	public boolean isAplicable(Valuable<?> v) {

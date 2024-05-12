@@ -26,4 +26,6 @@ public interface Translatable extends Serializable{
 	 * @param s
 	 */
 	public Translatable create(Sprite s);
+	
+	public void reset();
 }

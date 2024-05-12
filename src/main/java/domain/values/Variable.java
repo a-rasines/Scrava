@@ -147,6 +147,10 @@ public class Variable<T> extends AbstractLiteral<T> implements SimpleRenderable 
 		return nat;
 	}
 	
+	public boolean isGlobal() {
+		return variables.get(null).get(this.name) != null;
+	}
+	
 	public Variable<?> setValue(T value) {
 		this.value = value;
 		return this;

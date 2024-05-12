@@ -13,23 +13,16 @@ public abstract class AbstractLiteral<T> implements LiteralRenderer.LiteralRende
 	
 	@SuppressWarnings("unchecked")
 	public static <T> Valuable<T> getDefault(T type) {
-		if(type instanceof Boolean)
-			return (Valuable<T>) new BooleanLiteral(false);
-		else if (type instanceof Number) {
-			if(type instanceof Long)
-				return (Valuable<T>) new NumberLiteral<Long>(0l);
-			else if (type instanceof Integer)
-				return (Valuable<T>) new NumberLiteral<Integer>(0);
-			else if (type instanceof Short)
-				return (Valuable<T>) new NumberLiteral<Short>((short)0);				
-			else if (type instanceof Float)
-				return (Valuable<T>) new NumberLiteral<Float>(0f);
-			else if (type instanceof Double)
-				return (Valuable<T>) new NumberLiteral<Double>(0.);
-			else
-				return (Valuable<T>) new NumberLiteral<Byte>((byte)0);
-		} else
-			return (Valuable<T>) new StringLiteral("");
+		return (Valuable<T>) switch(type) {
+			case Boolean b -> new BooleanLiteral(false);
+			case Long l -> new NumberLiteral<Long>(0l);
+			case Integer i -> new NumberLiteral<Integer>(0);
+			case Short s -> new NumberLiteral<Short>((short)0);
+			case Float f -> new NumberLiteral<Float>(0f);
+			case Double d -> new NumberLiteral<Double>(0.);
+			case Byte b -> new NumberLiteral<Byte>((byte)0);
+			default -> new StringLiteral("");
+		};
 	}
 	
 	protected AbstractLiteral(T value) {
@@ -39,13 +32,14 @@ public abstract class AbstractLiteral<T> implements LiteralRenderer.LiteralRende
 	
 	/**
 	 * This function updates the value of the literal
-	 * @param value the new value
+	 * @param object the new value
 	 * @param update if true, the value at restart is also changed
 	 */
-	public void setValue(T value, boolean update) {
-		this.value = value;
+	@SuppressWarnings("unchecked")
+	public void setValue(Object object, boolean update) {
+		this.value = (T)object;
 		if(update)
-			this.initialValue = value;
+			this.initialValue = (T)object;
 	}
 	
 	
@@ -77,6 +71,7 @@ public abstract class AbstractLiteral<T> implements LiteralRenderer.LiteralRende
 
 	@Override
 	public void getImports(Set<String> imports) {}
+	
 	
 	@Override
 	public String toString() {

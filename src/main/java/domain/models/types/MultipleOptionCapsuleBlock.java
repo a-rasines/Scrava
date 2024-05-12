@@ -61,6 +61,13 @@ public abstract class MultipleOptionCapsuleBlock extends ArrayList<OptionCapsule
 		get(getInvocationObjectIndex()).firstTick();
 	}
 	
+	@Override
+	public void reset() {
+		for(Valuable<?> v : getAllVariables())
+			v.reset();
+		for(OptionCapsuleBlock ocb : this) ocb.reset();
+	}
+	
 	/**
 	 * Returns the index of the capsule to execute
 	 * @return
