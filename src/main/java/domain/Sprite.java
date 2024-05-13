@@ -7,6 +7,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import domain.blocks.event.KeyEventBlock;
 import domain.blocks.event.OnStartEventBlock;
 import domain.models.types.EventBlock;
 import domain.values.Variable;
@@ -60,6 +61,12 @@ public class Sprite {
 		for(EventBlock eb : eventMap.get(OnStartEventBlock.class)) {
 			new Thread(() -> eb.invoke()).start();
 		}
+	}
+	
+	public void runKeyEvent(Class<? extends KeyEventBlock> ev, int key) {
+		for(EventBlock keb : eventMap.get(ev))
+			((KeyEventBlock)keb).invoke(key);
+		
 	}
 	
 	/**

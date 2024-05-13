@@ -1,9 +1,14 @@
 package ui.components;
 
 import java.awt.Dimension;
+import java.awt.KeyEventDispatcher;
+import java.awt.KeyboardFocusManager;
 import java.awt.Toolkit;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+import java.awt.event.KeyEvent;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowFocusListener;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,11 +17,12 @@ import javax.swing.JFrame;
 
 import debug.DebugOut;
 import domain.Sprite;
+import domain.blocks.event.OnKeyPressEventBlock;
 import domain.blocks.event.OnStartEventBlock;
 import ui.EmptyLayout;
 
-public class ProjectFrame extends JFrame {
-	
+public class ProjectFrame extends JFrame implements WindowFocusListener {
+	public static boolean isStarted = false;
 	static {
 		DebugOut.setup();
 	}
@@ -33,6 +39,7 @@ public class ProjectFrame extends JFrame {
 
 	public String projectName;
 	private static List<Sprite> projectSprites;
+	private static boolean isFocused = true;
 	
 	private ProjectFrame() {
 		JButton startButton = new JButton("Start");
@@ -62,11 +69,43 @@ public class ProjectFrame extends JFrame {
 				endButton.setBounds(200, w * 2/3, 100, 20);
 			}
 		});
+		KeyboardFocusManager manager = KeyboardFocusManager.getCurrentKeyboardFocusManager();
+        manager.addKeyEventDispatcher(new KeyEventDispatcher() {
+
+			@Override
+			public boolean dispatchKeyEvent(KeyEvent e) {
+				if(isStarted && isFocused)
+					switch(e.getID()) {
+						case KeyEvent.KEY_RELEASED:
+							System.out.println("Released");
+							break;
+							
+						case KeyEvent.KEY_PRESSED:
+							System.out.println("Pressed");
+							for(Sprite s : getSprites())
+								s.runKeyEvent(OnKeyPressEventBlock.class, e.getKeyCode());
+							repaint();
+							break;
+					}
+				return false;
+			}
+        	
+        });
+        addWindowFocusListener(this);
 		
 		startButton.addActionListener((e) -> {
+			if(isStarted)
+				for(Sprite s : getSprites())
+					s.reset();
 			for(Sprite s : getSprites())
 				s.runEvent(OnStartEventBlock.class);
 			ActionPanel.INSTANCE.repaint();
+			isStarted = true;
+		});
+		endButton.addActionListener((e) -> {
+			for(Sprite s : getSprites())
+				s.reset();
+			isStarted = false;
 		});
 	}
 	
@@ -82,5 +121,15 @@ public class ProjectFrame extends JFrame {
 	}
 	@Override
 	public void setSize(Dimension d) {}
+
+	@Override
+	public void windowGainedFocus(WindowEvent e) {
+		isFocused = true;		
+	}
+
+	@Override
+	public void windowLostFocus(WindowEvent e) {
+		isFocused = false;
+	}
 
 }
