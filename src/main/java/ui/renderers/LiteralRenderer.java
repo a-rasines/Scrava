@@ -41,12 +41,18 @@ public class LiteralRenderer implements IRenderer {
 	
 	public static LiteralRenderer of(LiteralRenderable<?> block, Object type, BlockClickable parent) {
 		if(RENDS_MAP.get(block) == null)
-			if(type instanceof Boolean)
-				RENDS_MAP.put(block, new LiteralRenderer(block, IRenderable.VARIABLE_BOOL, parent));
-			else if (type instanceof Number)
-				RENDS_MAP.put(block, new LiteralRenderer(block, IRenderable.VARIABLE_NUM, parent));
-			else
-				RENDS_MAP.put(block, new LiteralRenderer(block, IRenderable.VARIABLE_STR, parent));
+			switch(type) {
+				case Boolean b:
+					RENDS_MAP.put(block, new LiteralRenderer(block, IRenderable.VARIABLE_BOOL, parent));
+					break;
+				case Number n:
+					RENDS_MAP.put(block, new LiteralRenderer(block, IRenderable.VARIABLE_NUM, parent));
+					break;
+				case String s:
+					RENDS_MAP.put(block, new LiteralRenderer(block, IRenderable.VARIABLE_STR, parent));
+					break;
+				default:
+			}
 		return RENDS_MAP.get(block);
 	}
 	
@@ -85,14 +91,12 @@ public class LiteralRenderer implements IRenderer {
 	public BufferedImage getRenderable() {
 		if(rendered != null)
 			return rendered;
-		String value = (this.block instanceof EnumLiteral el)?el.name():this.block.getCode();
+		String value = (this.block instanceof EnumLiteral el)?el.name():this.block.value().toString();
 		BufferedImage left;
 		BufferedImage right;
 		switch(type) {
 		case IRenderable.VARIABLE_STR:
 		case IRenderable.VARIABLE_ANY:
-			if(this.block.value() instanceof String)
-				value = value.substring(1, value.length() - 1);
 			left = STRING_VAR_START;
 			right = STRING_VAR_END;
 			break;
@@ -128,7 +132,7 @@ public class LiteralRenderer implements IRenderer {
 		g.setFont(new Font( font.getName(), Font.PLAIN, 51 ));
 		g.setColor(Color.black);
 		background(rendered, left.getHeight(), left.getWidth()-1, value.length() * FONT_WIDTH + 2);
-		if(this.block instanceof EnumLiteral el)
+		if(this.block instanceof EnumLiteral)
 			g.setColor(Color.white);
 		g.drawString(value, left.getWidth(), left.getHeight()/2 + 20);
 		

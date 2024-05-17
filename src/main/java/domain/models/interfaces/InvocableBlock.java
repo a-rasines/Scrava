@@ -1,5 +1,7 @@
 package domain.models.interfaces;
 
+import java.util.function.Supplier;
+
 import ui.renderers.IRenderer.IRenderable;
 
 /**
@@ -7,21 +9,18 @@ import ui.renderers.IRenderer.IRenderable;
  */
 public interface InvocableBlock extends IRenderable, Translatable {
 	
+	public static final Supplier<Boolean> SKIP_TICK = () -> true;
+
 	/**
 	 * This function runs the functionality of the block when it's reached
 	 */
 	public void invoke();
 	
 	/**
-	 * This function steps over the program
-	 * @return true if the block has finished and the parent can step into the next
+	 * Returns a supplier that runs one operation per execution.
+	 * @return a {@link java.util.function.Supplier Supplier} that returns true when finished
 	 */
-	public boolean tick();
-	
-	/**
-	 * Resets the tick pointer and ticks through the first element
-	 */
-	public void firstTick();
+	public Supplier<Boolean> getTick();
 	 
 	
 }

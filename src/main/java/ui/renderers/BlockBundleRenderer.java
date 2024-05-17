@@ -298,7 +298,7 @@ public class BlockBundleRenderer implements CapsuleRenderer{
 	
 	@Override
 	public DragableRenderer get(int bundle, int index) {
-		return IRenderer.getDragableRendererOf((IRenderable) ((CapsuleBlock) getBlock()).get(index));
+		return (InvocableBlockRenderer) IRenderer.getDragableRendererOf((IRenderable) ((CapsuleBlock) getBlock()).get(index));
 	}
 	
 	@SuppressWarnings("unchecked")

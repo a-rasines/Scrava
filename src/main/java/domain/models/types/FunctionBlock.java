@@ -1,5 +1,7 @@
 package domain.models.types;
 
+import java.util.function.Supplier;
+
 import domain.Sprite;
 import ui.renderers.InvocableBlockRenderer.InvocableBlockRenderable;
 
@@ -14,14 +16,13 @@ public abstract class FunctionBlock implements InvocableBlockRenderable{
 	public Sprite getSprite() {
 		return s;
 	}
+	
 	@Override
-	public boolean tick() {
-		invoke();
-		return true;
-	}
-	@Override
-	public void firstTick() {
-		invoke();
+	public Supplier<Boolean> getTick() {
+		return () -> {
+			invoke();
+			return true;
+		};
 	}
 
 }

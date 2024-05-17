@@ -28,11 +28,17 @@ public class Sprite {
 	public Sprite() {
 		Variable.registerSprite(this);
 		textures.add(DEFAULT_TEXTURE);
+		name = "Sprite";
 	}
 	
 	public void registerEvent(EventBlock event) {
 		eventMap.putIfAbsent(event.getClass(), new LinkedList<>());
 		eventMap.get(event.getClass()).add(event);
+	}
+	
+	public List<EventBlock> getEvents(Class<? extends EventBlock> type) {
+		eventMap.putIfAbsent(type, new LinkedList<>());
+		return eventMap.get(type);
 	}
 	
 	public void reset() {
@@ -64,6 +70,7 @@ public class Sprite {
 	}
 	
 	public void runKeyEvent(Class<? extends KeyEventBlock> ev, int key) {
+		eventMap.putIfAbsent(ev, new ArrayList<>());
 		for(EventBlock keb : eventMap.get(ev))
 			((KeyEventBlock)keb).invoke(key);
 		

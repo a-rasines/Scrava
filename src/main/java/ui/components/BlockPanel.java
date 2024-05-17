@@ -67,7 +67,7 @@ public class BlockPanel extends JLayeredPane{
 	
 	public final JButton BOTON_VARIABLES = new JButton("Create new Variable");
 	
-	private Sprite actualSprite = ProjectFrame.getDefSprite();
+	private Sprite actualSprite = SpritePanel.getSprite();
 	
 	public Sprite getSprite() {
 		return actualSprite;
@@ -79,6 +79,11 @@ public class BlockPanel extends JLayeredPane{
 	private BlockClickable hovered = null;
 	private JLabel clickedLabel = new JLabel("");
 	public static BlockPanel INSTANCE = new BlockPanel();
+	
+	public void changeSprite() {
+		actualSprite = SpritePanel.getSprite();
+		//TODO remove all blocks from here and add the ones from the new Sprite
+	}
 	
 	/**
 	 * Marks the clickable for the mouse events

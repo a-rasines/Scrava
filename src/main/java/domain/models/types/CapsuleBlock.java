@@ -4,6 +4,7 @@ import java.lang.reflect.Constructor;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Set;
+import java.util.function.Supplier;
 
 import domain.models.interfaces.InvocableBlock;
 import domain.models.interfaces.Valuable;
@@ -30,26 +31,43 @@ public abstract class CapsuleBlock extends LinkedList<InvocableBlock> implements
 		for(InvocableBlock ib : this)
 			ib.invoke();
 	}
-	
-	private InvocableBlock actualTick = null;
-	private Iterator<InvocableBlock> it;
 	@Override
-	public boolean tick() {
-		if(it == null)
-			it = iterator();
-		if(actualTick == null) {
-			actualTick = it.next();
-			actualTick.firstTick();
-		} else if(actualTick.tick())
-			actualTick = null;
-		return !it.hasNext() && actualTick == null;
-	};
-	
-	@Override
-	public void firstTick() {
-		it = iterator();
-		tick();
+	public Supplier<Boolean> getTick() {
+		return new Tick();
 	}
+	public class Tick implements Supplier<Boolean>{
+		private static final Supplier<Boolean> END_TICK = () -> false;
+		protected Iterator<InvocableBlock> it;
+		private Supplier<Boolean> actualBlock = null;
+		private Supplier<Boolean> endCondition;
+		public Tick(Supplier<Boolean> endCondition) {
+			this.it = iterator();
+			this.endCondition = endCondition;
+		}
+		public Tick() {
+			this(END_TICK);
+		}
+		@Override
+		public Boolean get() {
+			System.out.println(CapsuleBlock.this.toString());
+			if(actualBlock == null)
+				actualBlock = it.next().getTick();
+			if(actualBlock.get())
+				actualBlock = null;
+			System.out.println("get:" + (actualBlock==null));
+			if(!it.hasNext() && actualBlock == null)
+				if(endCondition.get()) {
+					System.out.println("reset");
+					it = iterator();
+				} else {
+					System.out.println("end");
+					return true;
+				}
+			return false;
+		}
+		
+	}
+	
 	
 	/**
 	 * Returns the wrapper string in java code.

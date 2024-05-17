@@ -4,8 +4,9 @@ import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Supplier;
 
-import domain.blocks.container.OptionCapsuleBlock;
+import domain.blocks.capsule.OptionCapsuleBlock;
 import domain.models.interfaces.InvocableBlock;
 import domain.models.interfaces.Valuable;
 import domain.models.interfaces.VariableHolder;
@@ -53,12 +54,8 @@ public abstract class MultipleOptionCapsuleBlock extends ArrayList<OptionCapsule
 	}	
 	
 	@Override
-	public boolean tick() {
-		return get(getInvocationObjectIndex()).tick();
-	}
-	@Override
-	public void firstTick() {
-		get(getInvocationObjectIndex()).firstTick();
+	public Supplier<Boolean> getTick() {
+		return get(getInvocationObjectIndex()).getTick();
 	}
 	
 	@Override

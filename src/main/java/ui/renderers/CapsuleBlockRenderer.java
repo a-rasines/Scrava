@@ -16,7 +16,7 @@ import javax.swing.SwingUtilities;
 import clickable.BlockClickable;
 import clickable.CapsuleBlockClickable;
 import clickable.InvocableClickable;
-import domain.blocks.container.IfBlock;
+import domain.blocks.capsule.IfBlock;
 import domain.blocks.movement.MoveBlock;
 import domain.models.interfaces.Clickable.Rect;
 import domain.models.interfaces.InvocableBlock;

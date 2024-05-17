@@ -20,7 +20,7 @@ public class ActionPanel extends JPanel{
 	protected void paintComponent(Graphics g) {
 		g.setColor(Color.white);
 		g.fillRect(0, 0, getWidth(), getHeight());
-		for(Sprite s : ProjectFrame.getSprites()) {
+		for(Sprite s : SpritePanel.getSprites()) {
 			g.drawImage(
 					s.getRendered().getScaledInstance(
 							s.getRendered().getWidth() * getWidth() / 1000, 

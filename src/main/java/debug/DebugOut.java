@@ -12,6 +12,7 @@ public class DebugOut extends PrintStream{
 			"moveTo",
 			"removeBlock",
 			"removeChild",
+			"setPosition",
 			
 			//event
 			"mouseDragged",
@@ -21,7 +22,7 @@ public class DebugOut extends PrintStream{
 			"onHover",
 			"onHoverEnd",
 			
-			//"paintComponent",
+			"paintComponent",
 			"patch",
 			"renderText"
 		);

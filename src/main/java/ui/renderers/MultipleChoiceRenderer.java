@@ -16,7 +16,7 @@ import clickable.BlockClickable;
 import clickable.CapsuleBlockClickable;
 import clickable.InvocableClickable;
 import debug.DebugOut;
-import domain.blocks.container.IfElseBlock;
+import domain.blocks.capsule.IfElseBlock;
 import domain.blocks.movement.MoveBlock;
 import domain.blocks.movement.MoveToBlock;
 import domain.blocks.movement.MoveXBlock;

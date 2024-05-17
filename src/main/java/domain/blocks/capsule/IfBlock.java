@@ -1,31 +1,48 @@
-package domain.blocks.container;
+package domain.blocks.capsule;
+
+import java.util.function.Supplier;
 
 import domain.Sprite;
+import domain.models.interfaces.InvocableBlock;
 import domain.models.interfaces.Valuable;
 import domain.models.types.CapsuleBlock;
 import domain.values.BooleanLiteral;
 import ui.renderers.LiteralRenderer.LiteralRenderable;
 
-public class WhileBlock extends CapsuleBlock{
+public class IfBlock extends CapsuleBlock {
 	private static final long serialVersionUID = 6422542828725824534L;
 	
-	@Override
-	public WhileBlock create(Sprite s) {
-		return new WhileBlock();
-	}
-
+	private Valuable<Boolean> defVal = new BooleanLiteral(true);
 	private Valuable<Boolean> condition;
-	private Valuable<Boolean> defCondition;
 	
-	public WhileBlock() {
-		this(new BooleanLiteral(true));
+	@Override
+	public IfBlock create(Sprite s) {
+		return new IfBlock();
 	}
 	
-	public WhileBlock(Valuable<Boolean> condition) {
+	public IfBlock() {
+		this.condition = new BooleanLiteral(true);
+	}
+	
+	public IfBlock(Valuable<Boolean> condition) {
 		this.condition = condition;
-		this.defCondition = condition;
+	}
+	
+	public IfBlock(Valuable<Boolean> condition, InvocableBlock... initialValues) {
+		this.condition = condition;
+		addAll(initialValues);
+	}
+	
+	public IfBlock(InvocableBlock... initialValues) {
+		this.condition = new BooleanLiteral(true);
+		addAll(initialValues);
 	}
 
+	public void addAll(InvocableBlock...blocks) {
+		for(InvocableBlock ib : blocks)
+			add(ib);
+	}
+	
 	public Valuable<Boolean> getCondition() {
 		return condition;
 	}
@@ -36,14 +53,14 @@ public class WhileBlock extends CapsuleBlock{
 
 	@Override
 	public void invoke() {
-		while(condition.value())
+		if(condition.value())
 			super.invoke();
 		
 	}
 
 	@Override
 	public String getTitle() {
-		return "While "+VARIABLE_BOOL+" do";
+		return "If "+VARIABLE_BOOL+" then";
 	}
 
 	@Override
@@ -53,7 +70,7 @@ public class WhileBlock extends CapsuleBlock{
 
 	@Override
 	public String getHead() {
-		return "while("+condition.getCode()+")";
+		return "if("+condition.getCode()+")";
 	}
 
 	@Override
@@ -64,25 +81,31 @@ public class WhileBlock extends CapsuleBlock{
 	@SuppressWarnings("unchecked")
 	@Override
 	public void setVariableAt(int i, Valuable<?> v) {
-		condition = (Valuable<Boolean>) v;
+		condition = (Valuable<Boolean>) v;		
 	}
 
 	@Override
 	public void removeVariableAt(int i) {
-		this.condition = this.defCondition;
+		condition = defVal;		
 	}
 
 	@Override
 	public LiteralRenderable<?> removeVariable(Valuable<?> v) {
-		this.condition = this.defCondition;
-		return (LiteralRenderable<?>) this.condition;
+		System.out.println("a");
+		condition = defVal;
+		return (LiteralRenderable<?>) condition;
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
 	public void replaceVariable(Valuable<?> old, Valuable<?> newValue) {
-		this.condition = (Valuable<Boolean>) newValue;
+		condition = (Valuable<Boolean>) newValue;
 		
+	}
+	
+	@Override
+	public Supplier<Boolean> getTick() {
+		return condition.value()?new Tick() : () -> true;
 	}
 
 	@Override
@@ -94,4 +117,5 @@ public class WhileBlock extends CapsuleBlock{
 	public boolean attachable() {
 		return true;
 	}
+
 }

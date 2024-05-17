@@ -11,6 +11,7 @@ import java.awt.event.WindowEvent;
 import java.awt.event.WindowFocusListener;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Supplier;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -19,6 +20,7 @@ import debug.DebugOut;
 import domain.Sprite;
 import domain.blocks.event.OnKeyPressEventBlock;
 import domain.blocks.event.OnStartEventBlock;
+import domain.models.types.EventBlock;
 import ui.EmptyLayout;
 
 public class ProjectFrame extends JFrame implements WindowFocusListener {
@@ -36,21 +38,26 @@ public class ProjectFrame extends JFrame implements WindowFocusListener {
 	
 	public static final ProjectFrame INSTANCE = new ProjectFrame();
 	private static final long serialVersionUID = -4157218152821931601L;
-
+	private static final List<Supplier<Boolean>> activeTicks = new ArrayList<>();
+	
 	public String projectName;
-	private static List<Sprite> projectSprites;
 	private static boolean isFocused = true;
+	private static boolean isTick = false;
+	
+	public static boolean isTick() {
+		return isTick;
+	}
 	
 	private ProjectFrame() {
 		JButton startButton = new JButton("Start");
 		JButton tickButton = new JButton("Tick");
 		JButton endButton = new JButton("End");
 		projectName = "Untitled";
-		projectSprites = new ArrayList<>();
-		projectSprites.add(new Sprite());
 		setLayout(new EmptyLayout());
 		add(BlockPanel.INSTANCE);
 		add(ActionPanel.INSTANCE);
+		add(SpritePanel.INSTANCE);
+		SpritePanel.addSprite(new Sprite());
 		add(startButton);
 		add(tickButton);
 		add(endButton);
@@ -64,6 +71,7 @@ public class ProjectFrame extends JFrame implements WindowFocusListener {
 				BlockPanel.INSTANCE.setBounds((int) (getWidth()*2/5)+10, 0, (int) (getWidth()*3/5) - 25, getHeight());
 				int w = (int) (getWidth()*2/5);
 				ActionPanel.INSTANCE.setBounds(0, 0, w, w * 2 / 3);
+				SpritePanel.INSTANCE.setBounds(0, 30 + w * 2 / 3, w, getHeight() - w * 2 / 3 - 30);
 				startButton.setBounds(0, w * 2/3, 100, 20);
 				tickButton.setBounds(100, w * 2/3, 100, 20);
 				endButton.setBounds(200, w * 2/3, 100, 20);
@@ -82,7 +90,7 @@ public class ProjectFrame extends JFrame implements WindowFocusListener {
 							
 						case KeyEvent.KEY_PRESSED:
 							System.out.println("Pressed");
-							for(Sprite s : getSprites())
+							for(Sprite s : SpritePanel.getSprites())
 								s.runKeyEvent(OnKeyPressEventBlock.class, e.getKeyCode());
 							repaint();
 							break;
@@ -94,16 +102,35 @@ public class ProjectFrame extends JFrame implements WindowFocusListener {
         addWindowFocusListener(this);
 		
 		startButton.addActionListener((e) -> {
+			isTick = false;
+			activeTicks.clear();
+			List<Sprite> l = SpritePanel.getSprites();
 			if(isStarted)
-				for(Sprite s : getSprites())
+				for(Sprite s : l)
 					s.reset();
-			for(Sprite s : getSprites())
+			for(Sprite s : l)
 				s.runEvent(OnStartEventBlock.class);
 			ActionPanel.INSTANCE.repaint();
 			isStarted = true;
 		});
+		tickButton.addActionListener((e) -> {
+			isTick = true;
+			if(isStarted == false) {
+				System.out.println("Collecting ticks");
+				for(Sprite s : SpritePanel.getSprites())
+					for(EventBlock eb : s.getEvents(OnStartEventBlock.class))
+						activeTicks.add(eb.getTick());
+				isStarted = true;
+			}
+			System.out.println("Running ticks");
+			for(Supplier<Boolean> s : new ArrayList<>(activeTicks))
+				if(s.get())
+					activeTicks.remove(s);
+			ActionPanel.INSTANCE.repaint();
+		});
 		endButton.addActionListener((e) -> {
-			for(Sprite s : getSprites())
+			activeTicks.clear();
+			for(Sprite s : SpritePanel.getSprites())
 				s.reset();
 			isStarted = false;
 		});
@@ -111,13 +138,6 @@ public class ProjectFrame extends JFrame implements WindowFocusListener {
 	
 	public void loadProject(List<Sprite> newSprites) {
 		
-	}
-	
-	public static  Sprite getDefSprite() {
-		return projectSprites.get(0);
-	}
-	public static List<Sprite> getSprites() {
-		return new ArrayList<>(projectSprites);
 	}
 	@Override
 	public void setSize(Dimension d) {}

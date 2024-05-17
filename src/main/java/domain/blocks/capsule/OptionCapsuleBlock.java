@@ -1,4 +1,4 @@
-package domain.blocks.container;
+package domain.blocks.capsule;
 
 import java.util.ArrayList;
 import java.util.List;

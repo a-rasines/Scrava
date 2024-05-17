@@ -106,6 +106,7 @@ public class CapsuleBlockClickable extends InvocableClickable {
 					return;
 				} else {
 					hovered.onHoverEnd(false, clicked);
+					System.out.println("hover end " + hovered);
 					hovered = null;
 				}
 			}
@@ -119,7 +120,6 @@ public class CapsuleBlockClickable extends InvocableClickable {
 				System.out.println(ib.toString().replaceAll(".*\\.", "") + " " + r1);
 				r1.y = r1.y + InvocableBlockRenderer.CONNECTOR.getHeight();
 				r1.h = r1.h - InvocableBlockRenderer.CONNECTOR.getHeight();
-				System.out.println(r1);
 				if(x > r1.x && y > r1.y && x < r1.x + r1.w && y < r1.y + r1.h) {
 					System.out.println("hovered " + ic.getBlock().toString().replaceAll(".*\\.", ""));
 					hovered = ic;
@@ -148,7 +148,7 @@ public class CapsuleBlockClickable extends InvocableClickable {
 	@Override
 	public void onHoverEnd(boolean click, BlockClickable clicked) {
 		if(click)
-			System.out.println("▓▓ hover end " + this.getBlock().toString().replaceAll(".*\\.", "") + " inside=" + inside + " append=" + append);
+			System.out.println("▓▓ hover end " + this.getBlock().toString().replaceAll(".*\\.", "") + " hovered=" + (hovered==null?"null":hovered) + " inside=" + inside + " append=" + append);
 		if(inside && (append || clicked.getBlock() instanceof Valuable)) { //Invocable behaviour
 			System.out.println("Hovered bar");
 			super.onHoverEnd(click, clicked);
@@ -164,8 +164,8 @@ public class CapsuleBlockClickable extends InvocableClickable {
 			}
 		} else {
 			System.out.println("block hover end");
-			int i = 0;
 			int index = getBlockBundleIndex(clicked);
+			int i = 0;
 			if(index < 0) {
 				System.out.println("no bundle");
 				super.onHoverEnd(click, clicked);
@@ -173,15 +173,24 @@ public class CapsuleBlockClickable extends InvocableClickable {
 			}
 			if(hovered == null) {
 				System.out.println("adding to queue");
-				InvocableClickable cl = null;
+				InvocableClickable cl = (InvocableClickable) clicked;
+				BlockPanel.INSTANCE.removeBlock(clicked.getRenderer());
+				nestClickable(index, clicked);
+				CapsuleRenderer r = getRenderer();
+				int ind = r.indexOf(index, clicked.getRenderer());
+				if(ind > 0)
+					((InvocableClickable)r.get(index, ind - 1).getClickable()).setNext(cl);
+				clicked = ((InvocableClickable) clicked).next();
 				while(clicked != null) {
 					cl = (InvocableClickable) clicked;
 					BlockPanel.INSTANCE.removeBlock(clicked.getRenderer());
 					nestClickable(index, clicked);
 					clicked = ((InvocableClickable) clicked).next();
+					ind++;
 				}
-				if(getRenderer().sizeOf(index) > i)
-					cl.setNext((InvocableClickable) getRenderer().get(index, i).getClickable());
+				System.out.println("cl: " + cl.getBlock().toString() + " -> " + getRenderer().get(index, i).getBlock());
+				if(r.sizeOf(index) > ind + 1)
+					cl.setNext(((InvocableClickable)r.get(index, ind + 1).getClickable()));
 			} else {
 				i = getRenderer().indexOf(index, (DragableRenderer) hovered.getRenderer()) + 1;
 				System.out.println("Hovered " + hovered.getBlock().toString().replaceAll(".*\\.", "") + " endIndex:" + i);
