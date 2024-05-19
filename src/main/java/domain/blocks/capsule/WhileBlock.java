@@ -20,7 +20,8 @@ public class WhileBlock extends CapsuleBlock{
 	private Valuable<Boolean> defCondition;
 	
 	public WhileBlock() {
-		this(new BooleanLiteral(true));
+		this.defCondition = new BooleanLiteral(true, this);
+		this.condition = this.defCondition;
 	}
 	
 	public WhileBlock(Valuable<Boolean> condition) {

@@ -20,7 +20,7 @@ public class IfElseBlock extends MultipleOptionCapsuleBlock{
 	}
 	
 	public IfElseBlock() {
-		super("If "+VARIABLE_BOOL, "else");
+		setup("If "+VARIABLE_BOOL, "else");
 	}
 	
 	public IfElseBlock(List<InvocableBlock> first, List<InvocableBlock> second) {
@@ -29,8 +29,8 @@ public class IfElseBlock extends MultipleOptionCapsuleBlock{
 		get(1).addAll(second);
 	}
 	
-	private Valuable<Boolean> condition;
-	private Valuable<Boolean> defCondition;
+	private Valuable<Boolean> defCondition = new BooleanLiteral(true, this);
+	private Valuable<Boolean> condition = defCondition;
 
 	@Override
 	public void getImports(Set<String> imports) {
@@ -85,10 +85,6 @@ public class IfElseBlock extends MultipleOptionCapsuleBlock{
 
 	@Override
 	public List<List<Valuable<?>>> getVariables() {
-		if(defCondition == null) { //Constructor hierarchy, I don't have the patience to fix it
-			defCondition = new BooleanLiteral(true);
-			condition = defCondition;
-		}
 		return List.of(new ArrayList<>(List.of(condition)), new ArrayList<>());
 	}
 

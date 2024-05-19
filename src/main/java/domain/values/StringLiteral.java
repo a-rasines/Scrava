@@ -1,22 +1,13 @@
 package domain.values;
 
-import domain.Sprite;
-import domain.models.interfaces.Translatable;
+import ui.renderers.IRenderer.IRenderable;
 
 public class StringLiteral extends AbstractLiteral<String>{
 
 	private static final long serialVersionUID = -7828034209905266775L;
 	
-	@Override
-	public Translatable create(Sprite s) {
-		return nullValue();
-	}
-	
-	public static StringLiteral nullValue() {
-		return new StringLiteral("");
-	}
-	public StringLiteral(String value) {
-		super(value);
+	public StringLiteral(String value, IRenderable parent) {
+		super(value, parent);
 	}
 	
 	@Override

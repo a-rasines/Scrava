@@ -8,8 +8,7 @@ import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-import domain.Sprite;
-import domain.models.interfaces.Translatable;
+import ui.renderers.IRenderer.IRenderable;
 
 public class EnumLiteral<T> extends AbstractLiteral<T> {
 
@@ -25,8 +24,8 @@ public class EnumLiteral<T> extends AbstractLiteral<T> {
 	 * Creates an enum literal from an enum
 	 * @param value MUST BE AN ENUM
 	 */
-	public EnumLiteral(T value) {
-		super(value);
+	public EnumLiteral(T value, IRenderable parent) {
+		super(value, parent);
 		name = value.toString();
 		try {
 			VALUE_OF = new Function<String, T>(){
@@ -65,8 +64,8 @@ public class EnumLiteral<T> extends AbstractLiteral<T> {
 	 * Creates a pseudo enum literal from a map
 	 * @param values
 	 */
-	public EnumLiteral(Map<String, T> values) {
-		super(values.values().iterator().next());
+	public EnumLiteral(Map<String, T> values, IRenderable parent) {
+		super(values.values().iterator().next(), parent);
 		name = values.keySet().iterator().next();
 		VALUE_OF = (s) -> values.get(s);
 		VALUES = () -> {
@@ -83,17 +82,12 @@ public class EnumLiteral<T> extends AbstractLiteral<T> {
 	 * Creates a pseudo enum literal from functions
 	 * @param values
 	 */
-	public EnumLiteral(Function<String, T> valueOf, Supplier<T[]> values, Supplier<String[]> names) {
-		super(values.get()[0]);
+	public EnumLiteral(Function<String, T> valueOf, Supplier<T[]> values, Supplier<String[]> names, IRenderable parent) {
+		super(values.get()[0], parent);
 		name = names.get()[0];
 		VALUE_OF = valueOf;
 		VALUES = values;
 		NAMES = names;
-	}
-
-	@Override
-	public Translatable create(Sprite s) { // N/A
-		return null;
 	}
 
 	public void setValueListener(BiConsumer<String, T> bc) {

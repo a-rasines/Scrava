@@ -6,24 +6,16 @@ import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
-import java.lang.reflect.Constructor;
 import java.util.LinkedList;
 import java.util.List;
 
-import javax.swing.JFrame;
-import javax.swing.JPanel;
-import javax.swing.SwingUtilities;
-
 import clickable.BlockClickable;
 import clickable.InvocableClickable;
-import domain.blocks.movement.MoveBlock;
 import domain.models.interfaces.Clickable.Rect;
 import domain.models.interfaces.InvocableBlock;
 import domain.models.interfaces.Translatable;
 import domain.models.interfaces.Valuable;
 import domain.models.interfaces.VariableHolder;
-import domain.values.AbstractLiteral;
-import domain.values.NumberLiteral;
 import ui.components.BlockPanel;
 import ui.renderers.IRenderer.DragableRenderer;
 
@@ -32,10 +24,7 @@ public class InvocableBlockRenderer implements DragableRenderer {
 	private static final long serialVersionUID = -1092485586518514545L;
 	
 	public static interface InvocableBlockRenderable extends Translatable, IRenderable, VariableHolder, InvocableBlock{
-		@Override
-		public default Constructor<InvocableBlockRenderer> getRenderer() throws NoSuchMethodException, SecurityException {
-			return InvocableBlockRenderer.class.getConstructor(InvocableBlockRenderable.class);
-		}
+
 		public String getTitle();
 		
 		/**
@@ -167,13 +156,9 @@ public class InvocableBlockRenderer implements DragableRenderer {
 		Valuable<?>[] v = block.getAllVariables();
 		for(int i = 0; i < v.length; i++) {
 			IRenderer rend;
-			String[] vars = block.getTitle().split("\\{\\{");
-			if((rend = IRenderer.getDragableRendererOf(v[i]))==null)
-				rend = LiteralRenderer.of((AbstractLiteral<?>)v[i], vars[i+1].split("}}")[0], getClickable());
-			else {
-				((BlockClickable) rend.getClickable()).setParent(this.getClickable());
-			}
-			
+			rend = v[i].getRenderer();
+			if(rend.getClickable() instanceof BlockClickable bl)
+				bl.setParent(this.getClickable());
 			output.add(rend);
 		}
 		return output;
@@ -222,7 +207,6 @@ public class InvocableBlockRenderer implements DragableRenderer {
 	public void delete() {
 		System.out.println("delete " + getBlock());
 		BlockPanel.INSTANCE.removeBlock(this);
-		IRenderer.DRAG_RENDS.remove((IRenderable)getBlock());
 		for(IRenderer rend : getChildren()) {
 			rend.delete();
 		}
@@ -233,31 +217,6 @@ public class InvocableBlockRenderer implements DragableRenderer {
 		}
 	}
 	
-	
-public static void main(String[] args) {
-		
-	 	InvocableBlockRenderer sampleImage = (InvocableBlockRenderer) IRenderer.getDragableRendererOf(new MoveBlock(null, new NumberLiteral<Integer>(0), new NumberLiteral<Integer>(0))); 	
-        SwingUtilities.invokeLater(() -> {
-            JFrame frame = new JFrame("Image Display");
-            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-            frame.setSize(1000, 500);
-
-            JPanel panel = new JPanel() {
-				private static final long serialVersionUID = -94843536618228336L;
-
-				@Override
-                protected void paintComponent(Graphics g) {
-                    super.paintComponent(g);
-                    g.drawRect(0, 0, 500, 500);
-                    g.drawImage(sampleImage.getRenderable(), 100, 100, this);
-                }
-            };
-            frame.getContentPane().add(panel);
-
-            frame.setLocationRelativeTo(null);
-            frame.setVisible(true);
-        });
-	}
 	@Override
 	public void patch(int x, int y, int h, int w, BufferedImage newI) {
 		BufferedImage rend =  rendered(null, false);

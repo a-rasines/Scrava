@@ -13,7 +13,7 @@ public class RepeatBlock extends CapsuleBlock{
 
 	private static final long serialVersionUID = -1027255896386562621L;
 
-	LiteralRenderable<? extends Number> defVariable = new NumberLiteral<Long>(0l);
+	LiteralRenderable<? extends Number> defVariable = new NumberLiteral<Long>(0l, this);
 	Valuable<? extends Number> variable = defVariable;
 	
 	@Override

@@ -15,7 +15,7 @@ public class AppendOperator extends OperatorBlock<Object, String>{
 	}
 	
 	public AppendOperator() {
-		super(StringLiteral.nullValue(), StringLiteral.nullValue());
+		setup(new StringLiteral("", this), new StringLiteral("", this));
 	}
 	@Override
 	public String value(Valuable<? extends Object> left, Valuable<? extends Object> right) {

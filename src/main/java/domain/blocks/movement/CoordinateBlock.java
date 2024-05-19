@@ -19,8 +19,8 @@ public abstract class CoordinateBlock extends FunctionBlock{
 	
 	protected CoordinateBlock(Sprite s) {
 		super(s);
-		this.x = AbstractLiteral.getDefault(0);
-		this.y = AbstractLiteral.getDefault(0);;
+		this.x = AbstractLiteral.getDefault(0, this);
+		this.y = AbstractLiteral.getDefault(0, this);
 		this.defX = this.x;
 		this.defY = this.y;
 	}
@@ -29,8 +29,8 @@ public abstract class CoordinateBlock extends FunctionBlock{
 		super(s);
 		this.x = x;
 		this.y = y;
-		this.defX = x instanceof AbstractLiteral ? x : AbstractLiteral.getDefault(0);
-		this.defY = y instanceof AbstractLiteral ? y : AbstractLiteral.getDefault(0);
+		this.defX = x instanceof AbstractLiteral ? x : AbstractLiteral.getDefault(0, this);
+		this.defY = y instanceof AbstractLiteral ? y : AbstractLiteral.getDefault(0, this);
 	}
 
 	public Valuable<? extends Number> getX() {
@@ -60,8 +60,8 @@ public abstract class CoordinateBlock extends FunctionBlock{
 	}
 	@Override
 	public void getImports(Set<String> imports) {
-		x.getImports(imports);
-		y.getImports(imports);
+		if(x!=null)x.getImports(imports);
+		if(y!=null)y.getImports(imports);
 	}
 	
 
@@ -112,8 +112,8 @@ public abstract class CoordinateBlock extends FunctionBlock{
 	}
 	@Override
 	public void reset() {
-		x.reset();
-		y.reset();
+		if(x!=null)x.reset();
+		if(y!=null)y.reset();
 	}
 	
 	@Override

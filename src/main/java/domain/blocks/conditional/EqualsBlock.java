@@ -16,11 +16,11 @@ public class EqualsBlock extends ComparatorBlock<Object> {
 	}
 	
 	public EqualsBlock() {
-		super(new StringLiteral(""), new StringLiteral(""));
+		setup(new StringLiteral("", this), new StringLiteral("", this));
 	}
 	
 	public EqualsBlock(Valuable<? extends Object> left, Valuable<? extends Object> right) {
-		super(left, right);
+		setup(left, right);
 	}
 	
 	@Override

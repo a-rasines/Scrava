@@ -1,22 +1,17 @@
 package domain.values;
 
-import domain.Sprite;
+import ui.renderers.IRenderer.IRenderable;
 
 public class BooleanLiteral extends AbstractLiteral<Boolean> {
 	
 	private static final long serialVersionUID = 6494348552216911637L;
 	
-	@Override
-	public BooleanLiteral create(Sprite s) {
-		return new BooleanLiteral();
+	public BooleanLiteral(IRenderable ir) {
+		super(true, ir);
 	}
 	
-	public BooleanLiteral() {
-		super(true);
-	}
-	
-	public BooleanLiteral(boolean val) {
-		super(val);
+	public BooleanLiteral(boolean val, IRenderable ir) {
+		super(val, ir);
 	}
 
 	@Override

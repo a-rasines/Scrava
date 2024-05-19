@@ -96,8 +96,10 @@ public class SpritePanel extends JPanel implements ComponentListener {
 				boolean isSelected, boolean cellHasFocus) {
 			BufferedImage out = new BufferedImage(120, 140, BufferedImage.TYPE_4BYTE_ABGR);
 			Graphics g = out.getGraphics();
-			g.setColor(getSelectionBackground());
-			g.fillRect(0, 0, 120, 140);
+			if(isSelected) {
+				g.setColor(getSelectionBackground());
+				g.fillRect(0, 0, 120, 140);
+			}
 			g.drawImage(value.getRendered().getScaledInstance(100, 100, BufferedImage.SCALE_FAST), 10, 10, null);
 			g.setFont(new Font( DragableRenderer.font.getName(), Font.PLAIN, 20 ));
 			g.setColor(Color.black);

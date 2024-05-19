@@ -2,8 +2,6 @@ package domain.blocks.movement;
 
 import domain.Sprite;
 import domain.models.interfaces.Valuable;
-import domain.values.AbstractLiteral;
-import domain.values.NumberLiteral;
 
 public class MoveXBlock extends MoveBlock{
 	private static final long serialVersionUID = -2626208983124778899L;
@@ -14,11 +12,11 @@ public class MoveXBlock extends MoveBlock{
 	}
 	
 	public MoveXBlock(Sprite s) {
-		super(s, AbstractLiteral.getDefault(0), new NumberLiteral<Byte>((byte)0));
+		super(s);
 	}
 	
 	public MoveXBlock(Sprite s, Valuable<? extends Number> x) {
-		super(s, x, new NumberLiteral<Byte>((byte)0));
+		super(s, x, null);
 	}
 	
 	@Override

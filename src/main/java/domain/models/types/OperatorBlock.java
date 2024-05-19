@@ -2,13 +2,20 @@ package domain.models.types;
 
 import java.util.Set;
 
-import domain.models.interfaces.Translatable;
 import domain.models.interfaces.Valuable;
 import domain.values.AbstractLiteral;
+import ui.renderers.IRenderer;
 import ui.renderers.LiteralRenderer.LiteralRenderable;
+import ui.renderers.SimpleBlockRenderer;
 import ui.renderers.SimpleBlockRenderer.SimpleRenderable;
 
-public abstract class OperatorBlock<T, R> implements Translatable, Valuable<R>, SimpleRenderable{
+public abstract class OperatorBlock<T, R> implements Valuable<R>, SimpleRenderable {
+	
+	private SimpleBlockRenderer sbr;
+	@Override
+	public IRenderer getRenderer() {
+		return sbr;
+	}
 
 	private static final long serialVersionUID = 1979700927393729000L;
 	@SuppressWarnings("rawtypes")
@@ -16,7 +23,11 @@ public abstract class OperatorBlock<T, R> implements Translatable, Valuable<R>, 
 	@SuppressWarnings("rawtypes")
 	protected Valuable[] defs;
 	
-	protected OperatorBlock(Valuable<? extends T> left, Valuable<? extends T> right) {
+	protected OperatorBlock() {
+		sbr = new SimpleBlockRenderer(this);
+	}
+	
+	protected void setup(Valuable<? extends T> left, Valuable<? extends T> right) {
 		this.values = new Valuable[]{left, right};
 		this.defs = new Valuable[]{left, right};
 	}

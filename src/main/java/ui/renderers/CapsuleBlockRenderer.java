@@ -3,30 +3,21 @@ package ui.renderers;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Font;
-import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.util.LinkedList;
 import java.util.List;
 
-import javax.swing.JFrame;
-import javax.swing.JPanel;
-import javax.swing.SwingUtilities;
-
 import clickable.BlockClickable;
 import clickable.CapsuleBlockClickable;
 import clickable.InvocableClickable;
-import domain.blocks.capsule.IfBlock;
-import domain.blocks.movement.MoveBlock;
 import domain.models.interfaces.Clickable.Rect;
 import domain.models.interfaces.InvocableBlock;
-import domain.models.interfaces.Translatable;
 import domain.models.interfaces.Valuable;
 import domain.models.types.CapsuleBlock;
 import domain.models.types.EventBlock;
-import domain.values.AbstractLiteral;
-import domain.values.BooleanLiteral;
 import ui.components.BlockPanel;
+import ui.components.SpritePanel;
 
 public class CapsuleBlockRenderer implements CapsuleRenderer{
 	
@@ -67,6 +58,7 @@ public class CapsuleBlockRenderer implements CapsuleRenderer{
 	
 	@Override
 	public BufferedImage getRenderable() {
+		
 		if(rendered != null)
 			return rendered;
 		
@@ -110,11 +102,11 @@ public class CapsuleBlockRenderer implements CapsuleRenderer{
 		int h = getTitleHeight();
 		blockRect.y = h;
 		if(block.size() > 0) {
-			DragableRenderer rend = IRenderer.getDragableRendererOf((IRenderable)block.get(0));
+			DragableRenderer rend = (DragableRenderer) block.get(0).getRenderer();
 			rend.getClickable().setPosition(ARM_BLOCK.getWidth() - 4, h);
 			rend.getClickable().setParent(this.getClickable());
 			for(InvocableBlock ib : block) {
-				rend = IRenderer.getDragableRendererOf((IRenderable) ib);
+				rend = (DragableRenderer) ib.getRenderer();
 				if(BlockPanel.DEBUG_SHOW_HITBOXES) {
 					Rect hb = rend.getClickable().getPosition();
 					((Graphics2D)g).setStroke(new BasicStroke(2));
@@ -179,7 +171,7 @@ public class CapsuleBlockRenderer implements CapsuleRenderer{
 	}
 
 	@Override
-	public Translatable getBlock() {
+	public CapsuleBlock getBlock() {
 		return block;
 	}
 
@@ -199,12 +191,9 @@ public class CapsuleBlockRenderer implements CapsuleRenderer{
 		Valuable<?>[] v = block.getAllVariables();
 		for(int i = 0; i < v.length; i++) {
 			IRenderer rend;
-			String[] vars = block.getTitle().split("\\{\\{");
-			if((rend = IRenderer.getDragableRendererOf(v[i]))==null)
-				rend = LiteralRenderer.of((AbstractLiteral<?>)v[i], vars[i+1].split("}}")[0], getClickable());
-			else {
-				((BlockClickable) rend.getClickable()).setParent(this.getClickable());
-			}
+			rend = v[i].getRenderer();
+			if(rend.getClickable() instanceof BlockClickable bl)
+				bl.setParent(this.getClickable());
 			output.add(rend);
 		}
 		return output;
@@ -219,13 +208,10 @@ public class CapsuleBlockRenderer implements CapsuleRenderer{
 	public void delete() {
 		System.out.println("delete " + getBlock());
 		BlockPanel.INSTANCE.removeBlock(this);
-		IRenderer.DRAG_RENDS.remove((IRenderable)getBlock());
 		if(getBlock() instanceof EventBlock eb)
-			BlockPanel.INSTANCE.getSprite().deleteEvent(eb);
+			SpritePanel.getSprite().deleteEvent(eb);
 		for(IRenderer rend : getChildren())
 			rend.delete();
-		for(InvocableBlock rend : (CapsuleBlock)getBlock())
-			IRenderer.DRAG_RENDS.remove(rend);
 		InvocableClickable next = ((InvocableClickable)getClickable()).next();
 		while(next != null) {
 			next.delete();
@@ -251,7 +237,7 @@ public class CapsuleBlockRenderer implements CapsuleRenderer{
 	public int getHeight() {
 		int h = 0;
 		for (InvocableBlock ib : block)
-			h += IRenderer.getDragableRendererOf((IRenderable)ib).getHeight();
+			h += ib.getRenderer().getHeight();
 		return getTitleHeight() + ARM_END.getHeight() + (block.attachable()?BODY_END_CONN.getHeight():BODY_END.getHeight()) + h - InvocableBlockRenderer.CONNECTOR.getHeight();
 	}
 
@@ -259,7 +245,7 @@ public class CapsuleBlockRenderer implements CapsuleRenderer{
 	public int getWidth() {
 		int w = 0;
 		for(InvocableBlock ib: block)
-			w = Math.max(w, IRenderer.getDragableRendererOf((IRenderable) ib).getWidth());
+			w = Math.max(w, ib.getRenderer().getWidth());
 		
 		return Math.max(w + ARM_BLOCK.getWidth(), getTitleWidth());
 	}
@@ -279,41 +265,6 @@ public class CapsuleBlockRenderer implements CapsuleRenderer{
 		// TODO Auto-generated method stub
 		
 	}
-	
-	public static void main(String[] args) {
-		
-		CapsuleBlockRenderer sampleImage = new CapsuleBlockRenderer(new IfBlock(
-																		new BooleanLiteral(true), 
-																			new MoveBlock(null), 
-																			new MoveBlock(null),
-																			new MoveBlock(null),
-																			new MoveBlock(null)) {
-			private static final long serialVersionUID = -4006721083467801784L;
-
-			public boolean attachable() {
-				return false;
-			}
-		});
-	 	
-        SwingUtilities.invokeLater(() -> {
-            JFrame frame = new JFrame("Image Display");
-            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-            frame.setSize(1000, 1000);
-
-            JPanel panel = new JPanel() {
-				private static final long serialVersionUID = -94843536618228336L;
-
-				@Override
-                protected void paintComponent(Graphics g) {
-                    g.drawImage(sampleImage.getRenderable(), 100, 100, this);
-                }
-            };
-            frame.getContentPane().add(panel);
-
-            frame.setVisible(true);
-        });
-	}
-	
 	@Override
 	public void add(int bundle, int index, DragableRenderer block) {
 		System.out.println("adding block");
@@ -330,13 +281,12 @@ public class CapsuleBlockRenderer implements CapsuleRenderer{
 	
 	@Override
 	public DragableRenderer get(int bundle, int index) {
-		return IRenderer.getDragableRendererOf((IRenderable) ((CapsuleBlock) getBlock()).get(index));
+		return (DragableRenderer) getBlock().get(index).getRenderer();
 	}
 	
-	@SuppressWarnings("unchecked")
 	@Override
 	public List<InvocableBlock> getBlocksOf(int bundle) {
-		return (List<InvocableBlock>) getBlock();
+		return getBlock();
 	}
 	
 	@Override

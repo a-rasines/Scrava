@@ -5,7 +5,6 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
-import java.lang.reflect.Constructor;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -14,7 +13,6 @@ import domain.models.interfaces.Clickable.Rect;
 import domain.models.interfaces.Translatable;
 import domain.models.interfaces.Valuable;
 import domain.models.interfaces.VariableHolder;
-import domain.values.AbstractLiteral;
 import ui.components.BlockPanel;
 import ui.renderers.IRenderer.DragableRenderer;
 import ui.renderers.SimpleBlockRenderer.SimpleRenderable.BlockCategory;
@@ -23,10 +21,6 @@ public class SimpleBlockRenderer implements DragableRenderer{
 	private static final long serialVersionUID = 2111348834794671783L;
 	
 	public static interface SimpleRenderable extends Translatable, IRenderable, VariableHolder{
-		@Override
-		public default Constructor<SimpleBlockRenderer> getRenderer() throws NoSuchMethodException, SecurityException {
-			return SimpleBlockRenderer.class.getConstructor(SimpleRenderable.class);
-		}
 		
 		public String getTitle();
 		
@@ -155,12 +149,9 @@ public class SimpleBlockRenderer implements DragableRenderer{
 		Valuable<?>[] v = block.getAllVariables();
 		for(int i = 0; i < v.length; i++) {
 			IRenderer rend;
-			String[] vars = block.getTitle().split("\\{\\{");
-				if((rend = IRenderer.getDragableRendererOf(v[i]))==null)
-					rend = LiteralRenderer.of((AbstractLiteral<?>)v[i], vars[i+1].split("}}")[0], getClickable());
-				else {
-					((BlockClickable) rend.getClickable()).setParent(this.getClickable());
-				}
+			rend = v[i].getRenderer();
+			if(rend.getClickable() instanceof BlockClickable bl)
+				bl.setParent(this.getClickable());
 			
 			output.add(rend);
 		}
@@ -206,7 +197,6 @@ public class SimpleBlockRenderer implements DragableRenderer{
 		BlockPanel.INSTANCE.removeBlock(this);
 		for(IRenderer rend : getChildren())
 			rend.delete();
-		DRAG_RENDS.remove((IRenderable)this.getBlock());
 		
 	}
 	@Override

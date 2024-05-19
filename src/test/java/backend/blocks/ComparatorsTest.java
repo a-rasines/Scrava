@@ -17,9 +17,9 @@ import domain.values.StringLiteral;
 
 public class ComparatorsTest {
 	
-	private final NumberLiteral<Integer> BIG = new NumberLiteral<Integer>(2);
-	private final NumberLiteral<Integer> SMALL = new NumberLiteral<Integer>(1);
-	private final NumberLiteral<Double> SMALLD = new NumberLiteral<Double>(1.0);
+	private final NumberLiteral<Integer> BIG = new NumberLiteral<Integer>(2, null);
+	private final NumberLiteral<Integer> SMALL = new NumberLiteral<Integer>(1, null);
+	private final NumberLiteral<Double> SMALLD = new NumberLiteral<Double>(1.0, null);
 	@Test
 	public void biggerTest() {
 		assertTrue(new BiggerThanBlock(BIG, SMALL).value());
@@ -47,19 +47,19 @@ public class ComparatorsTest {
 	@Test
 	public void equalsTest() {
 		
-		assertTrue(new EqualsBlock(new BooleanLiteral(true), new BooleanLiteral(true)).value());
-		assertTrue(new EqualsBlock(new StringLiteral("test"), new StringLiteral("test")).value());
+		assertTrue(new EqualsBlock(new BooleanLiteral(true, null), new BooleanLiteral(true, null)).value());
+		assertTrue(new EqualsBlock(new StringLiteral("test", null), new StringLiteral("test", null)).value());
 		assertTrue(new EqualsBlock(SMALL, SMALL).value());
 		assertTrue(new EqualsBlock(SMALL, SMALLD).value());
 		assertTrue(new EqualsBlock(SMALLD, SMALL).value());
 		assertTrue(new EqualsBlock(SMALLD, SMALLD).value());
 		
-		assertFalse(new EqualsBlock(new BooleanLiteral(true), new BooleanLiteral(false)).value());
-		assertFalse(new EqualsBlock(new StringLiteral("test"), new StringLiteral("aaa")).value());
+		assertFalse(new EqualsBlock(new BooleanLiteral(true, null), new BooleanLiteral(false, null)).value());
+		assertFalse(new EqualsBlock(new StringLiteral("test", null), new StringLiteral("aaa", null)).value());
 		assertFalse(new EqualsBlock(SMALL, BIG).value());
 		
-		assertEquals(new EqualsBlock(new BooleanLiteral(true), new BooleanLiteral(false)).getCode(), "true == false");
-		assertEquals(new EqualsBlock(new StringLiteral("test"), new StringLiteral("aaa")).getCode(), "\"test\".equals(\"aaa\") /*The == operator doesn't work well for the variable's type*/");
+		assertEquals(new EqualsBlock(new BooleanLiteral(true, null), new BooleanLiteral(false, null)).getCode(), "true == false");
+		assertEquals(new EqualsBlock(new StringLiteral("test", null), new StringLiteral("aaa", null)).getCode(), "\"test\".equals(\"aaa\") /*The == operator doesn't work well for the variable's type*/");
 		assertEquals(new EqualsBlock(SMALL, BIG).getCode(), "1 == 2");
 	}
 	

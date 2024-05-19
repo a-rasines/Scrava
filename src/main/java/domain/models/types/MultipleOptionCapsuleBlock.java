@@ -1,6 +1,5 @@
 package domain.models.types;
 
-import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -16,15 +15,17 @@ import ui.renderers.MultipleChoiceRenderer;
 public abstract class MultipleOptionCapsuleBlock extends ArrayList<OptionCapsuleBlock> implements IRenderable, InvocableBlock, VariableHolder {
 	private static final long serialVersionUID = 8958382657668628005L;
 
+	private MultipleChoiceRenderer mcr;
 	@Override
-	public Constructor<MultipleChoiceRenderer> getRenderer() throws NoSuchMethodException, SecurityException {
-		return MultipleChoiceRenderer.class.getConstructor(MultipleOptionCapsuleBlock.class);
+	public MultipleChoiceRenderer getRenderer() {
+		return mcr;
 	}
 	
-	protected MultipleOptionCapsuleBlock(String... titles) {
+	protected void setup(String... titles) {
 		for(int i = 0; i < titles.length; i++) {
 			add(new OptionCapsuleBlock(titles[i], attachable(), getVariables().get(i)));
 		}
+		mcr = new MultipleChoiceRenderer(this);
 	}
 	
 	@Override
@@ -40,7 +41,7 @@ public abstract class MultipleOptionCapsuleBlock extends ArrayList<OptionCapsule
 		}
 		return res;
 	}
-
+	
 	@Override
 	public void getImports(Set<String> imports) {
 		forEach(v -> v.getImports(imports));

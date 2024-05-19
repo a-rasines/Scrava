@@ -6,7 +6,7 @@ import java.util.List;
 public class DebugOut extends PrintStream{
 	
 	public static final List<String> DEBUG_MUTED_FUNCTIONS = List.of(
-			//block interaction
+//			//block interaction
 			"addBlock",
 			"getBlockBundleIndex",
 			"moveTo",

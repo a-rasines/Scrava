@@ -24,30 +24,14 @@ import javax.swing.JLayeredPane;
 
 import clickable.BlockClickable;
 import clickable.InvocableClickable;
-import domain.Sprite;
 import domain.models.interfaces.Clickable.Rect;
 import ui.EmptyLayout;
 import ui.FlashThread;
 import ui.VariableCreator;
-import ui.renderers.IRenderer;
 import ui.renderers.IRenderer.DragableRenderer;
 import ui.renderers.IRenderer.IRenderable;
 
 public class BlockPanel extends JLayeredPane{
-	
-//	static {
-//		DebugOut.setup();
-//	}
-//	
-//	public static void main(String[] args) {
-//		JFrame p = new JFrame();
-//		BlockPanel bp = BlockPanel.INSTANCE;
-//		
-//		p.setSize(1000, 1000);
-//		p.add(bp, BorderLayout.CENTER);
-//		p.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-//		p.setVisible(true);
-//	}
 	
 	public static final boolean DEBUG_SHOW_HITBOXES = false;
 	public static final boolean DEBUG_SHOW_HASHES = false;	
@@ -67,12 +51,6 @@ public class BlockPanel extends JLayeredPane{
 	
 	public final JButton BOTON_VARIABLES = new JButton("Create new Variable");
 	
-	private Sprite actualSprite = SpritePanel.getSprite();
-	
-	public Sprite getSprite() {
-		return actualSprite;
-	}
-	
 	
 	private final List<DragableRenderer> blocks = new LinkedList<>();
 	private BlockClickable clicked = null;
@@ -81,8 +59,6 @@ public class BlockPanel extends JLayeredPane{
 	public static BlockPanel INSTANCE = new BlockPanel();
 	
 	public void changeSprite() {
-		actualSprite = SpritePanel.getSprite();
-		//TODO remove all blocks from here and add the ones from the new Sprite
 	}
 	
 	/**
@@ -119,7 +95,7 @@ public class BlockPanel extends JLayeredPane{
 	 */
 	public void addBlock(IRenderable b) {
 		System.out.println(""+b);
-		addBlock(IRenderer.getDragableRendererOf(b));
+		addBlock((DragableRenderer) b.getRenderer());
 	}
 	
 	/**

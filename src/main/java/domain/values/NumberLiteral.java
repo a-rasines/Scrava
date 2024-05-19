@@ -1,18 +1,13 @@
 package domain.values;
 
-import domain.Sprite;
+import ui.renderers.IRenderer.IRenderable;
 
 public class NumberLiteral<T extends Number> extends AbstractLiteral<T>{
 
 	private static final long serialVersionUID = 8455810206707901226L;
 	
-	@Override
-	public NumberLiteral<Double> create(Sprite s) {
-		return new NumberLiteral<Double>(0.);
-	}
-	
-	public NumberLiteral(T value) {
-		super(value);
+	public NumberLiteral(T value, IRenderable parent) {
+		super(value, parent);
 	}
 	
 	@Override

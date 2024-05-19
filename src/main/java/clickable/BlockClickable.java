@@ -12,8 +12,6 @@ import domain.models.interfaces.VariableHolder;
 import ui.components.BlockPanel;
 import ui.renderers.IRenderer;
 import ui.renderers.IRenderer.DragableRenderer;
-import ui.renderers.LiteralRenderer;
-import ui.renderers.LiteralRenderer.LiteralRenderable;
 
 public class BlockClickable implements Clickable{
 	
@@ -35,8 +33,7 @@ public class BlockClickable implements Clickable{
 		child.setParent(null);
 		if(child.getBlock() instanceof Valuable vBlock) {
 			VariableHolder vh = (VariableHolder)getBlock();
-			LiteralRenderable<?> lr = vh.removeVariable(vBlock);
-			LiteralRenderer.of(lr, lr.value(), this);
+			vh.removeVariable(vBlock);
 		}
 	}
 	

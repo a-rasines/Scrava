@@ -15,11 +15,11 @@ public class ModulusOperator  extends OperatorBlock<Number, Number>{
 	}
 	
 	public ModulusOperator() {
-		super(new NumberLiteral<Double>(0.), new NumberLiteral<Double>(0.));
+		setup(new NumberLiteral<Double>(0., this), new NumberLiteral<Double>(0., this));
 	}
 	
 	public ModulusOperator(Valuable<? extends Number> left, Valuable<? extends Number> right) {
-		super(left, right);
+		setup(left, right);
 	}
 
 	@Override

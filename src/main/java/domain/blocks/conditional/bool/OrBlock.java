@@ -16,11 +16,11 @@ public class OrBlock extends ConditionalBlock<Boolean> {
 	}
 	
 	public OrBlock() {
-		super(new BooleanLiteral(true), new BooleanLiteral(true));
+		setup(new BooleanLiteral(true, this), new BooleanLiteral(true, this));
 	}
 	
 	public OrBlock(Valuable<Boolean> left, Valuable<Boolean> right) {
-		super(left, right);
+		setup(left, right);
 	}
 
 	@Override

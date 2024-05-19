@@ -12,7 +12,7 @@ import ui.renderers.LiteralRenderer.LiteralRenderable;
 public class IfBlock extends CapsuleBlock {
 	private static final long serialVersionUID = 6422542828725824534L;
 	
-	private Valuable<Boolean> defVal = new BooleanLiteral(true);
+	private Valuable<Boolean> defVal = new BooleanLiteral(true, this);
 	private Valuable<Boolean> condition;
 	
 	@Override
@@ -21,7 +21,7 @@ public class IfBlock extends CapsuleBlock {
 	}
 	
 	public IfBlock() {
-		this.condition = new BooleanLiteral(true);
+		this.condition = defVal;
 	}
 	
 	public IfBlock(Valuable<Boolean> condition) {
@@ -34,7 +34,7 @@ public class IfBlock extends CapsuleBlock {
 	}
 	
 	public IfBlock(InvocableBlock... initialValues) {
-		this.condition = new BooleanLiteral(true);
+		this.condition = defVal;
 		addAll(initialValues);
 	}
 

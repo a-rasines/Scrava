@@ -27,9 +27,9 @@ public class EnumLiteralTest {
 				put(le.name(), le.name());
 		}
 	};
-	private static EnumLiteral<LiteralEnum> enumLiteral = new EnumLiteral<>(LiteralEnum.VALUE1);
+	private static EnumLiteral<LiteralEnum> enumLiteral = new EnumLiteral<>(LiteralEnum.VALUE1, null);
 	
-	private static EnumLiteral<String> mapLiteral = new EnumLiteral<>(pseudoEnum);
+	private static EnumLiteral<String> mapLiteral = new EnumLiteral<>(pseudoEnum, null);
 	
 	@Before
 	public void checkValue() {

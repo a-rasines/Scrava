@@ -12,10 +12,8 @@ import clickable.BlockClickable;
 import clickable.CapsuleBlockClickable;
 import domain.models.interfaces.Clickable.Rect;
 import domain.models.interfaces.InvocableBlock;
-import domain.models.interfaces.Translatable;
 import domain.models.interfaces.Valuable;
 import domain.models.types.CapsuleBlock;
-import domain.values.AbstractLiteral;
 import ui.components.BlockPanel;
 
 public class BlockBundleRenderer implements CapsuleRenderer{
@@ -110,7 +108,7 @@ public class BlockBundleRenderer implements CapsuleRenderer{
 		int h = getTitleHeight();
 		blockRect.y += h;
 		for(InvocableBlock ib : block) {
-			DragableRenderer rend = IRenderer.getDragableRendererOf((IRenderable) ib);
+			DragableRenderer rend = (DragableRenderer) ib.getRenderer();
 //			verticalBackground(bi, 0, ARM_BLOCK.getWidth(), h/* == getTitleHeight()?h+ARM_START.getHeight():h*/, rend.getHeight());
 //			leftClone(bi, 0, Math.max(getTitleHeight() + ARM_START.getHeight(), h), 10, ARM_BLOCK.getHeight(), ARM_BLOCK.getWidth());
 			rend.getClickable().setPosition(ARM_BLOCK.getWidth() - 4 + x, h + y);
@@ -172,7 +170,7 @@ public class BlockBundleRenderer implements CapsuleRenderer{
 		blockRect.y += y;
 		blockRect.x += x;
 		for(InvocableBlock ib : block) {
-			IRenderer.getDragableRendererOf((IRenderable) ib).move(x - this.x, y - this.y);
+			((DragableRenderer) ib.getRenderer()).move(x - this.x, y - this.y);
 		}
 		this.x = x;
 		this.y = y;
@@ -187,7 +185,7 @@ public class BlockBundleRenderer implements CapsuleRenderer{
 	}
 
 	@Override
-	public Translatable getBlock() {
+	public CapsuleBlock getBlock() {
 		return block;
 	}
 
@@ -207,12 +205,10 @@ public class BlockBundleRenderer implements CapsuleRenderer{
 		Valuable<?>[] v = block.getAllVariables();
 		for(int i = 0; i < v.length; i++) {
 			IRenderer rend;
-			String[] vars = block.getTitle().split("\\{\\{");
-			if((rend = IRenderer.getDragableRendererOf(v[i]))==null)
-				rend = LiteralRenderer.of((AbstractLiteral<?>)v[i], vars[i+1].split("}}")[0], getClickable());
-			else {
-				((BlockClickable) rend.getClickable()).setParent(this.getClickable());
-			}
+			rend = v[i].getRenderer();
+			if(rend == null) continue;
+			if(rend.getClickable() instanceof BlockClickable bl)
+				bl.setParent(this.getClickable());
 			output.add(rend);
 		}
 		return output;
@@ -227,12 +223,9 @@ public class BlockBundleRenderer implements CapsuleRenderer{
 	public void delete() {
 		System.out.println("delete " + getBlock());
 		BlockPanel.INSTANCE.removeBlock(this);
-		IRenderer.DRAG_RENDS.remove((IRenderable)getBlock());
 		for(IRenderer rend : getChildren()) {
 			rend.delete();
 		}
-		for(InvocableBlock rend : (CapsuleBlock)getBlock())
-			IRenderer.DRAG_RENDS.remove(rend);
 	}
 	
 	public int getTitleHeight() {
@@ -252,7 +245,7 @@ public class BlockBundleRenderer implements CapsuleRenderer{
 	public int getHeight() {
 		int h = 0;
 		for (InvocableBlock ib : block)
-			h += IRenderer.getDragableRendererOf((IRenderable)ib).getHeight();
+			h += ib.getRenderer().getHeight();
 		return getTitleHeight() + ARM_END.getHeight() + h - InvocableBlockRenderer.CONNECTOR.getHeight();
 	}
 
@@ -260,7 +253,7 @@ public class BlockBundleRenderer implements CapsuleRenderer{
 	public int getWidth() {
 		int w = 0;
 		for(InvocableBlock ib: block)
-			w = Math.max(w, IRenderer.getDragableRendererOf((IRenderable) ib).getWidth());
+			w = Math.max(w, ib.getRenderer().getWidth());
 		
 		return Math.max(w + ARM_BLOCK.getWidth(), getTitleWidth());
 	}
@@ -298,10 +291,9 @@ public class BlockBundleRenderer implements CapsuleRenderer{
 	
 	@Override
 	public DragableRenderer get(int bundle, int index) {
-		return (InvocableBlockRenderer) IRenderer.getDragableRendererOf((IRenderable) ((CapsuleBlock) getBlock()).get(index));
+		return (InvocableBlockRenderer) getBlock().get(index).getRenderer();
 	}
 	
-	@SuppressWarnings("unchecked")
 	@Override
 	public List<InvocableBlock> getBlocksOf(int bundle) {
 		return (List<InvocableBlock>) getBlock();

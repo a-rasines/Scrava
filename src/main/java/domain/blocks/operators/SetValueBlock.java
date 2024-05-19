@@ -9,24 +9,24 @@ import domain.models.types.FunctionBlock;
 import domain.values.AbstractLiteral;
 import domain.values.EnumLiteral;
 import domain.values.Variable;
-import ui.renderers.IRenderer;
-import ui.renderers.LiteralRenderer;
 import ui.renderers.LiteralRenderer.LiteralRenderable;
 
 public class SetValueBlock extends FunctionBlock {
 
 	private static final long serialVersionUID = -1072262290642640507L;
 	
-	private EnumLiteral<Variable<?>> variables = Variable.getEnumLiteral();
+	private EnumLiteral<Variable<?>> variables = Variable.getEnumLiteral(this);
 	private Valuable<?> value;
+	private Valuable<?> defVal;
 
 	public SetValueBlock(Sprite s) {
 		super(s);
-		value = (AbstractLiteral<?>) AbstractLiteral.getDefault(variables.value());
+		value = (AbstractLiteral<?>) AbstractLiteral.getDefault(variables.value(), this);
 		variables.setValueListener((_s, v) -> {
-			if(value instanceof AbstractLiteral al)LiteralRenderer.of(al, al.value(), null).delete();
-			else IRenderer.getDragableRendererOf(value).delete();
-			value = (AbstractLiteral<?>) AbstractLiteral.getDefault(variables.value());
+			if(value instanceof AbstractLiteral al) al.getRenderer().delete();
+			else value.getRenderer().delete();
+			value = AbstractLiteral.getDefault(variables.value(), this);
+			defVal = value;
 		});
 	}
 
@@ -81,22 +81,19 @@ public class SetValueBlock extends FunctionBlock {
 
 	@Override
 	public void removeVariableAt(int i) {
-		LiteralRenderer.of((LiteralRenderable<?>)value, value.value(), null).delete();
-		value = (AbstractLiteral<?>) AbstractLiteral.getDefault(variables.value());
+		value = defVal;
 		
 	}
 
 	@Override
 	public LiteralRenderable<?> removeVariable(Valuable<?> v) {
-		LiteralRenderer.of((LiteralRenderable<?>)value, value.value(), null).delete();
-		return (LiteralRenderable<?>) (value = (AbstractLiteral<?>) AbstractLiteral.getDefault(variables.value()));
+		value = defVal;
+		return (LiteralRenderable<?>) value;
 	}
 
 	@Override
 	public void replaceVariable(Valuable<?> old, Valuable<?> newValue) {
-		if(old instanceof AbstractLiteral al)LiteralRenderer.of(al, al.value(), null).delete();
 		value = newValue;
-		
 	}
 
 	@Override

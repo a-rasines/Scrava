@@ -15,11 +15,11 @@ public class BiggerThanBlock extends ComparatorBlock<Number>{
 	}
 	
 	public BiggerThanBlock() {
-		super(new NumberLiteral<Double>(0.),new NumberLiteral<Double>(0.));
+		setup(new NumberLiteral<Double>(0., this),new NumberLiteral<Double>(0., this));
 	}
 	
 	public BiggerThanBlock(Valuable<? extends Number> left, Valuable<? extends Number> right) {
-		super(left, right);
+		setup(left, right);
 	}
 	
 	@Override

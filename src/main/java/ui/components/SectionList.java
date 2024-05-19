@@ -34,8 +34,12 @@ public class SectionList extends JList<BlockSection>{
 	private SectionList() {
 		setCellRenderer(new CellRenderer());
 		setModel(dlm);
+		try {
 		for(BlockSection section : BlockSection.values())
 			dlm.addElement(section);
+		} catch(Error e) {
+			e.printStackTrace();
+		}
 		addListSelectionListener(new ListSelectionListener() {
 			
 			@Override

@@ -11,8 +11,8 @@ import domain.values.BooleanLiteral;
 
 public class BooleansTest {
 	
-	private final BooleanLiteral TRUE = new BooleanLiteral(true);
-	private final BooleanLiteral FALSE = new BooleanLiteral(false);
+	private final BooleanLiteral TRUE = new BooleanLiteral(true, null);
+	private final BooleanLiteral FALSE = new BooleanLiteral(false, null);
 	
 	@Test
 	public void andTest() {

@@ -15,11 +15,11 @@ public class MultiplyOperator extends OperatorBlock<Number, Number>{
 	}
 	
 	public MultiplyOperator() {
-		super(new NumberLiteral<Double>(0.), new NumberLiteral<Double>(0.));
+		setup(new NumberLiteral<Double>(0., null), new NumberLiteral<Double>(0., null));
 	}
 	
 	public MultiplyOperator(Valuable<? extends Number> left, Valuable<? extends Number> right) {
-		super(left, right);
+		setup(left, right);
 	}
 
 	@Override

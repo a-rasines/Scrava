@@ -16,11 +16,11 @@ public class SmallerOrEqualThanBlock extends ComparatorBlock<Number>{
 	
 	
 	public SmallerOrEqualThanBlock() {
-		super(new NumberLiteral<Double>(0.), new NumberLiteral<Double>(0.));
+		setup(new NumberLiteral<Double>(0., this), new NumberLiteral<Double>(0., this));
 	}
 	
 	public SmallerOrEqualThanBlock(Valuable<? extends Number> left, Valuable<? extends Number> right) {
-		super(left, right);
+		setup(left, right);
 	}
 	
 	@Override

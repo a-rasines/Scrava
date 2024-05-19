@@ -28,13 +28,13 @@ public class MoveBlock extends CoordinateBlock{
 
 	@Override
 	public String getCode() {
-		return "this.moveTo(this.x + "+this.getX().getCode()+", this.y + "+this.getY().getCode()+");";
+		return "this.moveTo(this.x" + (this.getX() == null? "":" + " + this.getX().getCode()) + ", this.y" + (this.getY() == null? "":" + " + this.getY().getCode()) + ");";
 	}
 
 	@Override
 	public void invoke() {
-		this.getSprite().getX().setValue(this.getSprite().getX().value() + NumberHelper.castTo(this.getX().value(), Long.class));
-		this.getSprite().getY().setValue(this.getSprite().getY().value() + NumberHelper.castTo(this.getY().value(), Long.class));
+		if(this.getX()!=null)this.getSprite().getX().setValue(this.getSprite().getX().value() + NumberHelper.castTo(this.getX().value(), Long.class));
+		if(this.getY()!=null)this.getSprite().getY().setValue(this.getSprite().getY().value() + NumberHelper.castTo(this.getY().value(), Long.class));
 		
 	}
 

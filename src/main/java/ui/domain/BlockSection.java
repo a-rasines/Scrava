@@ -15,59 +15,59 @@ import ui.renderers.IRenderer;
 
 public enum BlockSection {
 	MOVEMENT(0xff16cbff, new IRenderer[] {
-			IRenderer.getDetachedDragableRendererOf(new MoveBlock(null)),
-			IRenderer.getDetachedDragableRendererOf(new MoveXBlock(null)),
-			IRenderer.getDetachedDragableRendererOf(new MoveYBlock(null)),
-			
-			IRenderer.getDetachedDragableRendererOf(new MoveToBlock(null)),
-			IRenderer.getDetachedDragableRendererOf(new MoveXToBlock(null)),
-			IRenderer.getDetachedDragableRendererOf(new MoveYToBlock(null)),
+		new MoveBlock(null).getRenderer(),
+		new MoveXBlock(null).getRenderer(),
+		new MoveYBlock(null).getRenderer(),
+					
+		new MoveToBlock(null).getRenderer(),
+		new MoveXToBlock(null).getRenderer(),
+		new MoveYToBlock(null).getRenderer(),
 			
 	}),
 	CONTROL(0xffffda22, new IRenderer[] {
-			IRenderer.getDetachedDragableRendererOf(new IfBlock()),
-			IRenderer.getDetachedDragableRendererOf(new IfElseBlock()),
-			IRenderer.getDetachedDragableRendererOf(new WhileBlock()),
-			IRenderer.getDetachedDragableRendererOf(new RepeatBlock()),
+		new IfBlock().getRenderer(),
+		new IfElseBlock().getRenderer(),
+		new WhileBlock().getRenderer(),
+		new RepeatBlock().getRenderer(),
 	}),
 	
 	EVENT(0xffe97d00, new IRenderer[] {
-			IRenderer.getDetachedDragableRendererOf(new OnStartEventBlock()),
-			IRenderer.getDetachedDragableRendererOf(new OnKeyPressEventBlock())
+		new OnStartEventBlock().getRenderer(),
+		new OnKeyPressEventBlock().getRenderer()
 	}),
 	
 	VARIABLE(0xffe97d00, () -> {
 		List<Variable<?>> variables = Variable.getVisibleVariables();
 		IRenderer[] output = new IRenderer[variables.size() + 1];
-		output[0] = IRenderer.getDetachedDragableRendererOf(new SetValueBlock(null));
+		output[0] = new SetValueBlock(null).getRenderer();
 		for(int i = 0; i < variables.size(); i++)
-			output[i + 1] = IRenderer.getDetachedDragableRendererOf(variables.get(i));
+			output[i + 1] = variables.get(i).getRenderer();
 		return output;
 	}),
 	OPERATOR(0xff4ca742, new IRenderer[] {
-		IRenderer.getDetachedDragableRendererOf(new BiggerOrEqualThanBlock()),
-		IRenderer.getDetachedDragableRendererOf(new BiggerThanBlock()),
-		IRenderer.getDetachedDragableRendererOf(new EqualsBlock()),
-		IRenderer.getDetachedDragableRendererOf(new SmallerThanBlock()),
-		IRenderer.getDetachedDragableRendererOf(new SmallerOrEqualThanBlock()),
+		new BiggerOrEqualThanBlock().getRenderer(),
+		new BiggerThanBlock().getRenderer(),
+		new EqualsBlock().getRenderer(),
+		new SmallerThanBlock().getRenderer(),
+		new SmallerOrEqualThanBlock().getRenderer(),
 		
-		IRenderer.getDetachedDragableRendererOf(new AndBlock()),
-		IRenderer.getDetachedDragableRendererOf(new OrBlock()),
+		new AndBlock().getRenderer(),
+		new OrBlock().getRenderer(),
 		
-		IRenderer.getDetachedDragableRendererOf(new AppendOperator()),
-		IRenderer.getDetachedDragableRendererOf(new RandomOperator()),
+		new AppendOperator().getRenderer(),
+		new RandomOperator().getRenderer(),
 		
-		IRenderer.getDetachedDragableRendererOf(new AddOperator()),
-		IRenderer.getDetachedDragableRendererOf(new SubstractOperator()),
-		IRenderer.getDetachedDragableRendererOf(new MultiplyOperator()),
-		IRenderer.getDetachedDragableRendererOf(new DivideOperator()),
-		IRenderer.getDetachedDragableRendererOf(new ModulusOperator()),
+		new AddOperator().getRenderer(),
+		new SubstractOperator().getRenderer(),
+		new MultiplyOperator().getRenderer(),
+		new DivideOperator().getRenderer(),
+		new ModulusOperator().getRenderer(),
 		
-		IRenderer.getDetachedDragableRendererOf(new MaxOperator()),
-		IRenderer.getDetachedDragableRendererOf(new MinOperator()),
+		new MaxOperator().getRenderer(),
+		new MinOperator().getRenderer(),
 		
-		IRenderer.getDetachedDragableRendererOf(new StringToDecimalNumberParser()),
-		IRenderer.getDetachedDragableRendererOf(new StringToIntegerNumberParser())
+		new StringToDecimalNumberParser().getRenderer(),
+		new StringToIntegerNumberParser().getRenderer()
 	}),
 	;
 	

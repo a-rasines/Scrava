@@ -2,13 +2,20 @@ package domain.models.types;
 
 import domain.models.interfaces.Valuable;
 import domain.values.AbstractLiteral;
+import ui.renderers.IRenderer;
 import ui.renderers.LiteralRenderer.LiteralRenderable;
+import ui.renderers.SimpleBlockRenderer;
 import ui.renderers.SimpleBlockRenderer.SimpleRenderable;
 
 public abstract  class ValuableModifier<In, Out> implements Valuable<Out>, SimpleRenderable {
 	
 	private static final long serialVersionUID = -5061705048710723500L;
 	protected Valuable<In> value;
+	
+	@Override
+	public IRenderer getRenderer() {
+		return new SimpleBlockRenderer(this);
+	}
 	
 	@Override
 	public Valuable<In> getVariableAt(int i) {
@@ -29,13 +36,13 @@ public abstract  class ValuableModifier<In, Out> implements Valuable<Out>, Simpl
 
 	@Override
 	public void removeVariableAt(int i) {
-		value = AbstractLiteral.getDefault(value.value());
+		value = AbstractLiteral.getDefault(value.value(), this);
 		
 	}
 
 	@Override
 	public LiteralRenderable<?> removeVariable(Valuable<?> v) {
-		return (LiteralRenderable<?>) (value = AbstractLiteral.getDefault(value.value()));
+		return (LiteralRenderable<?>) (value = AbstractLiteral.getDefault(value.value(), this));
 	}
 
 	@SuppressWarnings("unchecked")

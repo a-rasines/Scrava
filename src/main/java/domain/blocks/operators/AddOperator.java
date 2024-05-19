@@ -13,11 +13,11 @@ public class AddOperator extends OperatorBlock<Number, Number>{
 		return new AddOperator();
 	}
 	public AddOperator() {
-		super(new NumberLiteral<Double>(0.), new NumberLiteral<Double>(0.));
+		setup(new NumberLiteral<Double>(0., this), new NumberLiteral<Double>(0., this));
 	}
 	
 	public AddOperator(Valuable<? extends Number> left, Valuable<? extends Number> right) {
-		super(left, right);
+		setup(left, right);
 	}
 
 	@Override
@@ -84,9 +84,5 @@ public class AddOperator extends OperatorBlock<Number, Number>{
 	@Override
 	public String getTitle() {
 		return VARIABLE_NUM + " + " + VARIABLE_NUM;
-	}
-	
-	public static void main(String[] args) {
-		System.out.println(new AddOperator(new NumberLiteral<Float>(1.f), new NumberLiteral<Integer>(1)).value().getClass());
 	}
 }

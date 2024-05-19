@@ -12,7 +12,7 @@ public abstract class KeyEventBlock extends EventBlock {
 	private static final long serialVersionUID = -4600101075423209197L;
 	
 	private final static Map<String, Integer> KEY_MAP = new TreeMap<>();
-	protected final EnumLiteral<Integer> KEY = new EnumLiteral<>(KEY_MAP);
+	protected final EnumLiteral<Integer> KEY = new EnumLiteral<>(KEY_MAP, this);
 	
 	static {
 		for(Field f : KeyEvent.class.getDeclaredFields())

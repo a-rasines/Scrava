@@ -15,11 +15,11 @@ public class DivideOperator  extends OperatorBlock<Number, Number>{
 	}
 	
 	public DivideOperator() {
-		super(new NumberLiteral<Double>(0.), new NumberLiteral<Double>(0.));
+		setup(new NumberLiteral<Double>(0., this), new NumberLiteral<Double>(0., this));
 	}
 
 	public DivideOperator(Valuable<? extends Number> left, Valuable<? extends Number> right) {
-		super(left, right);
+		setup(left, right);
 	}
 
 	@Override

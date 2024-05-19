@@ -8,18 +8,9 @@ import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.swing.JFrame;
-import javax.swing.JPanel;
-import javax.swing.SwingUtilities;
-
 import clickable.BlockClickable;
 import clickable.CapsuleBlockClickable;
 import clickable.InvocableClickable;
-import debug.DebugOut;
-import domain.blocks.capsule.IfElseBlock;
-import domain.blocks.movement.MoveBlock;
-import domain.blocks.movement.MoveToBlock;
-import domain.blocks.movement.MoveXBlock;
 import domain.models.interfaces.Clickable.Rect;
 import domain.models.interfaces.InvocableBlock;
 import domain.models.interfaces.Translatable;
@@ -65,6 +56,8 @@ public class MultipleChoiceRenderer implements CapsuleRenderer {
 	
 	@Override
 	public BufferedImage getRenderable() {
+		if(getWidth() == 0 || getHeight() == 0)
+			return rendered;
 		if(rendered != null)
 			return rendered;
 		BufferedImage bi = new BufferedImage(getWidth(), getHeight() + (block.attachable()? InvocableBlockRenderer.CONNECTOR.getHeight():0), BufferedImage.TYPE_4BYTE_ABGR);
@@ -80,7 +73,7 @@ public class MultipleChoiceRenderer implements CapsuleRenderer {
 				g.drawRect(r.x, r.y, r.w, r.h);
 				g.setColor(Color.ORANGE);
 				for(InvocableBlock ib : brr.getBlocksOf(0)) {
-					DragableRenderer dr = IRenderer.getDragableRendererOf((IRenderable) ib);
+					DragableRenderer dr = (DragableRenderer) ib.getRenderer();
 					g.drawRect(dr.getX(), dr.getY(), dr.getWidth(), dr.getHeight());
 				}
 			}
@@ -167,7 +160,6 @@ public class MultipleChoiceRenderer implements CapsuleRenderer {
 	public void delete() {
 		System.out.println("delete " + getBlock());
 		BlockPanel.INSTANCE.removeBlock(this);
-		IRenderer.DRAG_RENDS.remove((IRenderable)getBlock());
 		for(BlockBundleRenderer bbr: getBlockBundles())
 			bbr.delete();
 		InvocableClickable next = ((InvocableClickable)getClickable()).next();
@@ -205,38 +197,6 @@ public class MultipleChoiceRenderer implements CapsuleRenderer {
 		List<Rect> r = new ArrayList<>(getBlockBundles().size());
 		getBlockBundles().forEach(v-> r.add(v.getBlockBundlesSize().get(0)));
 		return r;
-	}
-	
-	public static void main(String[] args) {
-		DebugOut.setup();
-		
-		MultipleChoiceRenderer sampleImage = new MultipleChoiceRenderer(new IfElseBlock(
-				List.of(new MoveToBlock(null)
-				),
-				
-				List.of(new MoveBlock(null),
-						new MoveXBlock(null)
-				)
-		));
-	 	
-        SwingUtilities.invokeLater(() -> {
-            JFrame frame = new JFrame("Image Display");
-            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-            frame.setSize(1000, 1000);
-
-            JPanel panel = new JPanel() {
-				private static final long serialVersionUID = -94843536618228336L;
-
-				@Override
-                protected void paintComponent(Graphics g) {
-                    g.drawImage(sampleImage.getRenderable(), 100, 100, this);
-                }
-            };
-            frame.getContentPane().add(panel);
-
-            frame.setVisible(true);
-        });
-        System.out.println(sampleImage.getBlock().getCode());
 	}
 	
 	@Override

@@ -9,12 +9,8 @@ import domain.models.interfaces.Valuable;
 import domain.models.interfaces.VariableHolder;
 import ui.components.BlockPanel;
 import ui.renderers.CapsuleRenderer;
-import ui.renderers.IRenderer;
 import ui.renderers.IRenderer.DragableRenderer;
-import ui.renderers.IRenderer.IRenderable;
 import ui.renderers.InvocableBlockRenderer;
-import ui.renderers.LiteralRenderer;
-import ui.renderers.LiteralRenderer.LiteralRenderable;
 
 public class CapsuleBlockClickable extends InvocableClickable {
 
@@ -40,8 +36,7 @@ public class CapsuleBlockClickable extends InvocableClickable {
 				child.setParent(null);
 				if(child.getBlock() instanceof Valuable vBlock) {
 					VariableHolder vh = (VariableHolder)getBlock();
-					LiteralRenderable<?> lr = vh.removeVariable(vBlock);
-					LiteralRenderer.of(lr, lr.value(), this);
+					vh.removeVariable(vBlock);
 				}
 				System.out.println("removed child " + child + " newSize:" + getRenderer().sizeOf(bundle));
 				InvocableClickable bc = ((InvocableClickable) child).next();
@@ -51,8 +46,7 @@ public class CapsuleBlockClickable extends InvocableClickable {
 				while(bc != null) {
 					if(bc.getBlock() instanceof Valuable vBlock) {
 						VariableHolder vh = (VariableHolder)getBlock();
-						LiteralRenderable<?> lr = vh.removeVariable(vBlock);
-						LiteralRenderer.of(lr, lr.value(), this);
+						vh.removeVariable(vBlock);
 					}
 					bc.setParent(null);
 					System.out.println("removing child " + bc + " res:" + getRenderer().remove(bundle, bc.getRenderer()) + " newSize:" + getRenderer().sizeOf(bundle));
@@ -115,7 +109,7 @@ public class CapsuleBlockClickable extends InvocableClickable {
 				return;
 			}
 			for(InvocableBlock ib : getRenderer().getBlocksOf(index)) {
-				InvocableClickable ic = (InvocableClickable) IRenderer.getDragableRendererOf((IRenderable) ib).getClickable();
+				InvocableClickable ic = (InvocableClickable) ib.getRenderer().getClickable();
 				Rect r1 = ic.getPosition();
 				System.out.println(ib.toString().replaceAll(".*\\.", "") + " " + r1);
 				r1.y = r1.y + InvocableBlockRenderer.CONNECTOR.getHeight();
@@ -233,7 +227,7 @@ public class CapsuleBlockClickable extends InvocableClickable {
 		Collection<Clickable> cl = super.getNestedClickables();
 		for(int i = 0; i < getRenderer().bundleCount(); i++)
 		for(InvocableBlock bbr: getRenderer().getBlocksOf(i))
-			cl.add(IRenderer.getDragableRendererOf(bbr).getClickable());
+			cl.add(bbr.getRenderer().getClickable());
 		return cl;
 	}
 	@Override

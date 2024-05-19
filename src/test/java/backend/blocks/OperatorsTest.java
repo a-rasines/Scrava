@@ -23,13 +23,13 @@ import domain.values.StringLiteral;
 
 public class OperatorsTest {
 	
-	private final NumberLiteral<Integer> NUMBER1 = new NumberLiteral<>(1);
-	private final NumberLiteral<Double> NUMBERD1 = new NumberLiteral<>(1.0);
-	private final NumberLiteral<Float> NUMBERF1 = new NumberLiteral<>(1.0f);
-	private final NumberLiteral<Integer> NUMBER2 = new NumberLiteral<>(2);
-	private final NumberLiteral<Integer> NUMBER3 = new NumberLiteral<>(3);
-	private final NumberLiteral<Double> NUMBERD3 = new NumberLiteral<>(3.0);
-	private final NumberLiteral<Float> NUMBERF3 = new NumberLiteral<>(3.0f);
+	private final NumberLiteral<Integer> NUMBER1 = new NumberLiteral<>(1, null);
+	private final NumberLiteral<Double> NUMBERD1 = new NumberLiteral<>(1.0, null);
+	private final NumberLiteral<Float> NUMBERF1 = new NumberLiteral<>(1.0f, null);
+	private final NumberLiteral<Integer> NUMBER2 = new NumberLiteral<>(2, null);
+	private final NumberLiteral<Integer> NUMBER3 = new NumberLiteral<>(3, null);
+	private final NumberLiteral<Double> NUMBERD3 = new NumberLiteral<>(3.0, null);
+	private final NumberLiteral<Float> NUMBERF3 = new NumberLiteral<>(3.0f, null);
 	@Test
 	public void addTest() {
 		assertEquals(new AddOperator(NUMBER1, NUMBER1).value(), 2l);
@@ -37,7 +37,7 @@ public class OperatorsTest {
 		assertTrue(new EqualsBlock(NUMBER2, new AddOperator(NUMBER1, NUMBERD1)).value());
 		assertTrue(new BiggerOrEqualThanBlock(new AddOperator(NUMBERD1, NUMBERD1), NUMBER1).value());
 	
-		assertEquals(new AppendOperator().setValues(new StringLiteral("a"), new StringLiteral("b")).value(), "ab");
+		assertEquals(new AppendOperator().setValues(new StringLiteral("a", null), new StringLiteral("b", null)).value(), "ab");
 	
 		assertEquals(new EqualsBlock(NUMBER2, new AddOperator(NUMBER1, NUMBER1)).getCode(), "2 == 1 + 1");
 	}

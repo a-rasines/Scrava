@@ -6,7 +6,6 @@ import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
-import java.lang.reflect.Constructor;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -34,34 +33,27 @@ public class LiteralRenderer implements IRenderer {
 	public float opacity = 1f;
 	
 	public static LiteralRenderer of(LiteralRenderable<?> block, String type, BlockClickable parent) {
-		if(RENDS_MAP.get(block) == null)
-			RENDS_MAP.put(block, new LiteralRenderer(block, type, parent));
-		return RENDS_MAP.get(block);
+		if(block instanceof EnumLiteral)
+			return new LiteralRenderer(block, IRenderable.VARIABLE_ENUM, parent);
+		return new LiteralRenderer(block, type, parent);
 	}
 	
 	public static LiteralRenderer of(LiteralRenderable<?> block, Object type, BlockClickable parent) {
-		if(RENDS_MAP.get(block) == null)
-			switch(type) {
-				case Boolean b:
-					RENDS_MAP.put(block, new LiteralRenderer(block, IRenderable.VARIABLE_BOOL, parent));
-					break;
-				case Number n:
-					RENDS_MAP.put(block, new LiteralRenderer(block, IRenderable.VARIABLE_NUM, parent));
-					break;
-				case String s:
-					RENDS_MAP.put(block, new LiteralRenderer(block, IRenderable.VARIABLE_STR, parent));
-					break;
-				default:
-			}
-		return RENDS_MAP.get(block);
+		if(block instanceof EnumLiteral)
+			return new LiteralRenderer(block, IRenderable.VARIABLE_ENUM, parent);
+		switch(type) {
+			case Boolean b:
+				return new LiteralRenderer(block, IRenderable.VARIABLE_BOOL, parent);
+			case Number n:
+				return new LiteralRenderer(block, IRenderable.VARIABLE_NUM, parent);
+			case String s:
+				return new LiteralRenderer(block, IRenderable.VARIABLE_STR, parent);
+			default:
+				return null;
+		}
 	}
 	
 	public static interface LiteralRenderable<T> extends IRenderable, Valuable<T> {
-
-		@Override
-		public default Constructor<? extends IRenderer> getRenderer() throws NoSuchMethodException, SecurityException {
-			return null;
-		}
 		
 	}
 	private final LiteralRenderable<?> block;
@@ -167,7 +159,7 @@ public class LiteralRenderer implements IRenderer {
 
 	public static void main(String[] args) {
 		
-	 	LiteralRenderer sampleImage = new LiteralRenderer(new NumberLiteral<Double>(1.21), IRenderable.VARIABLE_STR, new BlockClickable(null, null));
+	 	LiteralRenderer sampleImage = new LiteralRenderer(new NumberLiteral<Double>(1.21, null), IRenderable.VARIABLE_STR, new BlockClickable(null, null));
 	 	sampleImage.opacity = 0.5f;
 	 	
         SwingUtilities.invokeLater(() -> {

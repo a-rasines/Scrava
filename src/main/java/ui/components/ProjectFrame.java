@@ -25,9 +25,9 @@ import ui.EmptyLayout;
 
 public class ProjectFrame extends JFrame implements WindowFocusListener {
 	public static boolean isStarted = false;
-	static {
-		DebugOut.setup();
-	}
+//	static {
+//		DebugOut.setup();
+//	}
 	
 	public static void main(String[] args) {
 //		for (long longVal = 4946144450195624L; longVal > 0; longVal >>= 5)
@@ -49,6 +49,7 @@ public class ProjectFrame extends JFrame implements WindowFocusListener {
 	}
 	
 	private ProjectFrame() {
+		DebugOut.setup();
 		JButton startButton = new JButton("Start");
 		JButton tickButton = new JButton("Tick");
 		JButton endButton = new JButton("End");

@@ -15,11 +15,11 @@ public class AndBlock extends ConditionalBlock<Boolean> {
 	}
 	
 	public AndBlock() {
-		super(new BooleanLiteral(true), new BooleanLiteral(true));
+		setup(new BooleanLiteral(true, this), new BooleanLiteral(true, this));
 	}
 	
 	public AndBlock(Valuable<Boolean> left, Valuable<Boolean> right) {
-		super(left, right);
+		setup(left, right);
 	}
 
 	@Override
