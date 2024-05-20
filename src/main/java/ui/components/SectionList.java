@@ -44,7 +44,7 @@ public class SectionList extends JList<BlockSection>{
 			
 			@Override
 			public void valueChanged(ListSelectionEvent e) {
-				if(getSelectedIndex() > -1)
+				if(ProjectFrame.isFocus() && getSelectedIndex() > -1)
 					BlockSelectorPanel.INSTANCE.setPage(getSelectedValue());
 			}
 		});

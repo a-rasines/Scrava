@@ -12,6 +12,7 @@ public class DebugOut extends PrintStream{
 			"moveTo",
 			"removeBlock",
 			"removeChild",
+			"setClicked",
 			"setPosition",
 			
 			//event

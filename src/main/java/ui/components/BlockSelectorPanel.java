@@ -52,6 +52,7 @@ public class BlockSelectorPanel implements MouseListener, MouseWheelListener {
 
 	@Override
 	public void mousePressed(MouseEvent e) {
+		if(!ProjectFrame.isFocus())return;
 		Point click = e.getPoint();
 		int w = BlockPanel.INSTANCE.getWidth();
 		System.out.println("registered click");

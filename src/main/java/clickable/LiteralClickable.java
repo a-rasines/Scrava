@@ -87,6 +87,7 @@ public class LiteralClickable implements Clickable{
 					renderer.update();
 					break;
 				case EnumLiteral<?> e:
+					if(ValueSelector.isAlreadyOpen()) return;
 					JComboBox<String> cb = new JComboBox<>(e.names());
 					vs = new ValueSelector(cb);
 					vs.setVisible(true);
@@ -99,6 +100,7 @@ public class LiteralClickable implements Clickable{
 					});
 					break;
 				default:
+					if(ValueSelector.isAlreadyOpen()) return;
 					JTextField textField = new JTextField(value.value().toString());
 					if(value.value() instanceof Number) {
 						textField.addKeyListener(new NumberKeyListener(value.value() instanceof Double || value.value() instanceof Float, textField));
