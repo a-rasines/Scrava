@@ -38,6 +38,7 @@ public class SpritePanel extends JPanel implements ComponentListener {
 		if(INSTANCE.sl.getSelectedIndex() == -1)
 			INSTANCE.sl.setSelectedIndex(0);
 		INSTANCE.sl.setVisibleRowCount(INSTANCE.sprites.size()%3==0?INSTANCE.sprites.size()/3:INSTANCE.sprites.size()/3 + 1);
+		BlockPanel.INSTANCE.changeSprite();
 	}
 	
 	public static  Sprite getSprite() {

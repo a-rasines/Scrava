@@ -15,6 +15,9 @@ import java.util.function.Supplier;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
 
 import debug.DebugOut;
 import domain.Sprite;
@@ -25,13 +28,13 @@ import ui.EmptyLayout;
 
 public class ProjectFrame extends JFrame implements WindowFocusListener {
 	public static boolean isStarted = false;
-//	static {
-//		DebugOut.setup();
-//	}
+	static {
+		DebugOut.setup();
+	}
 	
 	public static void main(String[] args) {
-//		for (long longVal = 4946144450195624L; longVal > 0; longVal >>= 5)
-//			System.out.print((char) (((longVal & 31 | 64) % 95) + 32));
+		for (long longVal = 4946144450195624L; longVal > 0; longVal >>= 5)
+			System.out.print((char) (((longVal & 31 | 64) % 95) + 32));
 		INSTANCE.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		INSTANCE.setVisible(true);
 	}
@@ -49,7 +52,6 @@ public class ProjectFrame extends JFrame implements WindowFocusListener {
 	}
 	
 	private ProjectFrame() {
-		DebugOut.setup();
 		JButton startButton = new JButton("Start");
 		JButton tickButton = new JButton("Tick");
 		JButton endButton = new JButton("End");
@@ -135,10 +137,22 @@ public class ProjectFrame extends JFrame implements WindowFocusListener {
 				s.reset();
 			isStarted = false;
 		});
+		generateJMenu();
 	}
 	
-	public void loadProject(List<Sprite> newSprites) {
-		
+	private void generateJMenu() {
+		JMenuBar menuBar = new JMenuBar();									this.setJMenuBar(menuBar);
+        	JMenu archiveMenu = new JMenu("Archive");							menuBar.add(archiveMenu);
+        		JMenu openMenu = new JMenu("Open");									archiveMenu.add(openMenu);
+        			JMenuItem fromFileMenuItem = new JMenuItem("From File");			openMenu.add(fromFileMenuItem);
+        			JMenuItem fromServerMenuItem = new JMenuItem("From Server");		openMenu.add(fromServerMenuItem);
+        		JMenuItem saveMenuItem = new JMenuItem("Save"); 					archiveMenu.add(saveMenuItem);
+        		JMenu saveAsMenu = new JMenu("Save as");							archiveMenu.add(saveAsMenu);
+        			JMenuItem toFileMenuItem = new JMenuItem("To File");				saveAsMenu.add(toFileMenuItem);
+        			JMenuItem toServerMenuItem = new JMenuItem("To Server");			saveAsMenu.add(toServerMenuItem);
+        		JMenuItem exportMenuItem = new JMenuItem("Export");					archiveMenu.add(exportMenuItem);
+        		JMenuItem exitMenuItem = new JMenuItem("Exit");						archiveMenu.add(exitMenuItem);
+    		JMenu resourcesMenu = new JMenu("Resources");						menuBar.add(resourcesMenu);
 	}
 	@Override
 	public void setSize(Dimension d) {}

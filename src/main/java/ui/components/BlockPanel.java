@@ -14,7 +14,6 @@ import java.awt.event.MouseWheelListener;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
 
 import javax.swing.ImageIcon;
@@ -52,13 +51,14 @@ public class BlockPanel extends JLayeredPane{
 	public final JButton BOTON_VARIABLES = new JButton("Create new Variable");
 	
 	
-	private final List<DragableRenderer> blocks = new LinkedList<>();
+	private List<DragableRenderer> blocks = null;
 	private BlockClickable clicked = null;
 	private BlockClickable hovered = null;
 	private JLabel clickedLabel = new JLabel("");
 	public static BlockPanel INSTANCE = new BlockPanel();
 	
 	public void changeSprite() {
+		blocks = SpritePanel.getSprite().getBlocks();
 	}
 	
 	/**
