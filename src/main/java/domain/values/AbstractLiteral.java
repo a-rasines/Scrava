@@ -1,5 +1,7 @@
 package domain.values;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.util.Set;
 
 import clickable.BlockClickable;
@@ -25,8 +27,13 @@ public abstract class AbstractLiteral<T> implements LiteralRenderer.LiteralRende
 		return lr;
 	}
 	
+	private void readObject(ObjectInputStream ois) throws IOException, ClassNotFoundException {
+		ois.defaultReadObject();
+		this.value = this.initialValue;
+	}
+	
 	private static final long serialVersionUID = -3640248192146519107L;
-	public T value;
+	public transient T value;
 	private T initialValue;
 	
 	@SuppressWarnings("unchecked")

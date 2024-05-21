@@ -178,6 +178,10 @@ public class ProjectFrame extends JFrame implements WindowFocusListener {
     		JOptionPane.showMessageDialog(null, "Not available");
     	});
     	
+    	saveMenuItem.addActionListener((e) -> {
+    		Variable.saveProject();
+    	});
+    	
     	toFileMenuItem.addActionListener((e) -> {
     		JFileChooser fileChooser = new JFileChooser();
     		fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);

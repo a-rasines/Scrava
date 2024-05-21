@@ -13,6 +13,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 
 import domain.Sprite;
@@ -48,8 +49,25 @@ public class Variable<T> extends AbstractLiteral<T> implements SimpleRenderable 
 		variables.putIfAbsent(s, new HashMap<>());
 	}
 	
+	private static File projectFile = null;
+	
+	public static void saveProject() {
+		if(projectFile == null) {
+			JFileChooser fileChooser = new JFileChooser();
+    		fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+            int result = fileChooser.showOpenDialog(null);
+            if (result == JFileChooser.APPROVE_OPTION) {
+            	String res = JOptionPane.showInputDialog("Set file name:");
+            	if(res.length() > 0)
+            		projectFile = new File(fileChooser.getSelectedFile().getAbsolutePath() + "/" + res + ".scrv");
+            } else return;
+		}
+		saveProject(projectFile);
+	}
+	
 	public static void saveProject(File f) {
 		try {
+			projectFile = f;
 			ProjectFrame.INSTANCE.reset();
 			FileOutputStream fileOut = new FileOutputStream(f);
 			ObjectOutputStream out = new ObjectOutputStream(fileOut);
@@ -72,6 +90,7 @@ public class Variable<T> extends AbstractLiteral<T> implements SimpleRenderable 
 	        
 	        // ONLY if temp is read correctly changes are applied
 	        
+	        projectFile = f;
 	        variables = temp;
 	        SpritePanel.clearSprites();
 	        for(Sprite s : variables.keySet())
