@@ -1,5 +1,11 @@
 package domain.values;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -7,8 +13,13 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import javax.swing.JOptionPane;
+
 import domain.Sprite;
 import domain.models.interfaces.Valuable;
+import domain.values.EnumLiteral.EnumCapable;
+import ui.components.BlockPanel;
+import ui.components.ProjectFrame;
 import ui.components.SpritePanel;
 import ui.renderers.IRenderer.IRenderable;
 import ui.renderers.LiteralRenderer.LiteralRenderable;
@@ -37,28 +48,65 @@ public class Variable<T> extends AbstractLiteral<T> implements SimpleRenderable 
 		variables.putIfAbsent(s, new HashMap<>());
 	}
 	
+	public static void saveProject(File f) {
+		try {
+			FileOutputStream fileOut = new FileOutputStream(f);
+			ObjectOutputStream out = new ObjectOutputStream(fileOut);
+	        out.writeObject(variables);
+	        out.close();
+	        fileOut.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}  
+	}
+	
+	@SuppressWarnings("unchecked")
+	public static void readProject(File f) {
+		try {
+			FileInputStream fileIn = new FileInputStream(f);
+	        ObjectInputStream in = new ObjectInputStream(fileIn);
+	        var temp = (HashMap<Sprite, HashMap<String, Variable<?>>>) in.readObject();
+	        in.close();
+	        fileIn.close();
+	        
+	        // ONLY if temp is read correctly changes are applied
+	        
+	        variables = temp;
+	        SpritePanel.clearSprites();
+	        for(Sprite s : variables.keySet())
+	        	if(s != null)
+	        		SpritePanel.addSprite(s);
+	        ProjectFrame.INSTANCE.repaint();
+	        BlockPanel.INSTANCE.repaint();
+		} catch (IOException e) {
+			JOptionPane.showMessageDialog(null, "The project could no tbe loaded: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+			e.printStackTrace();
+		} catch (ClassNotFoundException e) { 
+			//(really) unlike
+			e.printStackTrace();
+		}
+	}
+	
 	@Override
 	public AbstractLiteral<T> create(Sprite s) {
 		return this;
 	}
 	
-	/**
-	 * Returns an {@link domain.values.EnumLiteral EnumLiteral} version of the variables' map
-	 * @return
-	 */
-	public static EnumLiteral<Variable<?>> getEnumLiteral(IRenderable parent) {
-		
-		return new EnumLiteral<>(
-		
-		//Variable<?> valueOf(String s)		
-		(s) -> {
-			Variable<?> v = variables.get(null).get(s);
+	 
+	private static class VariableEnumCapable implements EnumCapable<Variable<?>> {
+		private final static VariableEnumCapable INSTANCE = new VariableEnumCapable();
+		private static final long serialVersionUID = -3026004184272864437L;
+
+		@Override
+		public Variable<?> valueof(String value) {
+			Variable<?> v = variables.get(null).get(value);
 			if(v == null)
-				v = variables.get(SpritePanel.getSprite()).get(s);
+				v = variables.get(SpritePanel.getSprite()).get(value);
 			return v;
-		}, 
-		//Variable<?>[] values()
-		() -> {
+		}
+
+		@Override
+		public Variable<?>[] getValues() {
 			System.out.println(variables);
 			Variable<?>[] var = new Variable<?>[variables.get(null).size() + variables.get(SpritePanel.getSprite()).size()];
 			Iterator<Variable<?>> it = variables.get(null).values().iterator();
@@ -68,14 +116,25 @@ public class Variable<T> extends AbstractLiteral<T> implements SimpleRenderable 
 			for(int i = variables.get(null).size(); i < variables.get(null).size() + variables.get(SpritePanel.getSprite()).size(); i++)
 				var[i] = (Variable<?>) it.next();
 			return var;
-		},
-		//String[] names()
-		() -> {
+		}
+
+		@Override
+		public String[] names() {
 			HashSet<String> s = new HashSet<>();
 			s.addAll(variables.get(null).keySet());
 			s.addAll(variables.get(SpritePanel.getSprite()).keySet());
 			return s.toArray(new String[s.size()]);
-		}, parent);
+		}
+		
+	}
+	
+	/**
+	 * Returns an {@link domain.values.EnumLiteral EnumLiteral} version of the variables' map
+	 * @return
+	 */
+	public static EnumLiteral<Variable<?>> getEnumLiteral(IRenderable parent) {
+		
+		return new EnumLiteral<>(VariableEnumCapable.INSTANCE, parent);
 	}
 	
 	/**

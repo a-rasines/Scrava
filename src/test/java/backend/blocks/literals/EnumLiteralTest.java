@@ -9,14 +9,36 @@ import org.junit.Before;
 import org.junit.Test;
 
 import domain.values.EnumLiteral;
+import domain.values.EnumLiteral.EnumCapable;
 
 public class EnumLiteralTest {
 	
-	public static enum LiteralEnum {
+	public static enum LiteralEnum implements EnumCapable<LiteralEnum>{
 		VALUE1,
 		VALUE2,
 		VALUE3,
-		VALUE4
+		VALUE4;
+
+		@Override
+		public LiteralEnum valueof(String value) {
+			return LiteralEnum.valueOf(value);
+		}
+
+		@Override
+		public String[] names() {
+			LiteralEnum[] values = LiteralEnum.values();
+			String[] s = new String[values.length];
+			for(int i = 0; i < values.length; i++)
+				s[i] = values[i].name();
+				
+			return s;
+		}
+
+
+		@Override
+		public LiteralEnum[] getValues() {
+			return values();
+		}
 	}
 	private static HashMap<String, String> pseudoEnum = new HashMap<>() {
 		

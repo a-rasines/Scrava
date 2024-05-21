@@ -131,7 +131,6 @@ public class ValueSelector extends JDialog implements WindowFocusListener, Windo
 
 	@Override
 	public void windowClosing(WindowEvent e) {
-		System.out.println("closing");
 		isAlreadyOpen = false;
 	}
 	

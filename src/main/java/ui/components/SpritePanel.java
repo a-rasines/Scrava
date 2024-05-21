@@ -41,6 +41,10 @@ public class SpritePanel extends JPanel implements ComponentListener {
 		BlockPanel.INSTANCE.changeSprite();
 	}
 	
+	public static void clearSprites() {
+		INSTANCE.sprites.clear();
+	}
+	
 	public static  Sprite getSprite() {
 		return INSTANCE.sl.getSelectedValue();
 	}

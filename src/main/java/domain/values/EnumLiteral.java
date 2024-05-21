@@ -1,63 +1,65 @@
 package domain.values;
 
+import java.io.Serializable;
 import java.lang.reflect.Array;
-import java.lang.reflect.Method;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.function.BiConsumer;
-import java.util.function.Function;
-import java.util.function.Supplier;
 
 import ui.renderers.IRenderer.IRenderable;
 
 public class EnumLiteral<T> extends AbstractLiteral<T> {
 
 	private static final long serialVersionUID = 5931981357494162699L;
-	private transient final Function<String, T> VALUE_OF;
-	private transient final Supplier<T[]> VALUES;
-	private transient final Supplier<String[]> NAMES;
-	private BiConsumer<String, T> valueListener = (a,b)->{}; 
+	private ValueListener<T> valueListener = new DefaultListener<T>(); 
 	private String name;
+	private EnumCapable<T> behaviour;
 	
+	public static interface EnumCapable<T> extends Serializable {
+		T valueof(String value);
+		T[] getValues();
+		String[] names();
+	}
 	
-	/**
-	 * Creates an enum literal from an enum
-	 * @param value MUST BE AN ENUM
-	 */
-	public EnumLiteral(T value, IRenderable parent) {
-		super(value, parent);
-		name = value.toString();
-		try {
-			VALUE_OF = new Function<String, T>(){
-				private Method m; {m = value.getClass().getDeclaredMethod("valueOf", String.class);}
-				
-				@SuppressWarnings("unchecked")
-				@Override 
-				public T apply(String t) { 
-					try { return (T) m.invoke(null, t); } 
-					catch (Exception e) { e.printStackTrace();throw new RuntimeException(e);	}
-			}};
-			VALUES = new Supplier<T[]>() {
-				private Method m; {m = value.getClass().getDeclaredMethod("values");}
-				
-				@SuppressWarnings("unchecked")
-				@Override
-				public T[] get() {
-					try { return (T[]) m.invoke(null); } 
-					catch (Exception e) { e.printStackTrace();throw new RuntimeException(e);	}
-				}
-			};
-			NAMES = () -> {
-				T[] vals = VALUES.get();
-				String[] out = new String[vals.length];
-				for(int i = 0; i < vals.length; i++)
-					out[i] = vals[i].toString();
-				return out;
-			};
-		} catch (NoSuchMethodException | SecurityException e) {
-			e.printStackTrace();
-			throw new RuntimeException(e);
+	public static interface ValueListener<T> extends BiConsumer<String, T>, Serializable {}
+	
+	private static class DefaultListener<T> implements ValueListener<T> {
+
+		private static final long serialVersionUID = 4144235544702403961L;
+		@Override public void accept(String t, T u) {}
+		
+	}
+	
+	private static class MapEnumCapable<T> implements EnumCapable<T> {
+
+		private static final long serialVersionUID = -7759270095502208514L;
+		
+		private Map<String, T> map;
+		
+		public MapEnumCapable(Map<String, T> map) {
+			this.map = map;
 		}
+		
+		@Override
+		public T valueof(String value) {
+			return map.get(value);
+		}
+
+		@Override
+		public T[] getValues() {
+			@SuppressWarnings("unchecked")
+			T[] output = (T[]) Array.newInstance(map.values().iterator().next().getClass(), map.size());
+			Iterator<T> vs = map.values().iterator();
+			for(int i = 0; i < map.size(); i++)
+				output[i] = vs.next();
+			return output;
+		}
+
+		@Override
+		public String[] names() {
+			return map.keySet().toArray(new String[map.size()]);
+		}
+		
 	}
 	
 	/**
@@ -67,42 +69,31 @@ public class EnumLiteral<T> extends AbstractLiteral<T> {
 	public EnumLiteral(Map<String, T> values, IRenderable parent) {
 		super(values.values().iterator().next(), parent);
 		name = values.keySet().iterator().next();
-		VALUE_OF = (s) -> values.get(s);
-		VALUES = () -> {
-			@SuppressWarnings("unchecked")
-			T[] output = (T[]) Array.newInstance(values.values().iterator().next().getClass(), values.size());
-			Iterator<T> vs = values.values().iterator();
-			for(int i = 0; i < values.size(); i++)
-				output[i] = vs.next();
-			return output;
-		};
-		NAMES = () -> values.keySet().toArray(new String[values.size()]);
+		behaviour = new MapEnumCapable<>(values);
 	}
 	/**
 	 * Creates a pseudo enum literal from functions
 	 * @param values
 	 */
-	public EnumLiteral(Function<String, T> valueOf, Supplier<T[]> values, Supplier<String[]> names, IRenderable parent) {
-		super(values.get()[0], parent);
-		name = names.get()[0];
-		VALUE_OF = valueOf;
-		VALUES = values;
-		NAMES = names;
+	public EnumLiteral(EnumCapable<T> ec, IRenderable parent) {
+		super(ec.getValues()[0], parent);
+		name = ec.names()[0];
+		behaviour = ec;
 	}
 
-	public void setValueListener(BiConsumer<String, T> bc) {
+	public void setValueListener(ValueListener<T> bc) {
 		this.valueListener = bc;
 	}
 	
 	@Override
 	public void setValue(String str) {
 		name = str;
-		setValue(VALUE_OF.apply(str), true);
+		setValue(behaviour.valueof(str), true);
 		valueListener.accept(str, value);
 	}
 	
 	public T[] possibleValues() {
-		return VALUES.get();
+		return behaviour.getValues();
 	}
 	
 	public String name() {
@@ -110,12 +101,12 @@ public class EnumLiteral<T> extends AbstractLiteral<T> {
 	}
 	
 	public String[] names() {
-		return NAMES.get();
+		return behaviour.names();
 	}
 
 	@Override
 	public boolean isEmpty() {
-		return VALUES.get()[0] == value;
+		return behaviour.getValues()[0] == value;
 	}
 	
 	

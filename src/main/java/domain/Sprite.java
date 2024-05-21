@@ -1,14 +1,19 @@
 package domain;
 
 import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+
+import javax.imageio.ImageIO;
 
 import domain.blocks.event.KeyEventBlock;
 import domain.blocks.event.OnStartEventBlock;
@@ -29,7 +34,7 @@ public class Sprite implements Serializable{
 	private final List<DragableRenderer> blocks = new LinkedList<>();
 	private transient Map<Class<? extends EventBlock>, List<EventBlock>> eventMap = null;
 	private static final BufferedImage DEFAULT_TEXTURE = IRenderer.getRes("textures/sprite/def.svg");
-	private List<BufferedImage> textures = new ArrayList<>();
+	private transient List<BufferedImage> textures = new ArrayList<>();
 	private int selectedTexture = 0;
 	
 	public Sprite() {
@@ -38,16 +43,6 @@ public class Sprite implements Serializable{
 		textures.add(DEFAULT_TEXTURE);
 		name = "Sprite";
 	}
-	
-    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
-        in.defaultReadObject();
-        eventMap = new HashMap<>();
-		for(DragableRenderer dr : blocks)
-			if(dr.getBlock() instanceof EventBlock eb) {
-				eventMap.putIfAbsent(eb.getClass(), new LinkedList<>());
-				eventMap.get(eb.getClass()).add(eb);
-			}
-    }
 	
 	public void registerEvent(EventBlock event) {
 		eventMap.putIfAbsent(event.getClass(), new LinkedList<>());
@@ -121,4 +116,32 @@ public class Sprite implements Serializable{
 	public List<DragableRenderer> getBlocks() {
 		return blocks;
 	}
+	
+	private void writeObject(ObjectOutputStream oos) throws IOException {
+        oos.defaultWriteObject();
+        List<byte[]> images = new LinkedList<>();
+        for(BufferedImage bi : textures) {
+			ByteArrayOutputStream baos = new ByteArrayOutputStream();
+			ImageIO.write(bi, "png", baos);
+			images.add(baos.toByteArray());
+		}
+        oos.writeObject(images);
+    }
+
+    @SuppressWarnings("unchecked")
+	private void readObject(ObjectInputStream ois) throws IOException, ClassNotFoundException {
+        ois.defaultReadObject();
+        List<byte[]> images = (List<byte[]>) ois.readObject();
+        this.textures = new ArrayList<>();
+        for(byte[] b : images) {
+        	ByteArrayInputStream bais = new ByteArrayInputStream(b);
+            textures.add(ImageIO.read(bais));
+        }
+        eventMap = new HashMap<>();
+		for(DragableRenderer dr : blocks)
+			if(dr.getBlock() instanceof EventBlock eb) {
+				eventMap.putIfAbsent(eb.getClass(), new LinkedList<>());
+				eventMap.get(eb.getClass()).add(eb);
+			}
+    }
 }

@@ -9,21 +9,25 @@ import java.awt.event.ComponentEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowFocusListener;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
 
 import javax.swing.JButton;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 
 import debug.DebugOut;
 import domain.Sprite;
 import domain.blocks.event.OnKeyPressEventBlock;
 import domain.blocks.event.OnStartEventBlock;
 import domain.models.types.EventBlock;
+import domain.values.Variable;
 import ui.EmptyLayout;
 
 public class ProjectFrame extends JFrame implements WindowFocusListener {
@@ -33,8 +37,8 @@ public class ProjectFrame extends JFrame implements WindowFocusListener {
 	}
 	
 	public static void main(String[] args) {
-		for (long longVal = 4946144450195624L; longVal > 0; longVal >>= 5)
-			System.out.print((char) (((longVal & 31 | 64) % 95) + 32));
+//		for (long longVal = 4946144450195624L; longVal > 0; longVal >>= 5)
+//			System.out.print((char) (((longVal & 31 | 64) % 95) + 32));
 		INSTANCE.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		INSTANCE.setVisible(true);
 	}
@@ -69,7 +73,7 @@ public class ProjectFrame extends JFrame implements WindowFocusListener {
 		add(tickButton);
 		add(endButton);
 		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-		setBounds(0, 0, (int)screenSize.getWidth(), (int)screenSize.getHeight());
+		setBounds(0, 0, (int)screenSize.getWidth() - 50, (int)screenSize.getHeight() - 50);
 		setMinimumSize(new Dimension(Math.max(700, (int)screenSize.getWidth() / 2), Math.max(500, (int)screenSize.getHeight() / 2)));
 		
 		addComponentListener(new ComponentAdapter() {
@@ -136,12 +140,17 @@ public class ProjectFrame extends JFrame implements WindowFocusListener {
 			ActionPanel.INSTANCE.repaint();
 		});
 		endButton.addActionListener((e) -> {
-			activeTicks.clear();
-			for(Sprite s : SpritePanel.getSprites())
-				s.reset();
-			isStarted = false;
+			reset();
 		});
 		generateJMenu();
+	}
+	
+	public void reset() {
+		activeTicks.clear();
+		for(Sprite s : SpritePanel.getSprites())
+			s.reset();
+		isStarted = false;
+		ActionPanel.INSTANCE.repaint();
 	}
 	
 	private void generateJMenu() {
@@ -157,6 +166,33 @@ public class ProjectFrame extends JFrame implements WindowFocusListener {
         		JMenuItem exportMenuItem = new JMenuItem("Export");					archiveMenu.add(exportMenuItem);
         		JMenuItem exitMenuItem = new JMenuItem("Exit");						archiveMenu.add(exitMenuItem);
     		JMenu resourcesMenu = new JMenu("Resources");						menuBar.add(resourcesMenu);
+    		
+    	fromFileMenuItem.addActionListener((e) -> {
+    		JFileChooser fileChooser = new JFileChooser();
+            int result = fileChooser.showOpenDialog(ProjectFrame.this);
+            if (result == JFileChooser.APPROVE_OPTION)
+            	Variable.readProject(fileChooser.getSelectedFile());
+    	});
+    	
+    	fromServerMenuItem.addActionListener((e) -> {
+    		JOptionPane.showMessageDialog(null, "Not available");
+    	});
+    	
+    	toFileMenuItem.addActionListener((e) -> {
+    		JFileChooser fileChooser = new JFileChooser();
+    		fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+            int result = fileChooser.showOpenDialog(ProjectFrame.this);
+            if (result == JFileChooser.APPROVE_OPTION) {
+            	String res = JOptionPane.showInputDialog("Set file name:");
+            	if(res.length() > 0)
+            		Variable.saveProject(new File(fileChooser.getSelectedFile().getAbsolutePath() + "/" + res + ".scrv"));
+            }
+    	});
+    	
+    	toServerMenuItem.addActionListener((e) -> {
+    		JOptionPane.showMessageDialog(null, "Not available");
+    	});
+    		
 	}
 	@Override
 	public void setSize(Dimension d) {}

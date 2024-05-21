@@ -1,6 +1,8 @@
 package domain.blocks.event;
 
 import java.awt.event.KeyEvent;
+import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.lang.reflect.Field;
 import java.util.Map;
 import java.util.TreeMap;
@@ -11,8 +13,12 @@ import domain.values.EnumLiteral;
 public abstract class KeyEventBlock extends EventBlock {
 	private static final long serialVersionUID = -4600101075423209197L;
 	
-	private final static Map<String, Integer> KEY_MAP = new TreeMap<>();
-	protected final EnumLiteral<Integer> KEY = new EnumLiteral<>(KEY_MAP, this);
+	private final transient static Map<String, Integer> KEY_MAP = new TreeMap<>();
+	protected transient EnumLiteral<Integer> KEY = new EnumLiteral<>(KEY_MAP, this);
+	
+	private void readObject(ObjectInputStream ois) throws IOException, ClassNotFoundException {
+		KEY = new EnumLiteral<>(KEY_MAP, this);
+	}
 	
 	static {
 		for(Field f : KeyEvent.class.getDeclaredFields())

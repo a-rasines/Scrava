@@ -7,7 +7,10 @@ import ui.renderers.IRenderer;
 
 public interface Clickable extends Serializable{
 
-	public static class Rect {
+	public static class Rect implements Serializable{
+		
+		private static final long serialVersionUID = 1876736243739353948L;
+		
 		@Override
 		public String toString() {
 			return "Rect [x=" + x + ", y=" + y + ", h=" + h + ", w=" + w + "]";
