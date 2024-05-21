@@ -209,7 +209,7 @@ public class CapsuleBlockRenderer implements CapsuleRenderer{
 		System.out.println("delete " + getBlock());
 		BlockPanel.INSTANCE.removeBlock(this);
 		if(getBlock() instanceof EventBlock eb)
-			SpritePanel.getSprite().deleteEvent(eb);
+			SpritePanel.getSprite()._deleteEvent(eb);
 		for(IRenderer rend : getChildren())
 			rend.delete();
 		InvocableClickable next = ((InvocableClickable)getClickable()).next();

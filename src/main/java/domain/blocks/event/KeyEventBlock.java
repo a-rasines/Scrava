@@ -3,6 +3,7 @@ package domain.blocks.event;
 import java.awt.event.KeyEvent;
 import java.io.IOException;
 import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.lang.reflect.Field;
 import java.util.Map;
 import java.util.TreeMap;
@@ -15,9 +16,19 @@ public abstract class KeyEventBlock extends EventBlock {
 	
 	private final transient static Map<String, Integer> KEY_MAP = new TreeMap<>();
 	protected transient EnumLiteral<Integer> KEY = new EnumLiteral<>(KEY_MAP, this);
+	private String selected;
+	
+	private void writeObject(ObjectOutputStream oos) throws IOException {
+		selected = KEY.name();
+		oos.defaultWriteObject();
+		System.out.println(selected);
+	}
 	
 	private void readObject(ObjectInputStream ois) throws IOException, ClassNotFoundException {
+		ois.defaultReadObject();
+		System.out.println(selected);
 		KEY = new EnumLiteral<>(KEY_MAP, this);
+		KEY.setValue(selected.toString());;
 	}
 	
 	static {

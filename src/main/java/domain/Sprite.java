@@ -63,8 +63,11 @@ public class Sprite implements Serializable{
 	}
 	
 	public void deleteEvent(EventBlock event) {
-		eventMap.get(event.getClass()).remove(event);
 		event.getRenderer().delete();
+	}
+	
+	public void _deleteEvent(EventBlock event) {
+		eventMap.get(event.getClass()).remove(event);
 	}
 	
 	public void runEvent(Class<? extends EventBlock> type) {

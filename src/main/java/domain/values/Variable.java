@@ -50,6 +50,7 @@ public class Variable<T> extends AbstractLiteral<T> implements SimpleRenderable 
 	
 	public static void saveProject(File f) {
 		try {
+			ProjectFrame.INSTANCE.reset();
 			FileOutputStream fileOut = new FileOutputStream(f);
 			ObjectOutputStream out = new ObjectOutputStream(fileOut);
 	        out.writeObject(variables);
