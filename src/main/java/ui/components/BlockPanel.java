@@ -60,6 +60,7 @@ public class BlockPanel extends JLayeredPane {
 	
 	public void changeSprite() {
 		blocks = SpritePanel.getSprite().getBlocks();
+		repaint();
 	}
 	
 	/**

@@ -1,4 +1,3 @@
-
 apply plugin: 'java'
 apply plugin: 'com.google.protobuf'
 
@@ -11,7 +10,10 @@ buildscript {
     }
 }
 
-// Note: for IntelliJ IDE to mark the generated files as source.
+processResources {
+    duplicatesStrategy = 'warn' // or 'exclude' or 'fail'
+}
+
 sourceSets {
     main {
         proto {
@@ -21,69 +23,67 @@ sourceSets {
             srcDirs 'src/main/java'
         }
         resources {
-        	srcDir 'src/main/resources' 
-    	}
+            srcDir 'src/main/resources' 
+        }
     }
 }
 
-// Note: Make sure to modify the gRPC version if it is no 
-// longer compatible w/ the latest gradle version.
-//
-// Visit https://mvnrepository.com/artifact/io.grpc/grpc-protobuf
 def grpcVersion = '1.61.0'
+def imageIOVersion = '3.10.1'
+
+repositories {
+    mavenCentral()
+}
 
 dependencies {
-    repositories {
-        mavenCentral()
-    }
     implementation "io.grpc:grpc-netty:${grpcVersion}"
     implementation "io.grpc:grpc-protobuf:${grpcVersion}"
     implementation "io.grpc:grpc-stub:${grpcVersion}"
     implementation group: 'com.google.protobuf', name: 'protobuf-java-util', version: '4.26.0-RC1'
     
-	implementation 'com.twelvemonkeys.imageio:imageio-batik:3.10.1'
-	implementation 'com.twelvemonkeys.imageio:imageio-core:3.10.1'
-    
+    implementation "com.twelvemonkeys.imageio:imageio-batik:${imageIOVersion}"
+    implementation "com.twelvemonkeys.imageio:imageio-core:${imageIOVersion}"
+    runtimeOnly "com.twelvemonkeys.imageio:imageio-webp:${imageIOVersion}"
+
     implementation 'org.apache.xmlgraphics:batik-all:1.17'
 
     compileOnly group: "javax.annotation", name: "javax.annotation-api", version: "1.3.2"
     compileOnly group: "org.jetbrains", name: "annotations", version: "13.0"
 
     testImplementation 'junit:junit:4.13.2'
-
 }
 
 test {
     useJUnitPlatform()
 }
 
-protobuf {
-    protoc {
-        artifact = 'com.google.protobuf:protoc:4.26.0-RC1'
-    }
-
-    plugins {
-        grpc {
-            artifact = "io.grpc:protoc-gen-grpc-java:${grpcVersion}"
-        }
-    }
-    generateProtoTasks {
-    	
-        ofSourceSet("main").forEach { 
-        	it.group = "my gen proto group"
-            it.plugins {
-                grpc{}
-            }
-        }
-    }
-    //generateProtoTasks {
-    //    all()*.plugins {
-    //        grpc {}
-    //    }
-    //}
-}
+//
+//protobuf {
+//    protoc {
+//        artifact = 'com.google.protobuf:protoc:4.26.0-RC1'
+//    }
+//
+//    plugins {
+//        grpc {
+//            artifact = "io.grpc:protoc-gen-grpc-java:${grpcVersion}"
+//        }
+//    }
+//    generateProtoTasks {
+//        ofSourceSet("main").forEach {
+//            it.group = "my gen proto group"
+//            it.plugins {
+//                grpc{}
+//            }
+//        }
+//    }
+//}
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_22
-    targetCompatibility = JavaVersion.VERSION_22
+    sourceCompatibility = '21'
+	targetCompatibility = '21'
+	
+	tasks.withType(JavaCompile) {
+	    options.encoding = 'UTF-8'
+	    options.release = 21
+}
 }

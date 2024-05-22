@@ -33,15 +33,19 @@ public class Sprite implements Serializable{
 	private Variable<Long> yPos = Variable.createVariable(this, "y", 0l, true);
 	private final List<DragableRenderer> blocks = new LinkedList<>();
 	private transient Map<Class<? extends EventBlock>, List<EventBlock>> eventMap = null;
-	private static final BufferedImage DEFAULT_TEXTURE = IRenderer.getRes("textures/sprite/def.svg");
+	public static final BufferedImage DEFAULT_TEXTURE = IRenderer.getRes("textures/sprite/def.svg");
 	private transient List<BufferedImage> textures = new ArrayList<>();
 	private int selectedTexture = 0;
 	
 	public Sprite() {
+		this("Sprite", DEFAULT_TEXTURE);
+	}
+	
+	public Sprite(String name, BufferedImage texture) {
 		eventMap = new HashMap<>();
 		Variable.registerSprite(this);
-		textures.add(DEFAULT_TEXTURE);
-		name = "Sprite";
+		textures.add(texture);
+		this.name = name;
 	}
 	
 	public void registerEvent(EventBlock event) {
