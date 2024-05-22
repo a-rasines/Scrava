@@ -4,6 +4,7 @@ import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
+import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import java.util.LinkedList;
 import java.util.List;
@@ -71,6 +72,11 @@ public class BlockBundleRenderer implements CapsuleRenderer{
 		
 		BufferedImage bi = new BufferedImage(getWidth(), getHeight() + InvocableBlockRenderer.CONNECTOR.getHeight(), BufferedImage.TYPE_4BYTE_ABGR);
 		Graphics2D g = (Graphics2D) bi.getGraphics();
+		if(g instanceof Graphics2D g2d) {
+			 g2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+	         g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+	         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+		}
 		g.setFont(new Font( font.getName(), Font.PLAIN, 55 ));
 		blockRect = new Rect(ARM_BLOCK.getWidth() - 4, 0, 0, bi.getWidth() - ARM_BLOCK.getWidth() + 4);
 		
@@ -319,39 +325,5 @@ public class BlockBundleRenderer implements CapsuleRenderer{
 	public int bundleCount() {
 		return 1;
 	}
-	
-//	public static void main(String[] args) {
-//		
-//		BlockBundleRenderer sampleImage = new BlockBundleRenderer(new IfBlock(
-//																		new BooleanLiteral(true), 
-//																			new MoveBlock(null), 
-//																			new MoveBlock(null),
-//																			new MoveBlock(null),
-//																			new MoveBlock(null)) {
-//			private static final long serialVersionUID = -4006721083467801784L;
-//
-//			public boolean attachable() {
-//				return false;
-//			}
-//		}, false);
-//	 	
-//        SwingUtilities.invokeLater(() -> {
-//            JFrame frame = new JFrame("Image Display");
-//            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-//            frame.setSize(1000, 1000);
-//
-//            JPanel panel = new JPanel() {
-//				private static final long serialVersionUID = -94843536618228336L;
-//
-//				@Override
-//                protected void paintComponent(Graphics g) {
-//                    g.drawImage(sampleImage.getRenderable(), 100, 100, this);
-//                }
-//            };
-//            frame.getContentPane().add(panel);
-//
-//            frame.setVisible(true);
-//        });
-//	}
 
 }

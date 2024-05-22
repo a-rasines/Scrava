@@ -61,61 +61,7 @@ public interface IRenderer extends Serializable {
 			e.printStackTrace();
 			return null;
 		}
-	}
-	
-//	final static Map<IRenderable, DragableRenderer> DRAG_RENDS = new HashMap<>();
-//	/**
-//	 * Returns the {@link ui.renderers.IRenderer.DragableRenderer DragableRenderer} of the {@link ui.renderers.IRenderer.IRenderable IRenderable}
-//	 * @param b
-//	 * @return
-//	 */
-//	public static DragableRenderer getDragableRendererOf(IRenderable b) {
-//		try {
-//			if(b.getRenderer() == null)
-//				return null;
-//			if(b.getRenderer().getParameterCount() == 1) {
-//				DRAG_RENDS.putIfAbsent(b, (DragableRenderer) b.getRenderer().newInstance(b));
-//			}
-//			return DRAG_RENDS.get(b);
-//		} catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-//			e.printStackTrace();
-//			return null;
-//		}
-//	}
-//	/**
-//	 * This function creates a new instance of the renderer without checking for singleton instances. Avoid using if possible.
-//	 * @param b
-//	 * @return {@link ui.renderers.IRenderer.DragableRenderer DragableRenderer} of the {@link ui.renderers.IRenderer.IRenderable IRenderable} passed as parameter.
-//	 */
-//	public static DragableRenderer getDetachedDragableRendererOf(IRenderable b) {
-//		try {
-//			if(b.getRenderer() != null && b.getRenderer().getParameterCount() == 1)
-//				return (DragableRenderer) b.getRenderer().newInstance(b);
-//		} catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-//			e.printStackTrace();
-//		}
-//		return null;
-//	}
-//	
-//	public static SimpleBlockRenderer getDragableRendererOf(SimpleRenderable sbr) {
-//		DRAG_RENDS.putIfAbsent(sbr, new SimpleBlockRenderer(sbr));
-//		return (SimpleBlockRenderer) DRAG_RENDS.get(sbr);
-//	}
-//	
-//	public static InvocableBlockRenderer getDragableRendererOf(InvocableBlockRenderable ibr) {
-//		DRAG_RENDS.putIfAbsent(ibr, new InvocableBlockRenderer(ibr));
-//		return (InvocableBlockRenderer) DRAG_RENDS.get(ibr);
-//	}
-//	
-//	public static CapsuleBlockRenderer getDragableRendererOf(CapsuleBlock cr) {
-//		DRAG_RENDS.putIfAbsent(cr, new CapsuleBlockRenderer(cr));
-//		return (CapsuleBlockRenderer) DRAG_RENDS.get(cr);
-//	}
-//	
-//	public static DragableRenderer getDragableRendererOf(Valuable<?> b) {
-//		return getDragableRendererOf((IRenderable)b);
-//	}
-	
+	}	
 	
 	public default void background(BufferedImage rendered, int height, int start, int width) {
 		for(int y = 0; y < height; y++) {
@@ -265,7 +211,8 @@ public interface IRenderer extends Serializable {
 		 * Gets the y position of the rendered object
 		 * @return
 		 */
-		public int getY();
+		public int getY();		
+		
 		/**
 		 * Changes the X and Y values of the object
 		 * @param x

@@ -4,6 +4,7 @@ import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
+import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import java.util.LinkedList;
 import java.util.List;
@@ -70,6 +71,11 @@ public class CapsuleBlockRenderer implements CapsuleRenderer{
 		
 		BufferedImage bi = new BufferedImage(getWidth(), getHeight() + InvocableBlockRenderer.CONNECTOR.getHeight(), BufferedImage.TYPE_4BYTE_ABGR);
 		Graphics2D g = (Graphics2D) bi.getGraphics();
+		if(g instanceof Graphics2D g2d) {
+			 g2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+	         g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+	         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+		}
 		g.setFont(new Font( font.getName(), Font.PLAIN, 55 ));
 		blockRect = new Rect(ARM_BLOCK.getWidth() - 4, 0, 0, bi.getWidth() - ARM_BLOCK.getWidth() + 4);
 		

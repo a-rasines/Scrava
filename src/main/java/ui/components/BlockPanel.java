@@ -6,6 +6,7 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
+import java.awt.RenderingHints;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
@@ -26,11 +27,11 @@ import clickable.InvocableClickable;
 import domain.models.interfaces.Clickable.Rect;
 import ui.EmptyLayout;
 import ui.FlashThread;
-import ui.VariableCreator;
+import ui.dialogs.VariableCreator;
 import ui.renderers.IRenderer.DragableRenderer;
 import ui.renderers.IRenderer.IRenderable;
 
-public class BlockPanel extends JLayeredPane{
+public class BlockPanel extends JLayeredPane {
 	
 	public static final boolean DEBUG_SHOW_HITBOXES = false;
 	public static final boolean DEBUG_SHOW_HASHES = false;	
@@ -137,7 +138,10 @@ public class BlockPanel extends JLayeredPane{
 		add(BOTON_VARIABLES, JLayeredPane.PALETTE_LAYER);
 		add(clickedLabel, JLayeredPane.MODAL_LAYER);
 		
-		BOTON_VARIABLES.addActionListener((v)-> new VariableCreator().setVisible(true));
+		BOTON_VARIABLES.addActionListener((v)-> {
+			if(!VariableCreator.isAlreadyOpen())
+				new VariableCreator().setVisible(true);
+		});
 		BOTON_VARIABLES.setVisible(false);
 	
 		setDoubleBuffered(false);
@@ -155,6 +159,9 @@ public class BlockPanel extends JLayeredPane{
 			}
 			
 		});
+		
+		System.setProperty("sun.java2d.opengl", "true");
+	    System.setProperty("sun.java2d.d3d", "true");
 		repaint();
 	}
 	
@@ -225,8 +232,19 @@ public class BlockPanel extends JLayeredPane{
 		}
 		if(rend == null)
 			try {
+				if(g instanceof Graphics2D g2d) {
+					 g2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+			        g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+			        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+				}
 				rend = new BufferedImage(getWidth(), getHeight(), BufferedImage.TYPE_3BYTE_BGR);
 				Graphics g0 = rend.getGraphics();
+				if(g0 instanceof Graphics2D g2d) {
+					 g2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+			        g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+			        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+				}
+				((Graphics2D)g0).setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
 				g0.setColor(Color.white);
 				g0.fillRect(0, 0, this.getWidth(), this.getHeight());
 				List<DragableRenderer> _temp = new ArrayList<>(blocks);

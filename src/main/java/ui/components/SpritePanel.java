@@ -6,6 +6,8 @@ import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.util.Arrays;
 import java.util.List;
@@ -13,17 +15,19 @@ import java.util.List;
 import javax.swing.DefaultListModel;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
+import javax.swing.JLayeredPane;
 import javax.swing.JList;
-import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.ListCellRenderer;
 import javax.swing.ListSelectionModel;
 
 import domain.Sprite;
 import ui.EmptyLayout;
+import ui.dialogs.SpriteCreateDialog;
+import ui.renderers.IRenderer;
 import ui.renderers.IRenderer.DragableRenderer;
 
-public class SpritePanel extends JPanel implements ComponentListener {
+public class SpritePanel extends JLayeredPane implements ComponentListener {
 
 	private static final long serialVersionUID = 5118042588735984151L;
 	
@@ -32,6 +36,7 @@ public class SpritePanel extends JPanel implements ComponentListener {
 	private SpriteList sl;
 	private DefaultListModel<Sprite> sprites;
 	private JScrollPane spritePane;
+	private JLabel addButton;
 	
 	public static void addSprite(Sprite s) {
 		INSTANCE.sprites.addElement(s);
@@ -63,7 +68,18 @@ public class SpritePanel extends JPanel implements ComponentListener {
 		spritePane = new JScrollPane(sl);
 		setLayout(new EmptyLayout());
 		addComponentListener(this);
-		add(spritePane);
+		add(spritePane, JLayeredPane.DEFAULT_LAYER);
+		addButton = new JLabel(new ImageIcon(IRenderer.getRes("textures/ui/add.svg")));
+		addButton.addMouseListener(new MouseAdapter() {
+			
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				if(!SpriteCreateDialog.isAlreadyOpen())
+					new SpriteCreateDialog().setVisible(true);
+			}
+			
+		});
+		add(addButton, JLayeredPane.PALETTE_LAYER);
 	}
 	
 
@@ -71,6 +87,7 @@ public class SpritePanel extends JPanel implements ComponentListener {
 	public void componentResized(ComponentEvent e) {
 		spritePane.setBounds(200, 0, getWidth() - 200, getHeight());
 		sl.setBounds(spritePane.getBounds());
+		addButton.setBounds(getWidth() - 25, getHeight() - 25, 25, 25);
 	}
 
 	@Override

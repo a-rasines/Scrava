@@ -1,4 +1,4 @@
-package ui;
+package ui.dialogs;
 
 import java.awt.EventQueue;
 import java.awt.FlowLayout;
@@ -12,7 +12,6 @@ import java.util.function.Function;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -22,7 +21,7 @@ import domain.values.Variable;
 import ui.components.BlockSelectorPanel;
 import ui.components.SpritePanel;
 
-public class VariableCreator extends JFrame {
+public class VariableCreator extends ScDialog {
 
 	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
@@ -49,7 +48,6 @@ public class VariableCreator extends JFrame {
 	 * Create the frame.
 	 */
 	public VariableCreator() {
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 400, 180);
 		setResizable(false);
 		contentPane = new JPanel();

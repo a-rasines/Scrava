@@ -127,7 +127,6 @@ public class Variable<T> extends AbstractLiteral<T> implements SimpleRenderable 
 
 		@Override
 		public Variable<?>[] getValues() {
-			System.out.println(variables);
 			Variable<?>[] var = new Variable<?>[variables.get(null).size() + variables.get(SpritePanel.getSprite()).size()];
 			Iterator<Variable<?>> it = variables.get(null).values().iterator();
 			for(int i = 0; i < variables.get(null).size(); i++)

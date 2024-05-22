@@ -82,7 +82,7 @@ public class ProjectFrame extends JFrame implements WindowFocusListener {
 				BlockPanel.INSTANCE.setBounds((int) (getWidth()*2/5)+10, 0, (int) (getWidth()*3/5) - 25, getHeight());
 				int w = (int) (getWidth()*2/5);
 				ActionPanel.INSTANCE.setBounds(0, 0, w, w * 2 / 3);
-				SpritePanel.INSTANCE.setBounds(0, 30 + w * 2 / 3, w, getHeight() - w * 2 / 3 - 30);
+				SpritePanel.INSTANCE.setBounds(0, 30 + w * 2 / 3, w, getHeight() - w * 2 / 3 - 95);
 				startButton.setBounds(0, w * 2/3, 100, 20);
 				tickButton.setBounds(100, w * 2/3, 100, 20);
 				endButton.setBounds(200, w * 2/3, 100, 20);

@@ -5,6 +5,7 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import java.util.HashMap;
 import java.util.List;
@@ -70,14 +71,14 @@ public class LiteralRenderer implements IRenderer {
 		this.type = type;
 		this.clickable = new LiteralClickable(this, (AbstractLiteral<?>)block, parent);
 	}
-	public transient static final BufferedImage STRING_VAR_START = IRenderer.getRes("textures/variable/stringstart.svg");
-	public transient static final BufferedImage STRING_VAR_END = IRenderer.getRes("textures/variable/stringend.svg");
-	public transient static final BufferedImage NUM_VAR_START = IRenderer.getRes("textures/variable/numstart.svg");
-	public transient static final BufferedImage NUM_VAR_END = IRenderer.getRes("textures/variable/numend.svg");
-	public transient static final BufferedImage BOOLEAN_VAR_START = IRenderer.getRes("textures/variable/booleanstart.svg");
-	public transient static final BufferedImage BOOLEAN_VAR_END = IRenderer.getRes("textures/variable/booleanend.svg");
-	public transient static final BufferedImage ENUM_VAR_START = IRenderer.getRes("textures/variable/enumstart.svg");
-	public transient static final BufferedImage ENUM_VAR_END = IRenderer.getRes("textures/variable/enumend.svg");
+	public transient static final BufferedImage STRING_VAR_START = IRenderer.getRes("textures/variable/literal/stringstart.svg");
+	public transient static final BufferedImage STRING_VAR_END = IRenderer.getRes("textures/variable/literal/stringend.svg");
+	public transient static final BufferedImage NUM_VAR_START = IRenderer.getRes("textures/variable/literal/numstart.svg");
+	public transient static final BufferedImage NUM_VAR_END = IRenderer.getRes("textures/variable/literal/numend.svg");
+	public transient static final BufferedImage BOOLEAN_VAR_START = IRenderer.getRes("textures/variable/literal/booleanstart.svg");
+	public transient static final BufferedImage BOOLEAN_VAR_END = IRenderer.getRes("textures/variable/literal/booleanend.svg");
+	public transient static final BufferedImage ENUM_VAR_START = IRenderer.getRes("textures/variable/literal/enumstart.svg");
+	public transient static final BufferedImage ENUM_VAR_END = IRenderer.getRes("textures/variable/literal/enumend.svg");
 
 	@Override
 	public BufferedImage getRenderable() {
@@ -111,7 +112,12 @@ public class LiteralRenderer implements IRenderer {
 	}
 		rendered = new BufferedImage(left.getWidth() + right.getWidth() + value.length() * FONT_WIDTH, left.getHeight(), BufferedImage.TYPE_INT_ARGB);
 		Graphics g = rendered.getGraphics();
-		((Graphics2D)g).setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, opacity));
+		if(g instanceof Graphics2D g2d) {
+			 g2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+	         g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+	         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+	         g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, opacity));
+		}
 		background(
 				rendered,
 				left.getHeight(), 

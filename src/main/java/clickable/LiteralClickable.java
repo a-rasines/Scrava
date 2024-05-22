@@ -17,7 +17,7 @@ import domain.values.AbstractLiteral;
 import domain.values.BooleanLiteral;
 import domain.values.EnumLiteral;
 import ui.FlashThread;
-import ui.ValueSelector;
+import ui.dialogs.ValueSelector;
 import ui.renderers.IRenderer;
 import ui.renderers.LiteralRenderer;
 

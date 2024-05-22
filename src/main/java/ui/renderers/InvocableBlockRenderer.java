@@ -5,6 +5,7 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import java.util.LinkedList;
 import java.util.List;
@@ -95,6 +96,11 @@ public class InvocableBlockRenderer implements DragableRenderer {
 		
 		BufferedImage rendered = new BufferedImage(width, height + CONNECTOR.getHeight(), BufferedImage.TYPE_INT_ARGB); //Thread safe
 		Graphics g = rendered.getGraphics();
+		if(g instanceof Graphics2D g2d) {
+			 g2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+	         g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+	         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+		}
 		g.setFont(new Font( font.getName(), Font.PLAIN, 55 ));
 		
 		g.drawImage(replaceColor(clone(LEFT_TOP), block.getCategory().color), 0, 0, null);
