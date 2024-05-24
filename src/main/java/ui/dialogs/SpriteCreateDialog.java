@@ -70,7 +70,7 @@ public class SpriteCreateDialog extends ScDialog {
 		
 		JPanel panel_size = new JPanel();
 		panel.add(panel_size);
-		panel_size.add(new JLabel("Zoom:"));
+		panel_size.add(new JLabel("Scale:"));
 		JTextField zoomField = new JTextField(10);
 		zoomField.setText("1");
 		zoomField.addKeyListener(new DoubleKeyListener(zoomField));
@@ -114,7 +114,7 @@ public class SpriteCreateDialog extends ScDialog {
 					return;
 				}
 			Sprite s = new Sprite(textField.getText(), img);
-			s.getZoom().setValue(Double.parseDouble(zoomField.getText()));
+			s.getScale().setValue(Double.parseDouble(zoomField.getText()));
 			SpritePanel.addSprite(s);
 			dispose();
 		});

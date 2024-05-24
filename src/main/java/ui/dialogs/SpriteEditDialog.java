@@ -33,6 +33,7 @@ import javax.swing.border.TitledBorder;
 
 import domain.Sprite;
 import ui.ImageFilter;
+import ui.components.ActionPanel;
 import ui.listeners.DoubleKeyListener;
 import ui.listeners.NameKeyListener;
 
@@ -62,15 +63,16 @@ public class SpriteEditDialog extends ScDialog implements ListCellRenderer<Buffe
 	public SpriteEditDialog(Sprite s) {
 		DefaultListModel<BufferedImage> dlm = new DefaultListModel<>();
 		dlm.addAll(s.getTextures());
-		
 		JList<BufferedImage> list = new JList<>(dlm);
 		list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		list.setLayoutOrientation(JList.HORIZONTAL_WRAP);
 		list.setVisibleRowCount(1);
 		list.setCellRenderer(this);
+		list.setSelectedIndex(s.getSelectedTexture());
 		
 		//setResizable(false);
 		JLabel selectedTextureLbl = new JLabel(new ImageIcon(s.getRendered()));
+		
 		setBounds(100, 100, 570, 350);
 		getContentPane().setLayout(new BorderLayout());
 		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -112,13 +114,22 @@ public class SpriteEditDialog extends ScDialog implements ListCellRenderer<Buffe
 					JPanel panel_2 = new JPanel();
 					panel_1.add(panel_2);
 					{
-						JLabel lblNewLabel_1 = new JLabel("Zoom:");
+						JLabel lblNewLabel_1 = new JLabel("Scale:");
 						panel_2.add(lblNewLabel_1);
 					}
 					{
 						textField_1 = new JTextField();
-						textField_1.setText(s.getZoom().value().toString());
+						textField_1.setText(s.getScale().value().toString());
 						textField_1.addKeyListener(new DoubleKeyListener(textField_1));
+						list.addListSelectionListener((e) -> {
+							BufferedImage temp = list.getSelectedValue();
+							double scale = 1;
+							try {
+								scale = Double.parseDouble(textField_1.getText());
+							} catch (Exception _e) {}
+							selectedTextureLbl.setIcon(new ImageIcon(temp.getScaledInstance((int)(temp.getWidth() * scale), (int)(temp.getHeight() * scale), Image.SCALE_FAST)));
+								
+						});
 						panel_2.add(textField_1);
 						textField_1.setColumns(10);
 					}
@@ -162,7 +173,9 @@ public class SpriteEditDialog extends ScDialog implements ListCellRenderer<Buffe
 			{
 				JButton okButton = new JButton("OK");
 				okButton.addActionListener((e) -> {
-					s.getZoom().setValue(Double.parseDouble(textField_1.getText()));
+					try {
+						s.getScale().setValue(Double.parseDouble(textField_1.getText()));
+					} catch(NumberFormatException _e) {}
 					s.setName(textField.getText());
 					List<BufferedImage> textures = s.getTextures();
 					textures.clear();
@@ -170,6 +183,8 @@ public class SpriteEditDialog extends ScDialog implements ListCellRenderer<Buffe
 					while(el.hasMoreElements())
 						textures.add(el.nextElement());
 					s.setSelectedTexture(list.getSelectedIndex());
+					ActionPanel.INSTANCE.repaint();
+					dispose();
 				});
 				buttonPane.add(okButton);
 				getRootPane().setDefaultButton(okButton);
@@ -180,7 +195,7 @@ public class SpriteEditDialog extends ScDialog implements ListCellRenderer<Buffe
 			}
 			{
 				JButton cancelButton = new JButton("Cancel");
-				cancelButton.setActionCommand("Cancel");
+				cancelButton.addActionListener(e -> dispose());
 				buttonPane.add(cancelButton);
 			}
 		}

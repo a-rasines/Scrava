@@ -32,7 +32,7 @@ public class Sprite implements Serializable{
 	private String name;
 	private Variable<Long> xPos = Variable.createVariable(this, "x", 0l, true);
 	private Variable<Long> yPos = Variable.createVariable(this, "y", 0l, true);
-	private Variable<Double> zoom = Variable.createVariable(this, "zoom", 1., true);
+	private Variable<Double> scale = Variable.createVariable(this, "scale", 1., true);
 	private final List<DragableRenderer> blocks = new LinkedList<>();
 	private transient Map<Class<? extends EventBlock>, List<EventBlock>> eventMap = null;
 	public static final BufferedImage DEFAULT_TEXTURE = IRenderer.getRes("textures/sprite/def.svg");
@@ -100,13 +100,18 @@ public class Sprite implements Serializable{
 	
 	public Image getRendered() {
 		BufferedImage fullSize = textures.get(selectedTexture);
-		return fullSize.getScaledInstance((int)(fullSize.getWidth() * zoom.value()), (int)(fullSize.getHeight() * zoom.value()), BufferedImage.SCALE_FAST);
+		return fullSize.getScaledInstance((int)(fullSize.getWidth() * scale.value()), (int)(fullSize.getHeight() * scale.value()), BufferedImage.SCALE_FAST);
 	}
 	
 	//																											GETTERS / SETTERS
 	
 	public void setSelectedTexture(int st) {
-		this.selectedTexture = st;
+		if(st >= 0 && st < textures.size())
+			this.selectedTexture = st;
+	}
+	
+	public int getSelectedTexture() {
+		return selectedTexture;
 	}
 	
 	public void setSelectedTexture(BufferedImage bi) {
@@ -144,8 +149,8 @@ public class Sprite implements Serializable{
 		return yPos;
 	}
 	
-	public Variable<Double> getZoom() {
-		return zoom;
+	public Variable<Double> getScale() {
+		return scale;
 	}
 	
 	public List<DragableRenderer> getBlocks() {
