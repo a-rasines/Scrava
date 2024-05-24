@@ -2,14 +2,8 @@ package ui.dialogs;
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
 
 import javax.imageio.ImageIO;
 import javax.swing.BoxLayout;
@@ -23,10 +17,12 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.EtchedBorder;
-import javax.swing.filechooser.FileFilter;
 
 import domain.Sprite;
+import ui.ImageFilter;
 import ui.components.SpritePanel;
+import ui.listeners.DoubleKeyListener;
+import ui.listeners.NameKeyListener;
 
 public class SpriteCreateDialog extends ScDialog {
 
@@ -46,7 +42,8 @@ public class SpriteCreateDialog extends ScDialog {
 	private BufferedImage img = Sprite.DEFAULT_TEXTURE;
 	
 	public SpriteCreateDialog() {
-		setBounds(100, 100, 400, 150);
+		setBounds(100, 100, 400, 180);
+		setResizable(false);
 		getContentPane().setLayout(new BorderLayout());
 		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
 		getContentPane().add(contentPanel, BorderLayout.CENTER);
@@ -62,22 +59,23 @@ public class SpriteCreateDialog extends ScDialog {
 		JPanel panel = new JPanel();
 		contentPanel.add(panel);
 		panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+		
 		JPanel panel_name = new JPanel();
 		panel.add(panel_name);
-		JLabel lblNewLabel_1 = new JLabel("Set name");
-		panel_name.add(lblNewLabel_1);
+		panel_name.add(new JLabel("Set name"));
 		textField = new JTextField();
 		textField.setColumns(10);
-		textField.addKeyListener(new KeyAdapter() {
-			
-			@Override
-			public void keyTyped(KeyEvent e) {
-				if(e.getKeyChar() >= '0' && e.getKeyChar() <= '9' || e.getKeyChar() >= 'a' && e.getKeyChar() <= 'z' || e.getKeyChar() >= 'A' && e.getKeyChar() <= 'Z' || e.getKeyChar() == '_');
-				else e.consume();
-			}
-			
-		});
+		textField.addKeyListener(new NameKeyListener());
 		panel_name.add(textField);
+		
+		JPanel panel_size = new JPanel();
+		panel.add(panel_size);
+		panel_size.add(new JLabel("Zoom:"));
+		JTextField zoomField = new JTextField(10);
+		zoomField.setText("1");
+		zoomField.addKeyListener(new DoubleKeyListener(zoomField));
+		panel_size.add(zoomField);
+		
 		JPanel panel_1 = new JPanel();
 		panel.add(panel_1);
 		panel_1.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
@@ -115,32 +113,14 @@ public class SpriteCreateDialog extends ScDialog {
 					JOptionPane.showMessageDialog(null, "There's already an sprite with that name");
 					return;
 				}
-			SpritePanel.addSprite(new Sprite(textField.getText(), img));
+			Sprite s = new Sprite(textField.getText(), img);
+			s.getZoom().setValue(Double.parseDouble(zoomField.getText()));
+			SpritePanel.addSprite(s);
 			dispose();
 		});
 		buttonPane.add(okButton);
 		JButton cancelButton = new JButton("Cancel");
 		cancelButton.addActionListener((e) -> dispose());
 		buttonPane.add(cancelButton);
-	}
-	private static class ImageFilter extends FileFilter {
-		private static final Set<String> supportedSuffixes = new HashSet<>(Arrays.asList(ImageIO.getReaderFileSuffixes()));
-		@Override
-        public boolean accept(File file) {
-            if (file.isDirectory()) {
-                return true;
-            }
-            String fileName = file.getName().toLowerCase();
-            for (String suffix : supportedSuffixes) {
-                if (fileName.endsWith("." + suffix)) {
-                    return true;
-                }
-            }
-            return false;
-        }
-		@Override
-        public String getDescription() {
-            return "Image Files (" + String.join(", ", supportedSuffixes) + ")";
-        }
 	}
 }

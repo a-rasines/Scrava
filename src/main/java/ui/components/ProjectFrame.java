@@ -77,12 +77,13 @@ public class ProjectFrame extends JFrame implements WindowFocusListener {
 		setMinimumSize(new Dimension(Math.max(700, (int)screenSize.getWidth() / 2), Math.max(500, (int)screenSize.getHeight() / 2)));
 		
 		addComponentListener(new ComponentAdapter() {
+			private final int DOWN_OFFSET = 60;
 			@Override
 			public void componentResized(ComponentEvent e) {
-				BlockPanel.INSTANCE.setBounds((int) (getWidth()*2/5)+10, 0, (int) (getWidth()*3/5) - 25, getHeight());
+				BlockPanel.INSTANCE.setBounds((int) (getWidth()*2/5)+10, 0, (int) (getWidth()*3/5) - 25, getHeight() - DOWN_OFFSET);
 				int w = (int) (getWidth()*2/5);
 				ActionPanel.INSTANCE.setBounds(0, 0, w, w * 2 / 3);
-				SpritePanel.INSTANCE.setBounds(0, 30 + w * 2 / 3, w, getHeight() - w * 2 / 3 - 95);
+				SpritePanel.INSTANCE.setBounds(0, 30 + w * 2 / 3, w, getHeight() - w * 2 / 3 - 35 - DOWN_OFFSET);
 				startButton.setBounds(0, w * 2/3, 100, 20);
 				tickButton.setBounds(100, w * 2/3, 100, 20);
 				endButton.setBounds(200, w * 2/3, 100, 20);

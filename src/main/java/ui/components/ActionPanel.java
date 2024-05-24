@@ -2,6 +2,7 @@ package ui.components;
 
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.Image;
 import java.awt.image.BufferedImage;
 
 import javax.swing.JPanel;
@@ -21,13 +22,14 @@ public class ActionPanel extends JPanel{
 		g.setColor(Color.white);
 		g.fillRect(0, 0, getWidth(), getHeight());
 		for(Sprite s : SpritePanel.getSprites()) {
+			Image i = s.getRendered();
 			g.drawImage(
-					s.getRendered().getScaledInstance(
-							s.getRendered().getWidth() * getWidth() / 1000, 
-							s.getRendered().getHeight() * getWidth() / 1000, 
+					i.getScaledInstance(
+							i.getWidth(null) * getWidth() / 1000, 
+							i.getHeight(null) * getWidth() / 1000, 
 							BufferedImage.SCALE_FAST), 
-					(int)((s.getX().value() - s.getRendered().getWidth()/2) * getWidth() / 1000), 
-					(int)((s.getY().value() - s.getRendered().getHeight()/2) * getWidth() / 1000),
+					(int)((s.getX().value() - i.getWidth(null)/2) * getWidth() / 1000), 
+					(int)((s.getY().value() - i.getHeight(null)/2) * getWidth() / 1000),
 					null);
 		}
 	}

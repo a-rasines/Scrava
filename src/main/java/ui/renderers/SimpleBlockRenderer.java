@@ -36,8 +36,8 @@ public class SimpleBlockRenderer implements DragableRenderer{
 		public enum BlockCategory {
 				OPERATOR(IRenderer.getRes("textures/operator/start.svg"), IRenderer.getRes("textures/operator/end.svg")),
 				NUMBER_VARIABLE(IRenderer.getRes("textures/variable/numvarstart.svg"), IRenderer.getRes("textures/variable/numvarend.svg")),
-				STRING_VARIABLE(null, null),
-				BOOLEAN_VARIABLE(null, null),
+				STRING_VARIABLE(IRenderer.getRes("textures/variable/stringvarstart.svg"), IRenderer.getRes("textures/variable/stringvarend.svg")),
+				BOOLEAN_VARIABLE(IRenderer.getRes("textures/variable/booleanvarstart.svg"), IRenderer.getRes("textures/variable/booleanvarend.svg")),
 				CONDITIONAL(IRenderer.getRes("textures/operator/conditional_start.svg"), IRenderer.getRes("textures/operator/conditional_end.svg")),
 				;
 			

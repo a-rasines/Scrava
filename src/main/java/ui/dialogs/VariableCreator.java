@@ -139,7 +139,7 @@ public class VariableCreator extends ScDialog {
 				JOptionPane.showMessageDialog(null, "Variable needs a name");
 				return;
 			}
-			if(valueField.getText().length() == 0){
+			if(valueField.getText().length() == 0 && valueType.getSelectedItem() != VariableType.STRING && valueType.getSelectedItem() != VariableType.TEXT) {
 				JOptionPane.showMessageDialog(null, "Variable needs a value");
 				return;
 			}

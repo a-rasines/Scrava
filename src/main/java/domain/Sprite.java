@@ -1,5 +1,6 @@
 package domain;
 
+import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -31,6 +32,7 @@ public class Sprite implements Serializable{
 	private String name;
 	private Variable<Long> xPos = Variable.createVariable(this, "x", 0l, true);
 	private Variable<Long> yPos = Variable.createVariable(this, "y", 0l, true);
+	private Variable<Double> zoom = Variable.createVariable(this, "zoom", 1., true);
 	private final List<DragableRenderer> blocks = new LinkedList<>();
 	private transient Map<Class<? extends EventBlock>, List<EventBlock>> eventMap = null;
 	public static final BufferedImage DEFAULT_TEXTURE = IRenderer.getRes("textures/sprite/def.svg");
@@ -48,24 +50,12 @@ public class Sprite implements Serializable{
 		this.name = name;
 	}
 	
+	//																													EVENTS
+	
 	public void registerEvent(EventBlock event) {
 		eventMap.putIfAbsent(event.getClass(), new LinkedList<>());
 		eventMap.get(event.getClass()).add(event);
 	}
-	
-	public List<EventBlock> getEvents(Class<? extends EventBlock> type) {
-		eventMap.putIfAbsent(type, new LinkedList<>());
-		return eventMap.get(type);
-	}
-	
-	public void reset() {
-		xPos.reset();
-		yPos.reset();
-		for(List<EventBlock> l : eventMap.values())
-			for(EventBlock eb : l)
-				eb.reset();
-	}
-	
 	public void deleteEvent(EventBlock event) {
 		event.getRenderer().delete();
 	}
@@ -80,8 +70,9 @@ public class Sprite implements Serializable{
 				eb.invoke();
 	}
 	
-	public BufferedImage getRendered() {
-		return textures.get(selectedTexture);
+	public List<EventBlock> getEvents(Class<? extends EventBlock> type) {
+		eventMap.putIfAbsent(type, new LinkedList<>());
+		return eventMap.get(type);
 	}
 	
 	public void onStart() {
@@ -95,6 +86,39 @@ public class Sprite implements Serializable{
 		for(EventBlock keb : eventMap.get(ev))
 			((KeyEventBlock)keb).invoke(key);
 		
+	}
+	
+	public void reset() {
+		xPos.reset();
+		yPos.reset();
+		for(List<EventBlock> l : eventMap.values())
+			for(EventBlock eb : l)
+				eb.reset();
+	}
+	
+	//																											TEXTURE
+	
+	public Image getRendered() {
+		BufferedImage fullSize = textures.get(selectedTexture);
+		return fullSize.getScaledInstance((int)(fullSize.getWidth() * zoom.value()), (int)(fullSize.getHeight() * zoom.value()), BufferedImage.SCALE_FAST);
+	}
+	
+	//																											GETTERS / SETTERS
+	
+	public void setSelectedTexture(int st) {
+		this.selectedTexture = st;
+	}
+	
+	public void setSelectedTexture(BufferedImage bi) {
+		this.selectedTexture = getTextures().indexOf(bi);
+	}
+	
+	public List<BufferedImage> getTextures() {
+		return textures;
+	}
+	
+	public void setName(String newName) {
+		name = newName;
 	}
 	
 	/**
@@ -118,6 +142,10 @@ public class Sprite implements Serializable{
 	 */
 	public Variable<Long> getY() {
 		return yPos;
+	}
+	
+	public Variable<Double> getZoom() {
+		return zoom;
 	}
 	
 	public List<DragableRenderer> getBlocks() {

@@ -8,6 +8,7 @@ import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
 import java.util.Arrays;
 import java.util.List;
@@ -24,6 +25,7 @@ import javax.swing.ListSelectionModel;
 import domain.Sprite;
 import ui.EmptyLayout;
 import ui.dialogs.SpriteCreateDialog;
+import ui.dialogs.SpriteEditDialog;
 import ui.renderers.IRenderer;
 import ui.renderers.IRenderer.DragableRenderer;
 
@@ -44,6 +46,7 @@ public class SpritePanel extends JLayeredPane implements ComponentListener {
 			INSTANCE.sl.setSelectedIndex(0);
 		INSTANCE.sl.setVisibleRowCount(INSTANCE.sprites.size()%3==0?INSTANCE.sprites.size()/3:INSTANCE.sprites.size()/3 + 1);
 		BlockPanel.INSTANCE.changeSprite();
+		ActionPanel.INSTANCE.repaint();
 	}
 	
 	public static void clearSprites() {
@@ -60,7 +63,7 @@ public class SpritePanel extends JLayeredPane implements ComponentListener {
 	}
 	
 	
-	private int selectedIndex = 0;
+	private int selectedIndex = -1;
 	
 	private SpritePanel() {
 		sprites = new DefaultListModel<Sprite>();
@@ -99,7 +102,7 @@ public class SpritePanel extends JLayeredPane implements ComponentListener {
 	@Override
 	public void componentHidden(ComponentEvent e) {}
 
-	private class SpriteList extends JList<Sprite> implements ListCellRenderer<Sprite> {
+	private class SpriteList extends JList<Sprite> implements ListCellRenderer<Sprite>, MouseListener {
 		private static final long serialVersionUID = -431526313947694850L;
 		
 		public SpriteList() {
@@ -110,8 +113,12 @@ public class SpritePanel extends JLayeredPane implements ComponentListener {
 			setCellRenderer(this);
 			addListSelectionListener((e) -> {
 				if(getSelectedIndex() == -1 && sprites.size() > 0) setSelectedIndex(selectedIndex);
-				else BlockPanel.INSTANCE.changeSprite();
+				else {
+					BlockPanel.INSTANCE.changeSprite();
+					selectedIndex = getSelectedIndex();
+				}
 			});
+			addMouseListener(this);
 		}
 
 		@Override
@@ -129,7 +136,18 @@ public class SpritePanel extends JLayeredPane implements ComponentListener {
 			g.drawString(value.getName().length() > 10 ? value.getName().substring(0, 7) + "..." : value.getName(), 10, 130);
 			return new JLabel(new ImageIcon(out));
 		}
-			
+		
+		@Override
+		public void mouseClicked(MouseEvent e) {
+			if(locationToIndex(e.getPoint()) == selectedIndex) 
+				if(!SpriteEditDialog.isAlreadyOpen())
+						new SpriteEditDialog(getSelectedValue()).setVisible(true);
+		}
+		
+		@Override public void mousePressed(MouseEvent e) {}
+		@Override public void mouseReleased(MouseEvent e) {}
+		@Override public void mouseEntered(MouseEvent e) {}
+		@Override public void mouseExited(MouseEvent e) {}	
 		
 	}
 }
