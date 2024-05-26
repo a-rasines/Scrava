@@ -1,9 +1,9 @@
 syntax = "proto3";
 
 option java_package = "server";
-option java_outer_classname = "CipherServiceProto";
+option java_outer_classname = "ScravaProto";
 
-service Scraba {
+service Scrava {
    rpc startConnection(EmptyMessage) returns (ClientData) {}
    rpc login(ClientLogin) returns (ClientData) {}
    rpc register(ClientRegister) returns (ClientData) {}

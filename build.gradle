@@ -53,30 +53,29 @@ dependencies {
     testImplementation 'junit:junit:4.13.2'
 }
 
-test {
-    useJUnitPlatform()
-}
-
-//
-//protobuf {
-//    protoc {
-//        artifact = 'com.google.protobuf:protoc:4.26.0-RC1'
-//    }
-//
-//    plugins {
-//        grpc {
-//            artifact = "io.grpc:protoc-gen-grpc-java:${grpcVersion}"
-//        }
-//    }
-//    generateProtoTasks {
-//        ofSourceSet("main").forEach {
-//            it.group = "my gen proto group"
-//            it.plugins {
-//                grpc{}
-//            }
-//        }
-//    }
+//test {
+//    useJUnitPlatform()
 //}
+
+protobuf {
+    protoc {
+        artifact = 'com.google.protobuf:protoc:4.26.0-RC1'
+    }
+
+    plugins {
+        grpc {
+            artifact = "io.grpc:protoc-gen-grpc-java:${grpcVersion}"
+        }
+    }
+    generateProtoTasks {
+        ofSourceSet("main").forEach {
+            it.group = "my gen proto group"
+            it.plugins {
+                grpc{}
+            }
+        }
+    }
+}
 
 java {
     sourceCompatibility = '21'
@@ -85,5 +84,5 @@ java {
 	tasks.withType(JavaCompile) {
 	    options.encoding = 'UTF-8'
 	    options.release = 21
-}
+	}
 }
