@@ -4,12 +4,14 @@ option java_package = "server";
 option java_outer_classname = "ScravaProto";
 
 service Scrava {
-   rpc startConnection(EmptyMessage) returns (ClientData) {}
+   rpc startConnection(EmptyMessage) returns (CipherUpdate) {}
    rpc login(ClientLogin) returns (ClientData) {}
    rpc register(ClientRegister) returns (ClientData) {}
    rpc saveProject(SerializedObject) returns (EmptyMessage) {}
    rpc getTutorialList(Query) returns (StringList) {}
    rpc getProjectList(Query) returns (StringList) {}
+
+   rpc refreshCypher(EmptyMessage) returns (CipherUpdate) {}
    
    rpc getTutorial(Query) returns (SerializedObject) {}
    rpc getProject(Query) returns (SerializedObject) {}
@@ -21,18 +23,23 @@ message Query {
 }
 
 message SerializedObject {
-  string obj = 1;
+  string id = 1;
+  string name = 2;
+  string obj = 3;
 }
 
 message StringList {
-  repeated string results = 1;
+  repeated string ids = 1;
+  repeated string results = 2;
+}
+
+message CipherUpdate {
+  string publicKey = 1;
 }
 
 message ClientData {
   string id = 1;
   string name = 2;
-  string public_key = 3;
-  string private_key = 4;
 }
 
 message ClientLogin {

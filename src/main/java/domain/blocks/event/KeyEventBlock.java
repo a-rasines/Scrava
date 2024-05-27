@@ -26,7 +26,6 @@ public abstract class KeyEventBlock extends EventBlock {
 	
 	private void readObject(ObjectInputStream ois) throws IOException, ClassNotFoundException {
 		ois.defaultReadObject();
-		System.out.println(selected);
 		KEY = new EnumLiteral<>(KEY_MAP, this);
 		KEY.setValue(selected.toString());;
 	}

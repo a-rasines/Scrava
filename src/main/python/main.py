@@ -1,10 +1,14 @@
 import generated.service_pb2 as pb2
 import generated.service_pb2_grpc as grpc
+from cipher import *
 
 class Service(grpc.ScravaServicer):
 
-    def startConnection(self, _: pb2.EmptyMessage, context) -> pb2.ClientData:
-        pass
+    def startConnection(self, _: pb2.EmptyMessage, context) -> pb2.CipherUpdate:
+        return pb2.CipherUpdate(RSA.getPublicKey());
+    
+    def refreshCypher(self, _: pb2.EmptyMessage, context) -> pb2.CipherUpdate:
+        return pb2.CipherUpdate(RSA.getPublicKey());
 
     def login(self, request: pb2.ClientLogin, context) -> pb2.ClientData:
         pass

@@ -114,7 +114,7 @@ public class SpriteCreateDialog extends ScDialog {
 					return;
 				}
 			Sprite s = new Sprite(textField.getText(), img);
-			s.getScale().setValue(Double.parseDouble(zoomField.getText()));
+			s.getScale().setValue(Double.parseDouble(zoomField.getText()), true);
 			SpritePanel.addSprite(s);
 			dispose();
 		});

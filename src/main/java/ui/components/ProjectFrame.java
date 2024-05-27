@@ -173,6 +173,8 @@ public class ProjectFrame extends JFrame implements WindowFocusListener {
             int result = fileChooser.showOpenDialog(ProjectFrame.this);
             if (result == JFileChooser.APPROVE_OPTION)
             	Variable.readProject(fileChooser.getSelectedFile());
+            ActionPanel.INSTANCE.repaint();
+            SpritePanel.INSTANCE.repaint();
     	});
     	
     	fromServerMenuItem.addActionListener((e) -> {

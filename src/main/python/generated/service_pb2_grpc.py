@@ -42,7 +42,7 @@ class ScravaStub(object):
         self.startConnection = channel.unary_unary(
                 '/Scrava/startConnection',
                 request_serializer=service__pb2.EmptyMessage.SerializeToString,
-                response_deserializer=service__pb2.ClientData.FromString,
+                response_deserializer=service__pb2.CipherUpdate.FromString,
                 _registered_method=True)
         self.login = channel.unary_unary(
                 '/Scrava/login',
@@ -68,6 +68,11 @@ class ScravaStub(object):
                 '/Scrava/getProjectList',
                 request_serializer=service__pb2.Query.SerializeToString,
                 response_deserializer=service__pb2.StringList.FromString,
+                _registered_method=True)
+        self.refreshCypher = channel.unary_unary(
+                '/Scrava/refreshCypher',
+                request_serializer=service__pb2.EmptyMessage.SerializeToString,
+                response_deserializer=service__pb2.CipherUpdate.FromString,
                 _registered_method=True)
         self.getTutorial = channel.unary_unary(
                 '/Scrava/getTutorial',
@@ -120,6 +125,12 @@ class ScravaServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
+    def refreshCypher(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
     def getTutorial(self, request, context):
         """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
@@ -138,7 +149,7 @@ def add_ScravaServicer_to_server(servicer, server):
             'startConnection': grpc.unary_unary_rpc_method_handler(
                     servicer.startConnection,
                     request_deserializer=service__pb2.EmptyMessage.FromString,
-                    response_serializer=service__pb2.ClientData.SerializeToString,
+                    response_serializer=service__pb2.CipherUpdate.SerializeToString,
             ),
             'login': grpc.unary_unary_rpc_method_handler(
                     servicer.login,
@@ -164,6 +175,11 @@ def add_ScravaServicer_to_server(servicer, server):
                     servicer.getProjectList,
                     request_deserializer=service__pb2.Query.FromString,
                     response_serializer=service__pb2.StringList.SerializeToString,
+            ),
+            'refreshCypher': grpc.unary_unary_rpc_method_handler(
+                    servicer.refreshCypher,
+                    request_deserializer=service__pb2.EmptyMessage.FromString,
+                    response_serializer=service__pb2.CipherUpdate.SerializeToString,
             ),
             'getTutorial': grpc.unary_unary_rpc_method_handler(
                     servicer.getTutorial,
@@ -202,7 +218,7 @@ class Scrava(object):
             target,
             '/Scrava/startConnection',
             service__pb2.EmptyMessage.SerializeToString,
-            service__pb2.ClientData.FromString,
+            service__pb2.CipherUpdate.FromString,
             options,
             channel_credentials,
             insecure,
@@ -338,6 +354,33 @@ class Scrava(object):
             '/Scrava/getProjectList',
             service__pb2.Query.SerializeToString,
             service__pb2.StringList.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def refreshCypher(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/Scrava/refreshCypher',
+            service__pb2.EmptyMessage.SerializeToString,
+            service__pb2.CipherUpdate.FromString,
             options,
             channel_credentials,
             insecure,

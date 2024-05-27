@@ -1,6 +1,19 @@
 package remote;
 
+import java.nio.charset.StandardCharsets;
+import java.security.InvalidKeyException;
+import java.security.KeyFactory;
+import java.security.NoSuchAlgorithmException;
+import java.security.PublicKey;
+import java.security.spec.InvalidKeySpecException;
+import java.security.spec.X509EncodedKeySpec;
+import java.util.Base64;
 import java.util.List;
+
+import javax.crypto.BadPaddingException;
+import javax.crypto.Cipher;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
 
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
@@ -9,20 +22,52 @@ import server.ScravaGrpc.ScravaBlockingStub;
 import server.ScravaProto.ClientData;
 import server.ScravaProto.ClientLogin;
 import server.ScravaProto.ClientRegister;
+import server.ScravaProto.CypherUpdate;
+import server.ScravaProto.EmptyMessage;
 import server.ScravaProto.Query;
 import server.ScravaProto.SerializedObject;
 
 public class ClientController {
 	public static final ClientController INSTANCE = new ClientController("127.0.0.1", 8080);
+	private Cipher encryptCipher;
+	private PublicKey publicKey;
 	
 	private ScravaBlockingStub blockingStub;
 	private ClientController(String ip, int port) {
-		 ManagedChannel channel = ManagedChannelBuilder.forAddress(ip, port).useTransportSecurity().build();
-		 blockingStub = ScravaGrpc.newBlockingStub(channel);	
+		try {
+			encryptCipher = Cipher.getInstance("RSA");
+			ManagedChannel channel = ManagedChannelBuilder.forAddress(ip, port).useTransportSecurity().build();
+			blockingStub = ScravaGrpc.newBlockingStub(channel);
+			CypherUpdate cu = 	blockingStub.startConnection(EmptyMessage.getDefaultInstance());
+			publicKey = KeyFactory.getInstance("RSA").generatePublic(new X509EncodedKeySpec(Base64.getDecoder().decode(cu.getPublicKey())));
+			encryptCipher.init(Cipher.ENCRYPT_MODE, publicKey);
+		} catch (InvalidKeySpecException | NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException e) { e.printStackTrace(); }
 	}
 	
-	public ClientData login(ClientLogin cl) {
-		return blockingStub.login(cl);
+	private void refreshCypher() {
+		CypherUpdate cu = blockingStub.refreshCypher(EmptyMessage.getDefaultInstance());
+		try {
+			publicKey = KeyFactory.getInstance("RSA").generatePublic(new X509EncodedKeySpec(Base64.getDecoder().decode(cu.getPublicKey())));
+			encryptCipher.init(Cipher.ENCRYPT_MODE, publicKey);
+		} catch (InvalidKeySpecException | NoSuchAlgorithmException | InvalidKeyException e) { e.printStackTrace(); }
+	}
+	
+	private String rsaEncode(String orig) {
+		try {
+			return new String(encryptCipher.doFinal(orig.getBytes(StandardCharsets.UTF_8)), StandardCharsets.UTF_8);
+		} catch (IllegalBlockSizeException | BadPaddingException e) {
+			e.printStackTrace();
+			throw new RuntimeException(e);
+		}
+	}
+	
+	public ClientData login(String name,  String pw) {
+		return blockingStub.login(
+				ClientLogin.newBuilder()
+						   .setName(name)
+						   .setPassword(rsaEncode(pw))
+						   .build()
+				);
 	}
 	
 	public ClientData register(ClientRegister cr) {
