@@ -34,6 +34,8 @@ import javax.swing.border.TitledBorder;
 import domain.Sprite;
 import ui.ImageFilter;
 import ui.components.ActionPanel;
+import ui.components.BlockPanel;
+import ui.components.SpritePanel;
 import ui.listeners.DoubleKeyListener;
 import ui.listeners.NameKeyListener;
 
@@ -191,6 +193,13 @@ public class SpriteEditDialog extends ScDialog implements ListCellRenderer<Buffe
 			}
 			{
 				JButton deleteButton = new JButton("Delete");
+				deleteButton.setEnabled(SpritePanel.getSprites().size() > 1);
+				deleteButton.addActionListener((e) -> {
+					s.delete();
+					dispose();
+					ActionPanel.INSTANCE.repaint();
+					BlockPanel.INSTANCE.repaint();
+				});
 				buttonPane.add(deleteButton);
 			}
 			{

@@ -20,6 +20,7 @@ import domain.blocks.event.KeyEventBlock;
 import domain.blocks.event.OnStartEventBlock;
 import domain.models.types.EventBlock;
 import domain.values.Variable;
+import ui.components.SpritePanel;
 import ui.renderers.IRenderer;
 import ui.renderers.IRenderer.DragableRenderer;
 
@@ -183,5 +184,10 @@ public class Sprite implements Serializable{
 				eventMap.putIfAbsent(eb.getClass(), new LinkedList<>());
 				eventMap.get(eb.getClass()).add(eb);
 			}
+    }
+    
+    public void delete() {
+    	Variable.deleteSprite(this);
+    	SpritePanel.deleteSprite(this);
     }
 }

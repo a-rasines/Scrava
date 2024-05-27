@@ -49,6 +49,10 @@ public class Variable<T> extends AbstractLiteral<T> implements SimpleRenderable 
 		variables.putIfAbsent(s, new HashMap<>());
 	}
 	
+	public static void deleteSprite(Sprite s) {
+		variables.remove(s);
+	}
+	
 	private static File projectFile = null;
 	
 	public static void saveProject() {

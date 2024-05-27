@@ -62,6 +62,13 @@ public class SpritePanel extends JLayeredPane implements ComponentListener {
 		return Arrays.asList(s);
 	}
 	
+	public static void deleteSprite(Sprite s) {
+		INSTANCE.sl.setSelectedIndex(0);
+		INSTANCE.sprites.removeElement(s);
+		INSTANCE.sl.setVisibleRowCount(INSTANCE.sprites.size()%3==0?INSTANCE.sprites.size()/3:INSTANCE.sprites.size()/3 + 1);
+		BlockPanel.INSTANCE.changeSprite();
+		ActionPanel.INSTANCE.repaint();
+	}
 	
 	private int selectedIndex = -1;
 	
