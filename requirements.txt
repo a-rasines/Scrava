@@ -1,5 +1,6 @@
 grpcio==1.64.0
 grpcio-tools==1.64.0
+mysql-connector-python==8.4.0
 protobuf==5.27.0
 pyasn1==0.6.0
 rsa==4.9

@@ -5,10 +5,12 @@ from cipher import *
 class Service(grpc.ScravaServicer):
 
     def startConnection(self, _: pb2.EmptyMessage, context) -> pb2.CipherUpdate:
-        return pb2.CipherUpdate(RSA.getPublicKey());
+        print("Start connection with client")
+        return pb2.CipherUpdate(RSA.get_public_key());
     
-    def refreshCypher(self, _: pb2.EmptyMessage, context) -> pb2.CipherUpdate:
-        return pb2.CipherUpdate(RSA.getPublicKey());
+    def refreshCipher(self, _: pb2.EmptyMessage, context) -> pb2.CipherUpdate:
+        print("Refresh cipher")
+        return pb2.CipherUpdate(RSA.get_public_key());
 
     def login(self, request: pb2.ClientLogin, context) -> pb2.ClientData:
         pass

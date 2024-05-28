@@ -10,7 +10,7 @@ class RSA:
         return rsa.decrypt(orig.encode(), privatekey)
     
     @staticmethod
-    def getPublicKey() -> str:
+    def get_public_key() -> str:
         return publickey
     
 class SHA_256:
