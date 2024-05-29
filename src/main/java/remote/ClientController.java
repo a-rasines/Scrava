@@ -19,18 +19,19 @@ import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 import server.ScravaGrpc;
 import server.ScravaGrpc.ScravaBlockingStub;
+import server.ScravaProto.CipherUpdate;
 import server.ScravaProto.ClientData;
 import server.ScravaProto.ClientLogin;
 import server.ScravaProto.ClientRegister;
-import server.ScravaProto.CypherUpdate;
 import server.ScravaProto.EmptyMessage;
 import server.ScravaProto.Query;
-import server.ScravaProto.SerializedObject;
+import server.ScravaProto.SudoMessage;
 
 public class ClientController {
 	public static final ClientController INSTANCE = new ClientController("127.0.0.1", 8080);
 	private Cipher encryptCipher;
 	private PublicKey publicKey;
+	private String token;
 	
 	private ScravaBlockingStub blockingStub;
 	private ClientController(String ip, int port) {
@@ -38,14 +39,14 @@ public class ClientController {
 			encryptCipher = Cipher.getInstance("RSA");
 			ManagedChannel channel = ManagedChannelBuilder.forAddress(ip, port).useTransportSecurity().build();
 			blockingStub = ScravaGrpc.newBlockingStub(channel);
-			CypherUpdate cu = 	blockingStub.startConnection(EmptyMessage.getDefaultInstance());
+			CipherUpdate cu = 	blockingStub.startConnection(EmptyMessage.getDefaultInstance());
 			publicKey = KeyFactory.getInstance("RSA").generatePublic(new X509EncodedKeySpec(Base64.getDecoder().decode(cu.getPublicKey())));
 			encryptCipher.init(Cipher.ENCRYPT_MODE, publicKey);
 		} catch (InvalidKeySpecException | NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException e) { e.printStackTrace(); }
 	}
 	
 	private void refreshCypher() {
-		CypherUpdate cu = blockingStub.refreshCypher(EmptyMessage.getDefaultInstance());
+		CipherUpdate cu = blockingStub.refreshCypher(EmptyMessage.getDefaultInstance());
 		try {
 			publicKey = KeyFactory.getInstance("RSA").generatePublic(new X509EncodedKeySpec(Base64.getDecoder().decode(cu.getPublicKey())));
 			encryptCipher.init(Cipher.ENCRYPT_MODE, publicKey);
@@ -75,10 +76,10 @@ public class ClientController {
 	}
 	
 	public void saveProject(String serialized) {
-		saveProject(SerializedObject.newBuilder().setObj(serialized).build());
+		saveProject(SudoMessage.newBuilder().setToken(token).setObj(serialized).build());
 	}
 	
-	public void saveProject(SerializedObject so) {
+	public void saveProject(SudoMessage so) {
 		blockingStub.saveProject(so);
 	}
 	

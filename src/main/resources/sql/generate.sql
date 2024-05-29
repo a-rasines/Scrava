@@ -10,7 +10,7 @@ USE Scrava;
 CREATE TABLE User (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     name char(20),
-    password TEXT(256),
+    password VARCHAR(256),
     UNIQUE (name)
 );
 
@@ -30,4 +30,12 @@ CREATE TABLE Tutorial (
     content TEXT,
     PRIMARY KEY (id),
     FOREIGN KEY (author) REFERENCES User(id)
+);
+
+CREATE TABLE Token (
+    token VARCHAR(256) PRIMARY KEY,
+    owner BIGINT,
+    expiration DATE,
+    FOREIGN KEY (owner) REFERENCES User(id)
+
 )
