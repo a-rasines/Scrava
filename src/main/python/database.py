@@ -124,7 +124,6 @@ def delete_tokens_thread():
 
 _dtt = Thread(target=delete_tokens_thread, args = [])
 _dtt.start()
-print("b")
 
 if __name__ == "__main__":
     print(create_user("test", SHA_256.encode("test")))

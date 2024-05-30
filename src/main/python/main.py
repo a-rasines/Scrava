@@ -9,16 +9,19 @@ class Service(grpc.ScravaServicer):
 
     def startConnection(self, _: pb2.EmptyMessage, context) -> pb2.CipherUpdate:
         print("Start connection with client")
-        return pb2.CipherUpdate(RSA.get_public_key());
+        print(RSA.get_public_key())
+        print("-------")
+        return pb2.CipherUpdate(publicKey=RSA.get_public_key());
     
     def refreshCipher(self, _: pb2.EmptyMessage, context) -> pb2.CipherUpdate:
         print("Refresh cipher")
-        return pb2.CipherUpdate(RSA.get_public_key());
+        return pb2.CipherUpdate(publicKey=RSA.get_public_key());
 
     def login(self, request: pb2.ClientLogin, context) -> pb2.ClientData:
+        print("Login")
         id = database.check_user(request.name, SHA_256.encode(RSA.decode(request.password)))
         if id != -1:
-            pass
+            return database.get_user(id, RSA.decode(request.password))
         else:
             context.set_details("Wrong credentials")
             context.set_code(grpc.StatusCode.INVALID_ARGUMENT)
@@ -52,5 +55,4 @@ def serve():
     srver.wait_for_termination()
 
 if __name__ == "__main__":
-    print(Service().login(pb2.ClientLogin(name="test", password=RSA.encode("test")), None))
     serve()

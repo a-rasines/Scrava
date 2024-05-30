@@ -1,27 +1,21 @@
-import rsa
+from Crypto.PublicKey import RSA
+from Crypto.Cipher import PKCS1_v1_5
 import hashlib
 import base64
 import time
 
 # Generate public and private keys
-(publickey, privatekey) = rsa.newkeys(1024)
+keypair = RSA.generate(1024)
+cipher = PKCS1_v1_5.new(keypair)
 
 class RSA:
-
     @staticmethod
     def decode(orig: str) -> str:
-        encrypted_data = base64.b64decode(orig)
-        decrypted_data = rsa.decrypt(encrypted_data, privatekey)
-        return decrypted_data.decode('utf-8') 
-    
-    @staticmethod
-    def encode(orig: str) -> str:
-        encrypted_data = rsa.encrypt(orig.encode('utf-8'), publickey)
-        return base64.b64encode(encrypted_data).decode('utf-8') 
+        return cipher.decrypt(base64.b64decode(orig), None).decode('utf-8') 
     
     @staticmethod
     def get_public_key() -> str:
-        return str(publickey)
+        return keypair.publickey().export_key(format='DER')
     
 class SHA_256:
 

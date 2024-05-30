@@ -36,11 +36,11 @@ public class ClientController {
 	private ScravaBlockingStub blockingStub;
 	private ClientController(String ip, int port) {
 		try {
-			encryptCipher = Cipher.getInstance("RSA");
-			ManagedChannel channel = ManagedChannelBuilder.forAddress(ip, port).useTransportSecurity().build();
+			encryptCipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
+			ManagedChannel channel = ManagedChannelBuilder.forAddress(ip, port).usePlaintext().build();
 			blockingStub = ScravaGrpc.newBlockingStub(channel);
 			CipherUpdate cu = 	blockingStub.startConnection(EmptyMessage.getDefaultInstance());
-			publicKey = KeyFactory.getInstance("RSA").generatePublic(new X509EncodedKeySpec(Base64.getDecoder().decode(cu.getPublicKey())));
+			publicKey = KeyFactory.getInstance("RSA").generatePublic(new X509EncodedKeySpec(cu.getPublicKey().toByteArray()));
 			encryptCipher.init(Cipher.ENCRYPT_MODE, publicKey);
 		} catch (InvalidKeySpecException | NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException e) { e.printStackTrace(); }
 	}
@@ -48,14 +48,14 @@ public class ClientController {
 	private void refreshCypher() {
 		CipherUpdate cu = blockingStub.refreshCypher(EmptyMessage.getDefaultInstance());
 		try {
-			publicKey = KeyFactory.getInstance("RSA").generatePublic(new X509EncodedKeySpec(Base64.getDecoder().decode(cu.getPublicKey())));
+			publicKey = KeyFactory.getInstance("RSA").generatePublic(new X509EncodedKeySpec(Base64.getDecoder().decode(cu.getPublicKey().toByteArray())));
 			encryptCipher.init(Cipher.ENCRYPT_MODE, publicKey);
 		} catch (InvalidKeySpecException | NoSuchAlgorithmException | InvalidKeyException e) { e.printStackTrace(); }
 	}
 	
 	private String rsaEncode(String orig) {
 		try {
-			return new String(encryptCipher.doFinal(orig.getBytes(StandardCharsets.UTF_8)), StandardCharsets.UTF_8);
+			return new String(Base64.getEncoder().encode(encryptCipher.doFinal(orig.getBytes(StandardCharsets.UTF_8))), StandardCharsets.UTF_8);
 		} catch (IllegalBlockSizeException | BadPaddingException e) {
 			e.printStackTrace();
 			throw new RuntimeException(e);
@@ -85,6 +85,10 @@ public class ClientController {
 	
 	public List<String> getTutorialList(Query q) {
 		return blockingStub.getTutorialList(q).getResultsList();
+	}
+	
+	public static void main(String[] args) {
+		ClientController.INSTANCE.login("test", "test");
 	}
 	
 }

@@ -42,7 +42,7 @@ message StringList {
 }
 
 message CipherUpdate {
-  string publicKey = 1;
+  bytes publicKey = 1;
 }
 
 message ClientData {
