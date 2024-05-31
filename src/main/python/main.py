@@ -9,11 +9,11 @@ class Service(grpc.ScravaServicer):
 
     def startConnection(self, _: pb2.EmptyMessage, context) -> pb2.CipherUpdate:
         print("Start connection with client")
-        return pb2.CipherUpdate(publicKey=RSA.get_public_key());
+        return pb2.CipherUpdate(publicKey=RSA.get_public_key())
     
     def refreshCipher(self, _: pb2.EmptyMessage, context) -> pb2.CipherUpdate:
         print("Refresh cipher")
-        return pb2.CipherUpdate(publicKey=RSA.get_public_key());
+        return pb2.CipherUpdate(publicKey=RSA.get_public_key())
 
     def login(self, request: pb2.ClientLogin, context) -> pb2.ClientData:
         print("Login")
