@@ -24,30 +24,22 @@ def to_sql_strings(*args) -> str:
 def to_sql_string(str:str) -> str:
     return str.replace("'", "''")
 
-def check_user(username:str, pw:str) -> bool:
-    username, pw = to_sql_strings(username, pw)
-    mycursor = mydb.cursor()
-    mycursor.execute(f"SELECT id FROM User WHERE name={username} AND password={pw}")
-    for x in mycursor:
-        return x[0]
-    return -1
-
-def get_user(id:int, pw:str) -> pb2.ClientData:
+def check_user(username:str, pw:str) -> pb2.ClientData:
+    username = to_sql_strings(username)
     mycursor = mydb.cursor()
     _pw = to_sql_strings(SHA_256.encode(pw))
-    mycursor.execute(f"SELECT name from User WHERE id={id} AND password={_pw} LIMIT 1")
+    mycursor.execute(f"SELECT id, name FROM User WHERE name={username} AND password={_pw}")
     res = mycursor.fetchone()
-    if(res == None):
-        return pb2.ClientData()
-    token = SHA_256.generate_token(pw)
-    output = pb2.ClientData(id=id, name=res[0], token=token)
-
-    token = to_sql_strings(token)
-    xpdate = to_sql_strings((datetime.now() + timedelta(days = 3)).strftime('%Y-%m-%d %H:%M:%S'))
-    mycursor = mydb.cursor()
-    mycursor.execute(f"INSERT INTO Token(token, owner, expiration) VALUES ({token}, {id}, {xpdate})")
-    mydb.commit()
-    return output
+    if res != None:
+        token = SHA_256.generate_token(pw)
+        xpdate = to_sql_strings((datetime.now() + timedelta(days = 3)).strftime('%Y-%m-%d %H:%M:%S'))
+        mycursor = mydb.cursor()
+        _token = to_sql_strings(token)
+        mycursor.execute(f"INSERT INTO Token(token, owner, expiration) VALUES ({_token}, {res[0]}, {xpdate})")
+        mydb.commit()
+        return pb2.ClientData(id = res[0], name=res[1], token=token)
+    
+    return pb2.ClientData(id = -1)
 
 def create_user(username:str, pw:str) -> bool:
     username, pw = to_sql_strings(username, pw)

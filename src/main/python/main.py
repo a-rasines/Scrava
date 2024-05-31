@@ -9,8 +9,6 @@ class Service(grpc.ScravaServicer):
 
     def startConnection(self, _: pb2.EmptyMessage, context) -> pb2.CipherUpdate:
         print("Start connection with client")
-        print(RSA.get_public_key())
-        print("-------")
         return pb2.CipherUpdate(publicKey=RSA.get_public_key());
     
     def refreshCipher(self, _: pb2.EmptyMessage, context) -> pb2.CipherUpdate:
@@ -19,16 +17,26 @@ class Service(grpc.ScravaServicer):
 
     def login(self, request: pb2.ClientLogin, context) -> pb2.ClientData:
         print("Login")
-        id = database.check_user(request.name, SHA_256.encode(RSA.decode(request.password)))
-        if id != -1:
-            return database.get_user(id, RSA.decode(request.password))
+        user = database.check_user(request.name, RSA.decode(request.password))
+        if user.id != -1:
+            return user
         else:
             context.set_details("Wrong credentials")
             context.set_code(grpc.StatusCode.INVALID_ARGUMENT)
             return pb2.ClientData()
 
     def register(self, request: pb2.ClientRegister, context) -> pb2.ClientData:
-        pass
+        print("Register")
+        pw = RSA.decode(request.password)
+        if len(pw) < 8 or len(pw) > 256:
+            context.set_details(f"Wrong password length ({len(pw)}); Password must be between 8and 256 characters")
+            context.set_code(grpc.StatusCode.INVALID_ARGUMENT)
+            return pb2.ClientData()
+        if not database.create_user(request.name, SHA_256.encode(pw)):
+            context.set_details("Name already in use")
+            context.set_code(grpc.StatusCode.INVALID_ARGUMENT)
+            return pb2.ClientData()
+        return database.check_user(request.name, pw)
 
     def saveProject(self, request: pb2.SerializedObject, context) -> pb2.EmptyMessage:
         pass

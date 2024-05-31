@@ -31,7 +31,7 @@ public class ClientController {
 	public static final ClientController INSTANCE = new ClientController("127.0.0.1", 8080);
 	private Cipher encryptCipher;
 	private PublicKey publicKey;
-	private String token;
+	private ClientData account;
 	
 	private ScravaBlockingStub blockingStub;
 	private ClientController(String ip, int port) {
@@ -63,20 +63,27 @@ public class ClientController {
 	}
 	
 	public ClientData login(String name,  String pw) {
-		return blockingStub.login(
+		account = blockingStub.login(
 				ClientLogin.newBuilder()
-						   .setName(name)
-						   .setPassword(rsaEncode(pw))
-						   .build()
-				);
+				   .setName(name)
+				   .setPassword(rsaEncode(pw))
+				   .build()
+		);
+		return account;
 	}
 	
-	public ClientData register(ClientRegister cr) {
-		return blockingStub.register(cr);
+	public ClientData register(String name, String pw) {
+		account = blockingStub.register(
+				ClientRegister.newBuilder()
+				   .setName(name)
+				   .setPassword(rsaEncode(pw))
+				   .build()
+		);
+		return account;
 	}
 	
 	public void saveProject(String serialized) {
-		saveProject(SudoMessage.newBuilder().setToken(token).setObj(serialized).build());
+		saveProject(SudoMessage.newBuilder().setToken(account.getToken()).setObj(serialized).build());
 	}
 	
 	public void saveProject(SudoMessage so) {
@@ -88,7 +95,7 @@ public class ClientController {
 	}
 	
 	public static void main(String[] args) {
-		ClientController.INSTANCE.login("test", "test");
+		System.out.println(ClientController.INSTANCE.login("test", "test"));
 	}
 	
 }
