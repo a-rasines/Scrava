@@ -3,6 +3,7 @@ import mysql.connector
 import generated.service_pb2 as pb2
 from cipher import SHA_256
 from datetime import datetime, timedelta
+import threading
 from threading import Thread
 import time
 
@@ -27,7 +28,9 @@ def to_sql_string(str:str) -> str:
 def get_last_id() -> int:
     mycursor = mydb.cursor()
     mycursor.execute("SELECT LAST_INSERT_ID()")
-    return mycursor.fetchone()[0]
+    id = mycursor.fetchone()[0]
+    mycursor.close()
+    return id
 
 def check_user(username:str, pw:str) -> pb2.ClientData:
     username = to_sql_strings(username)
@@ -42,15 +45,18 @@ def check_user(username:str, pw:str) -> pb2.ClientData:
         _token = to_sql_strings(token)
         mycursor.execute(f"INSERT INTO Token(token, owner, expiration) VALUES ({_token}, {res[0]}, {xpdate})")
         mydb.commit()
+        mycursor.close()
         return pb2.ClientData(id = res[0], name=res[1], token=token)
-    
+    mycursor.close()
     return pb2.ClientData(id = -1)
 
 def check_token(token:str, uid:int) -> bool:
     token = to_sql_strings(token)
     mycursor = mydb.cursor()
     mycursor.execute(f"SELECT token FROM Token WHERE token={token} AND owner={uid}")
-    return mycursor.fetchone() != None
+    output = mycursor.fetchone() != None
+    mycursor.close()
+    return output
 
 def create_user(username:str, pw:str) -> bool:
     username, pw = to_sql_strings(username, pw)
@@ -58,8 +64,10 @@ def create_user(username:str, pw:str) -> bool:
     try:
         mycursor.execute(f"INSERT INTO User(name, password) VALUES ({username}, {pw})")
         mydb.commit()
-        return mycursor.rowcount == 1
+        output = mycursor.rowcount == 1
+        mycursor.close()
     except IntegrityError:
+        mycursor.close()
         return False
 
 def create_tutorial(author:int, name:str, content:str) -> bool:
@@ -68,8 +76,11 @@ def create_tutorial(author:int, name:str, content:str) -> bool:
     try:
         mycursor.execute(f"INSERT INTO Tutorial(author, name, content) VALUES ({author}, {name}, {content})")
         mydb.commit()
-        return mycursor.rowcount == 1
+        output = mycursor.rowcount == 1
+        mycursor.close()
+        return output
     except IntegrityError:
+        mycursor.close()
         return False
 
 def save_project(p_id: int, author:int, name:str, content:str) -> bool:
@@ -81,9 +92,12 @@ def save_project(p_id: int, author:int, name:str, content:str) -> bool:
         if mycursor.rowcount == 0:
             mycursor.execute(f"INSERT INTO Project(author, name, content) VALUES ({author}, {name}, {content})")
             mydb.commit()
-            return mycursor.rowcount == 1
+            output = mycursor.rowcount == 1
+            mycursor.close()
+            return output
         return True
     except IntegrityError:
+        mycursor.close()
         return False
 
 
@@ -94,8 +108,11 @@ def delete_token(owner:int, token:str) -> bool:
     try:
         mycursor.execute(f"DELETE FROM Token WHERE owner = {owner} AND token = {token}")
         mydb.commit()
-        return mycursor.rowcount == 1
+        output = mycursor.rowcount == 1
+        mycursor.close()
+        return output
     except IntegrityError:
+        mycursor.close()
         return False
 
 def check_sqlinj(input:str):
@@ -116,36 +133,51 @@ def search_projects(offset:int, query: str) -> list[tuple[int, str]]:
     if(check_sqlinj(query)):
         return []
     mycursor.execute(f"SELECT id, name FROM Project WHERE {query} LIMIT 30 OFFSET {offset}")
-    return mycursor.fetchall()
+    output = mycursor.fetchall()
+    mycursor.close()
+    return output
 
 def search_tutorial(offset:int, query: str) -> list[tuple[int, str]]:
     mycursor = mydb.cursor()
     query = to_sql_string(query)
     mycursor.execute(f"SELECT id, name FROM Tutorial WHERE name LIKE '%{query}%' LIMIT 30 OFFSET {offset}")
-    return mycursor.fetchall()
+    output = mycursor.fetchall()
+    mycursor.close()
+    return output
 
 def get_project(id: int) -> pb2.SerializedObject:
     mycursor = mydb.cursor()
     mycursor.execute(f"SELECT name, content FROM Project WHERE id = {id} LIMIT 1")
-    if mycursor.rowcount == 0: return None
+    if mycursor.rowcount == 0: 
+        mycursor.close()
+        return None
     res = list(mycursor.fetchone())
+    mycursor.close()
     return pb2.SerializedObject(id=id, name=res[0], obj = res[1])
 
 def get_tutorial(id: int) -> pb2.SerializedObject:
     mycursor = mydb.cursor()
     mycursor.execute(f"SELECT name, content FROM Tutorial WHERE id = {id} LIMIT 1")
-    if mycursor.rowcount == 0: return None
+    if mycursor.rowcount == 0: 
+        mycursor.close()
+        return None
     res = list(mycursor.fetchone())
+    mycursor.close()
     return pb2.SerializedObject(id=id, name=res[0], obj = res[1])
 
 def _delete_tokens_thread():
     mycursor = mydb.cursor()
-    while True:
+    a = True
+    while a:
         print("Deleting expired tokens")
         now = to_sql_strings((datetime.now()).strftime('%Y-%m-%d %H:%M:%S'))
         mycursor.execute(f"DELETE FROM Token WHERE expiration < {now}")
         mydb.commit()
         time.sleep(300)
+        for i in threading.enumerate():
+            if i.name == "MainThread" and not i.is_alive():
+                a = False #Stop zombie thread
+
     print("exit")
 
 def delete_tokens_thread():
