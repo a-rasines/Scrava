@@ -1,23 +1,27 @@
 package ui.windows;
 
-import java.awt.EventQueue;
-
-import javax.swing.JFrame;
-import javax.swing.JPanel;
-import javax.swing.border.EmptyBorder;
-
-import debug.DebugOut;
-import ui.components.OnlineProjectsScrollPane;
-import ui.components.UserPanel;
-
 import java.awt.BorderLayout;
-import javax.swing.JTabbedPane;
-import javax.swing.JScrollPane;
+import java.awt.EventQueue;
 import java.awt.FlowLayout;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowFocusListener;
 
+import javax.swing.DefaultListModel;
 import javax.swing.JButton;
+import javax.swing.JFileChooser;
+import javax.swing.JFrame;
+import javax.swing.JList;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTabbedPane;
+import javax.swing.border.EmptyBorder;
+
+import debug.DebugOut;
+import domain.AppCache;
+import domain.AppCache.ProjectData;
+import domain.Project;
+import ui.components.OnlineProjectsScrollPane;
+import ui.components.UserPanel;
 
 public class ProjectSelectorFrame extends JFrame implements WindowFocusListener {
 
@@ -61,7 +65,11 @@ public class ProjectSelectorFrame extends JFrame implements WindowFocusListener 
 		JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
 		contentPane.add(tabbedPane, BorderLayout.CENTER);
 		
-		JScrollPane scrollPane = new JScrollPane();
+		DefaultListModel<ProjectData> plm = new DefaultListModel<>();
+		for(ProjectData pd : AppCache.getInstance().importedProjects)
+			plm.addElement(pd);
+		JList<ProjectData> projectList = new JList<>(plm);
+		JScrollPane scrollPane = new JScrollPane(projectList);
 		tabbedPane.addTab("Local Projects", null, scrollPane, null);
 		
 		tabbedPane.addTab("Online Projects", null, OnlineProjectsScrollPane.INSTANCE, null);
@@ -80,6 +88,21 @@ public class ProjectSelectorFrame extends JFrame implements WindowFocusListener 
 		panel.add(btnDelete);
 		
 		JButton btnImport = new JButton("Import");
+		btnImport.addActionListener(e -> {
+			JFileChooser fileChooser = new JFileChooser();
+            int result = fileChooser.showOpenDialog(ProjectSelectorFrame.this);
+            if (result == JFileChooser.APPROVE_OPTION) {
+            	if(Project.readProject(fileChooser.getSelectedFile())) {
+            		ProjectData pd = new ProjectData(Project.getActiveProject().name, fileChooser.getSelectedFile());
+            		AppCache.getInstance().importedProjects.add(pd);
+            		plm.addElement(pd);
+            		AppCache.save();
+            		ProjectFrame.INSTANCE.setVisible(true);
+            		dispose();
+            	}
+            	
+            }
+		});
 		panel.add(btnImport);
 		
 		tabbedPane.addChangeListener(e -> {

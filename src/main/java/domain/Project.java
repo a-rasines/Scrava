@@ -156,7 +156,7 @@ public class Project implements Serializable {
 		}
 		
 	}
-	public static void readProject(File f) {
+	public static boolean readProject(File f) {
 		try {
 			FileInputStream fileIn = new FileInputStream(f);
 	        ObjectInputStream in = new ObjectInputStream(fileIn);
@@ -168,6 +168,7 @@ public class Project implements Serializable {
 	        
 	        temp.file = f;
 	        setProject(temp);
+	        return true;
 		} catch (IOException e) {
 			JOptionPane.showMessageDialog(null, "The project could no tbe loaded: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
 			e.printStackTrace();
@@ -175,6 +176,7 @@ public class Project implements Serializable {
 			//(really) unlike
 			e.printStackTrace();
 		}
+		return false;
 	}
 	
 	/**

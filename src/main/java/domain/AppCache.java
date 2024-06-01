@@ -7,8 +7,8 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 import server.ScravaProto.ClientData;
 
@@ -24,12 +24,17 @@ public class AppCache implements Serializable{
 	
 	public ClientData user = null;
 	
-	public static record ProjectData(String name, File file) {}
+	public static record ProjectData(String name, File file) implements Serializable {
+		@Override
+		public final boolean equals(Object arg0) {
+			return arg0 instanceof ProjectData pd && file.equals(pd.file);
+		}
+	}
 	
-	public List<ProjectData> importedProjects;
+	public Set<ProjectData> importedProjects;
 	
 	private AppCache() {
-		importedProjects = new ArrayList<>();
+		importedProjects = new HashSet<>();
 	}
 	
 	public static void load() {
