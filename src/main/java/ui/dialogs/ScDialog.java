@@ -6,7 +6,8 @@ import java.awt.event.WindowListener;
 
 import javax.swing.JDialog;
 
-import ui.components.ProjectFrame;
+import ui.windows.ProjectFrame;
+import ui.windows.ProjectSelectorFrame;
 
 public abstract class ScDialog extends JDialog implements WindowFocusListener, WindowListener {
 
@@ -25,7 +26,7 @@ public abstract class ScDialog extends JDialog implements WindowFocusListener, W
 	
 	@Override
 	public void windowLostFocus(WindowEvent e) {
-		if(!ProjectFrame.isFocus())requestFocus();	
+		if(!ProjectFrame.isFocus() || !ProjectSelectorFrame.isFocus())requestFocus();	
 	}
 
 	@Override

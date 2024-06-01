@@ -30,6 +30,10 @@ import ui.renderers.IRenderer.DragableRenderer;
 public class Sprite implements Serializable{
 	private static final long serialVersionUID = 2195406778691654466L;
 	
+	{
+		Project.getActiveProject().registerSprite(this);
+	}
+	
 	private String name;
 	private Variable<Long> xPos = Variable.createVariable(this, "x", 0l, true);
 	private Variable<Long> yPos = Variable.createVariable(this, "y", 0l, true);
@@ -46,7 +50,6 @@ public class Sprite implements Serializable{
 	
 	public Sprite(String name, BufferedImage texture) {
 		eventMap = new HashMap<>();
-		Variable.registerSprite(this);
 		textures.add(texture);
 		this.name = name;
 	}
@@ -187,7 +190,7 @@ public class Sprite implements Serializable{
     }
     
     public void delete() {
-    	Variable.deleteSprite(this);
+    	Project.getActiveProject().deleteSprite(this);
     	SpritePanel.deleteSprite(this);
     }
 }

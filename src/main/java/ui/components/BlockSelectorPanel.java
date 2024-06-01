@@ -14,6 +14,7 @@ import ui.domain.BlockSection;
 import ui.renderers.IRenderer;
 import ui.renderers.IRenderer.DragableRenderer;
 import ui.renderers.IRenderer.IRenderable;
+import ui.windows.ProjectFrame;
 
 public class BlockSelectorPanel implements MouseListener, MouseWheelListener {
 	

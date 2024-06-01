@@ -20,6 +20,7 @@ import javax.swing.event.ListSelectionListener;
 
 import ui.domain.BlockSection;
 import ui.renderers.IRenderer;
+import ui.windows.ProjectFrame;
 
 public class SectionList extends JList<BlockSection>{
 	

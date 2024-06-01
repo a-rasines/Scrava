@@ -41,6 +41,12 @@ def check_user(username:str, pw:str) -> pb2.ClientData:
     
     return pb2.ClientData(id = -1)
 
+def check_token(token:str, uid:int) -> bool:
+    token = to_sql_strings(token)
+    mycursor = mydb.cursor()
+    mycursor.execute(f"SELECT token FROM Token WHERE token={token} AND owner={uid}")
+    return mycursor.fetchone() != None
+
 def create_user(username:str, pw:str) -> bool:
     username, pw = to_sql_strings(username, pw)
     mycursor = mydb.cursor()
@@ -61,20 +67,50 @@ def create_tutorial(author:int, name:str, content:str) -> bool:
     except IntegrityError:
         return False
 
-def create_project(author:int, name:str, content:str) -> bool:
+def save_project(p_id: int, author:int, name:str, content:str) -> bool:
     name, content = to_sql_strings(name, content)
     mycursor = mydb.cursor()
     try:
-        mycursor.execute(f"INSERT INTO Project(author, name, content) VALUES ({author}, {name}, {content})")
+        mycursor.execute(f"UPDATE Project SET name= {name}, content={content} WHERE id = {p_id} AND author = {author}")
+        mydb.commit()
+        if mycursor.rowcount == 0:
+            mycursor.execute(f"INSERT INTO Project(author, name, content) VALUES ({author}, {name}, {content})")
+            mydb.commit()
+            return mycursor.rowcount == 1
+        return True
+    except IntegrityError:
+        return False
+
+
+
+def delete_token(owner:int, token:str) -> bool:
+    token = to_sql_strings(token)
+    mycursor = mydb.cursor()
+    try:
+        mycursor.execute(f"DELETE FROM Token WHERE owner = {owner} AND token = {token}")
         mydb.commit()
         return mycursor.rowcount == 1
     except IntegrityError:
         return False
-    
+
+def check_sqlinj(input:str):
+    is_str = 0
+    for char in input:
+        if char == ';' and is_str == 0:
+           return True
+        elif char == '"':
+            if is_str == 0: is_str = 1
+            elif is_str == 1: is_str = 0
+        elif char == "'":
+            if is_str == 0: is_str = 2
+            elif is_str == 2: is_str = 0
+    return False
+
 def search_projects(offset:int, query: str) -> list[tuple[int, str]]:
     mycursor = mydb.cursor()
-    query = to_sql_string(query)
-    mycursor.execute(f"SELECT id, name FROM Project WHERE name LIKE '%{query}%' LIMIT 30 OFFSET {offset}")
+    if(check_sqlinj(query)):
+        return []
+    mycursor.execute(f"SELECT id, name FROM Project WHERE {query} LIMIT 30 OFFSET {offset}")
     return mycursor.fetchall()
 
 def search_tutorial(offset:int, query: str) -> list[tuple[int, str]]:

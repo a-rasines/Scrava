@@ -15,8 +15,11 @@ import javax.swing.border.EmptyBorder;
 
 import io.grpc.StatusRuntimeException;
 import remote.ClientController;
+import ui.components.OnlineProjectsScrollPane;
+import ui.components.UserPanel;
+import ui.dialogs.ScDialog;
 
-public class LoginDialog extends JDialog {
+public class LoginDialog extends ScDialog {
 
 	private static final long serialVersionUID = 1L;
 	private final JPanel contentPanel = new JPanel();
@@ -88,6 +91,8 @@ public class LoginDialog extends JDialog {
 					else 
 						try {
 							ClientController.INSTANCE.login(textField.getText(), String.copyValueOf(passwordField.getPassword()));
+							UserPanel.INSTANCE.regenerate();
+							OnlineProjectsScrollPane.INSTANCE.regenerate();
 							dispose();
 						} catch(StatusRuntimeException _e) {
 							JOptionPane.showMessageDialog(null, "Error logging in:" + _e.getMessage().substring(_e.getMessage().indexOf(":") + 1));
@@ -106,6 +111,8 @@ public class LoginDialog extends JDialog {
 					else 
 						try {
 							ClientController.INSTANCE.register(textField.getText(), String.copyValueOf(passwordField.getPassword()));
+							UserPanel.INSTANCE.regenerate();
+							OnlineProjectsScrollPane.INSTANCE.regenerate();
 							dispose();
 						} catch(StatusRuntimeException _e) {
 							JOptionPane.showMessageDialog(null, "Error registering:" + _e.getMessage().substring(_e.getMessage().indexOf(":") + 1));

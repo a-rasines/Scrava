@@ -54,20 +54,25 @@ class ScravaStub(object):
                 request_serializer=service__pb2.ClientRegister.SerializeToString,
                 response_deserializer=service__pb2.ClientData.FromString,
                 _registered_method=True)
-        self.saveProject = channel.unary_unary(
-                '/Scrava/saveProject',
-                request_serializer=service__pb2.SudoMessage.SerializeToString,
+        self.deleteToken = channel.unary_unary(
+                '/Scrava/deleteToken',
+                request_serializer=service__pb2.DeleteTokenMessage.SerializeToString,
                 response_deserializer=service__pb2.EmptyMessage.FromString,
                 _registered_method=True)
-        self.getTutorialList = channel.unary_unary(
+        self.saveProject = channel.unary_unary(
+                '/Scrava/saveProject',
+                request_serializer=service__pb2.AuthoredObject.SerializeToString,
+                response_deserializer=service__pb2.EmptyMessage.FromString,
+                _registered_method=True)
+        self.getTutorialList = channel.unary_stream(
                 '/Scrava/getTutorialList',
                 request_serializer=service__pb2.Query.SerializeToString,
-                response_deserializer=service__pb2.StringList.FromString,
+                response_deserializer=service__pb2.ObjectDescriptor.FromString,
                 _registered_method=True)
-        self.getProjectList = channel.unary_unary(
+        self.getProjectList = channel.unary_stream(
                 '/Scrava/getProjectList',
                 request_serializer=service__pb2.Query.SerializeToString,
-                response_deserializer=service__pb2.StringList.FromString,
+                response_deserializer=service__pb2.ObjectDescriptor.FromString,
                 _registered_method=True)
         self.refreshCypher = channel.unary_unary(
                 '/Scrava/refreshCypher',
@@ -102,6 +107,12 @@ class ScravaServicer(object):
         raise NotImplementedError('Method not implemented!')
 
     def register(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def deleteToken(self, request, context):
         """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
@@ -161,20 +172,25 @@ def add_ScravaServicer_to_server(servicer, server):
                     request_deserializer=service__pb2.ClientRegister.FromString,
                     response_serializer=service__pb2.ClientData.SerializeToString,
             ),
-            'saveProject': grpc.unary_unary_rpc_method_handler(
-                    servicer.saveProject,
-                    request_deserializer=service__pb2.SudoMessage.FromString,
+            'deleteToken': grpc.unary_unary_rpc_method_handler(
+                    servicer.deleteToken,
+                    request_deserializer=service__pb2.DeleteTokenMessage.FromString,
                     response_serializer=service__pb2.EmptyMessage.SerializeToString,
             ),
-            'getTutorialList': grpc.unary_unary_rpc_method_handler(
+            'saveProject': grpc.unary_unary_rpc_method_handler(
+                    servicer.saveProject,
+                    request_deserializer=service__pb2.AuthoredObject.FromString,
+                    response_serializer=service__pb2.EmptyMessage.SerializeToString,
+            ),
+            'getTutorialList': grpc.unary_stream_rpc_method_handler(
                     servicer.getTutorialList,
                     request_deserializer=service__pb2.Query.FromString,
-                    response_serializer=service__pb2.StringList.SerializeToString,
+                    response_serializer=service__pb2.ObjectDescriptor.SerializeToString,
             ),
-            'getProjectList': grpc.unary_unary_rpc_method_handler(
+            'getProjectList': grpc.unary_stream_rpc_method_handler(
                     servicer.getProjectList,
                     request_deserializer=service__pb2.Query.FromString,
-                    response_serializer=service__pb2.StringList.SerializeToString,
+                    response_serializer=service__pb2.ObjectDescriptor.SerializeToString,
             ),
             'refreshCypher': grpc.unary_unary_rpc_method_handler(
                     servicer.refreshCypher,
@@ -284,6 +300,33 @@ class Scrava(object):
             _registered_method=True)
 
     @staticmethod
+    def deleteToken(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/Scrava/deleteToken',
+            service__pb2.DeleteTokenMessage.SerializeToString,
+            service__pb2.EmptyMessage.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
     def saveProject(request,
             target,
             options=(),
@@ -298,7 +341,7 @@ class Scrava(object):
             request,
             target,
             '/Scrava/saveProject',
-            service__pb2.SudoMessage.SerializeToString,
+            service__pb2.AuthoredObject.SerializeToString,
             service__pb2.EmptyMessage.FromString,
             options,
             channel_credentials,
@@ -321,12 +364,12 @@ class Scrava(object):
             wait_for_ready=None,
             timeout=None,
             metadata=None):
-        return grpc.experimental.unary_unary(
+        return grpc.experimental.unary_stream(
             request,
             target,
             '/Scrava/getTutorialList',
             service__pb2.Query.SerializeToString,
-            service__pb2.StringList.FromString,
+            service__pb2.ObjectDescriptor.FromString,
             options,
             channel_credentials,
             insecure,
@@ -348,12 +391,12 @@ class Scrava(object):
             wait_for_ready=None,
             timeout=None,
             metadata=None):
-        return grpc.experimental.unary_unary(
+        return grpc.experimental.unary_stream(
             request,
             target,
             '/Scrava/getProjectList',
             service__pb2.Query.SerializeToString,
-            service__pb2.StringList.FromString,
+            service__pb2.ObjectDescriptor.FromString,
             options,
             channel_credentials,
             insecure,

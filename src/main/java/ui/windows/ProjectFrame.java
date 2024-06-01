@@ -1,4 +1,4 @@
-package ui.components;
+package ui.windows;
 
 import java.awt.Dimension;
 import java.awt.KeyEventDispatcher;
@@ -23,17 +23,21 @@ import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 
 import debug.DebugOut;
+import domain.Project;
 import domain.Sprite;
 import domain.blocks.event.OnKeyPressEventBlock;
 import domain.blocks.event.OnStartEventBlock;
 import domain.models.types.EventBlock;
-import domain.values.Variable;
 import ui.EmptyLayout;
+import ui.components.ActionPanel;
+import ui.components.BlockPanel;
+import ui.components.SpritePanel;
 
 public class ProjectFrame extends JFrame implements WindowFocusListener {
 	public static boolean isStarted = false;
 	static {
 		DebugOut.setup();
+		new Project("New project");
 	}
 	
 	public static void main(String[] args) {
@@ -172,7 +176,7 @@ public class ProjectFrame extends JFrame implements WindowFocusListener {
     		JFileChooser fileChooser = new JFileChooser();
             int result = fileChooser.showOpenDialog(ProjectFrame.this);
             if (result == JFileChooser.APPROVE_OPTION)
-            	Variable.readProject(fileChooser.getSelectedFile());
+            	Project.readProject(fileChooser.getSelectedFile());
             ActionPanel.INSTANCE.repaint();
             SpritePanel.INSTANCE.repaint();
     	});
@@ -182,7 +186,7 @@ public class ProjectFrame extends JFrame implements WindowFocusListener {
     	});
     	
     	saveMenuItem.addActionListener((e) -> {
-    		Variable.saveProject();
+    		Project.getActiveProject().save();
     	});
     	
     	toFileMenuItem.addActionListener((e) -> {
@@ -192,7 +196,7 @@ public class ProjectFrame extends JFrame implements WindowFocusListener {
             if (result == JFileChooser.APPROVE_OPTION) {
             	String res = JOptionPane.showInputDialog("Set file name:");
             	if(res.length() > 0)
-            		Variable.saveProject(new File(fileChooser.getSelectedFile().getAbsolutePath() + "/" + res + ".scrv"));
+            		Project.getActiveProject().save(new File(fileChooser.getSelectedFile().getAbsolutePath() + "/" + res + ".scrv"));
             }
     	});
     	

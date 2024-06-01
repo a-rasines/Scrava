@@ -30,6 +30,7 @@ import ui.FlashThread;
 import ui.dialogs.VariableCreator;
 import ui.renderers.IRenderer.DragableRenderer;
 import ui.renderers.IRenderer.IRenderable;
+import ui.windows.ProjectFrame;
 
 public class BlockPanel extends JLayeredPane {
 	

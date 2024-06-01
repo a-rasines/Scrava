@@ -2,6 +2,7 @@ package domain.blocks.operators;
 
 import java.util.Set;
 
+import domain.Project;
 import domain.Sprite;
 import domain.models.interfaces.Translatable;
 import domain.models.interfaces.Valuable;
@@ -15,7 +16,7 @@ public class SetValueBlock extends FunctionBlock {
 
 	private static final long serialVersionUID = -1072262290642640507L;
 	
-	private EnumLiteral<Variable<?>> variables = Variable.getEnumLiteral(this);
+	private EnumLiteral<Variable<?>> variables = Project.getActiveProject().getVariablesEnumLiteral(this);
 	private Valuable<?> value;
 	private Valuable<?> defVal;
 

@@ -1,28 +1,13 @@
 package domain.values;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import javax.swing.JFileChooser;
-import javax.swing.JOptionPane;
-
+import domain.Project;
 import domain.Sprite;
 import domain.models.interfaces.Valuable;
-import domain.values.EnumLiteral.EnumCapable;
-import ui.components.BlockPanel;
-import ui.components.ProjectFrame;
 import ui.components.SpritePanel;
-import ui.renderers.IRenderer.IRenderable;
 import ui.renderers.LiteralRenderer.LiteralRenderable;
 import ui.renderers.SimpleBlockRenderer;
 import ui.renderers.SimpleBlockRenderer.SimpleRenderable;
@@ -34,131 +19,6 @@ import ui.renderers.SimpleBlockRenderer.SimpleRenderable;
 public class Variable<T> extends AbstractLiteral<T> implements SimpleRenderable {
 
 	private static final long serialVersionUID = 6146036704484981438L;
-	/**
-	 * In this list all the variables get stored sorted by Sprite
-	 * 
-	 * null Sprite = global variable
-	 */
-	private static HashMap<Sprite, HashMap<String, Variable<?>>> variables = new HashMap<>();
-	
-	static {
-		variables.put(null, new HashMap<>());
-	}
-	
-	public static void registerSprite(Sprite s) {
-		variables.putIfAbsent(s, new HashMap<>());
-	}
-	
-	public static void deleteSprite(Sprite s) {
-		variables.remove(s);
-	}
-	
-	private static File projectFile = null;
-	
-	public static void saveProject() {
-		if(projectFile == null) {
-			JFileChooser fileChooser = new JFileChooser();
-    		fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-            int result = fileChooser.showOpenDialog(null);
-            if (result == JFileChooser.APPROVE_OPTION) {
-            	String res = JOptionPane.showInputDialog("Set file name:");
-            	if(res.length() > 0)
-            		projectFile = new File(fileChooser.getSelectedFile().getAbsolutePath() + "/" + res + ".scrv");
-            } else return;
-		}
-		saveProject(projectFile);
-	}
-	
-	public static void saveProject(File f) {
-		try {
-			projectFile = f;
-			ProjectFrame.INSTANCE.reset();
-			FileOutputStream fileOut = new FileOutputStream(f);
-			ObjectOutputStream out = new ObjectOutputStream(fileOut);
-	        out.writeObject(variables);
-	        out.close();
-	        fileOut.close();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}  
-	}
-	
-	@SuppressWarnings("unchecked")
-	public static void readProject(File f) {
-		try {
-			FileInputStream fileIn = new FileInputStream(f);
-	        ObjectInputStream in = new ObjectInputStream(fileIn);
-	        var temp = (HashMap<Sprite, HashMap<String, Variable<?>>>) in.readObject();
-	        in.close();
-	        fileIn.close();
-	        
-	        // ONLY if temp is read correctly changes are applied
-	        
-	        projectFile = f;
-	        variables = temp;
-	        SpritePanel.clearSprites();
-	        for(Sprite s : variables.keySet())
-	        	if(s != null)
-	        		SpritePanel.addSprite(s);
-	        ProjectFrame.INSTANCE.repaint();
-	        BlockPanel.INSTANCE.repaint();
-		} catch (IOException e) {
-			JOptionPane.showMessageDialog(null, "The project could no tbe loaded: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-			e.printStackTrace();
-		} catch (ClassNotFoundException e) { 
-			//(really) unlike
-			e.printStackTrace();
-		}
-	}
-	
-	@Override
-	public AbstractLiteral<T> create(Sprite s) {
-		return this;
-	}
-	
-	 
-	private static class VariableEnumCapable implements EnumCapable<Variable<?>> {
-		private final static VariableEnumCapable INSTANCE = new VariableEnumCapable();
-		private static final long serialVersionUID = -3026004184272864437L;
-
-		@Override
-		public Variable<?> valueof(String value) {
-			Variable<?> v = variables.get(null).get(value);
-			if(v == null)
-				v = variables.get(SpritePanel.getSprite()).get(value);
-			return v;
-		}
-
-		@Override
-		public Variable<?>[] getValues() {
-			Variable<?>[] var = new Variable<?>[variables.get(null).size() + variables.get(SpritePanel.getSprite()).size()];
-			Iterator<Variable<?>> it = variables.get(null).values().iterator();
-			for(int i = 0; i < variables.get(null).size(); i++)
-				var[i] = (Variable<?>) it.next();
-			it = variables.get(SpritePanel.getSprite()).values().iterator();
-			for(int i = variables.get(null).size(); i < variables.get(null).size() + variables.get(SpritePanel.getSprite()).size(); i++)
-				var[i] = (Variable<?>) it.next();
-			return var;
-		}
-
-		@Override
-		public String[] names() {
-			HashSet<String> s = new HashSet<>();
-			s.addAll(variables.get(null).keySet());
-			s.addAll(variables.get(SpritePanel.getSprite()).keySet());
-			return s.toArray(new String[s.size()]);
-		}
-		
-	}
-	
-	/**
-	 * Returns an {@link domain.values.EnumLiteral EnumLiteral} version of the variables' map
-	 * @return
-	 */
-	public static EnumLiteral<Variable<?>> getEnumLiteral(IRenderable parent) {
-		
-		return new EnumLiteral<>(VariableEnumCapable.INSTANCE, parent);
-	}
 	
 	/**
 	 * Creates a global variable of the desired type with the desired initial value
@@ -193,8 +53,7 @@ public class Variable<T> extends AbstractLiteral<T> implements SimpleRenderable 
 	 */
 	public static <T> Variable<T> createVariable(Sprite s, String name, T value, boolean nat) {
 		Variable<T> var = new Variable<T>(name, value, s, nat);
-		variables.putIfAbsent(s, new HashMap<>());
-		variables.get(s).put(name, var);
+		Project.getActiveProject().registerVariable(s, name, var);
 		return var;
 	}
 	
@@ -203,12 +62,12 @@ public class Variable<T> extends AbstractLiteral<T> implements SimpleRenderable 
 	}
 	
 	public static Variable<?> getVariable(Sprite s, String name) {
-		return variables.get(s).get(name);
+		return Project.getActiveProject().getVariable(s, name);
 	}
 	
 	public static List<Variable<?>> getVisibleVariables() {
-		List<Variable<?>> output = new ArrayList<>(variables.get(null).values());
-		output.addAll(variables.get(SpritePanel.getSprite()).values());
+		List<Variable<?>> output = new ArrayList<>(Project.getActiveProject().getVariablesOf(null).values());
+		output.addAll(Project.getActiveProject().getVariablesOf(SpritePanel.getSprite()).values());
 		return output;
 	}
 	
@@ -237,7 +96,7 @@ public class Variable<T> extends AbstractLiteral<T> implements SimpleRenderable 
 	}
 	
 	public boolean isGlobal() {
-		return variables.get(null).get(this.name) != null;
+		return Project.getActiveProject().getVariable(null, this.name) != null;
 	}
 	
 	public Variable<?> setValue(T value) {

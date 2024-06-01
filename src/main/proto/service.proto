@@ -7,11 +7,12 @@ service Scrava {
    rpc startConnection(EmptyMessage) returns (CipherUpdate) {}
    rpc login(ClientLogin) returns (ClientData) {}
    rpc register(ClientRegister) returns (ClientData) {}
+   rpc deleteToken(DeleteTokenMessage) returns (EmptyMessage) {}
 
-   rpc saveProject(SudoMessage) returns (EmptyMessage) {}
+   rpc saveProject(AuthoredObject) returns (EmptyMessage) {}
 
-   rpc getTutorialList(Query) returns (StringList) {}
-   rpc getProjectList(Query) returns (StringList) {}
+   rpc getTutorialList(Query) returns (stream ObjectDescriptor) {}
+   rpc getProjectList(Query) returns (stream ObjectDescriptor) {}
 
    rpc refreshCypher(EmptyMessage) returns (CipherUpdate) {}
    
@@ -25,9 +26,15 @@ message Query {
   int32 offset = 2;
 }
 
-message SudoMessage {
+message DeleteTokenMessage {
   string token = 1;
-  string obj = 2;
+  int32 uid = 2;
+}
+
+message AuthoredObject {
+  string token = 1;
+  int32 uid = 2;
+  SerializedObject obj = 3;
 }
 
 message SerializedObject {
@@ -36,9 +43,9 @@ message SerializedObject {
   string obj = 3;
 }
 
-message StringList {
-  repeated string ids = 1;
-  repeated string results = 2;
+message ObjectDescriptor {
+  int32 id = 1;
+  string name = 2;
 }
 
 message CipherUpdate {

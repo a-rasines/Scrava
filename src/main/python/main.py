@@ -19,6 +19,8 @@ class Service(grpc.ScravaServicer):
         print("Login")
         user = database.check_user(request.name, RSA.decode(request.password))
         if user.id != -1:
+            print("success")
+            print(user)
             return user
         else:
             context.set_details("Wrong credentials")
@@ -38,20 +40,35 @@ class Service(grpc.ScravaServicer):
             return pb2.ClientData()
         return database.check_user(request.name, pw)
 
-    def saveProject(self, request: pb2.SerializedObject, context) -> pb2.EmptyMessage:
-        pass
+    def deleteToken(self, request: pb2.SudoMessage, context):
+        print("Delete token")
+        if(not database.delete_token(int(request.obj), request.token)):
+            context.set_details("Invalid credentials")
+            context.set_code(grpc.StatusCode.INVALID_ARGUMENT)
+        return pb2.EmptyMessage() 
+
+    def saveProject(self, request: pb2.AuthoredObject, context) -> pb2.EmptyMessage:
+        if(database.check_token(request.token, request.uid)):
+            database.save_project(request.obj.id, request.uid, request.obj.name, request.obj.obj)
+        else:
+            context.set_details("Invalid credentials")
+            context.set_code(grpc.StatusCode.PERMISSION_DENIED)
+        return pb2.EmptyMessage()
 
     def getTutorialList(self, request, context):
         pass
 
-    def getProjectList(self, request, context):
-        pass
+    def getProjectList(self, request: pb2.Query, context) -> pb2.ObjectDescriptor:
+        res = database.search_projects(request.offset, request.query)
+        for element in res:
+            yield pb2.ObjectDescriptor(id=element[0], name = element[1])
+
 
     def getTutorial(self, request, context):
         pass
 
-    def getProject(self, request, context):
-        pass
+    def getProject(self, request: pb2.Query, context):
+        return database.get_project(request.query)
 
 #https://grpc.io/docs/languages/python/basics/
 def serve():
