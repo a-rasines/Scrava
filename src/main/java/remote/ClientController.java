@@ -19,6 +19,7 @@ import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 import javax.swing.JOptionPane;
 
+import domain.AppCache;
 import domain.Project;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
@@ -39,7 +40,6 @@ public class ClientController {
 	public static final ClientController INSTANCE = new ClientController("127.0.0.1", 8080);
 	private Cipher encryptCipher;
 	private PublicKey publicKey;
-	private ClientData account;
 	
 	private ScravaBlockingStub blockingStub;
 	private ClientController(String ip, int port) {
@@ -51,10 +51,6 @@ public class ClientController {
 			publicKey = KeyFactory.getInstance("RSA").generatePublic(new X509EncodedKeySpec(cu.getPublicKey().toByteArray()));
 			encryptCipher.init(Cipher.ENCRYPT_MODE, publicKey);
 		} catch (InvalidKeySpecException | NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException e) { e.printStackTrace(); }
-	}
-	
-	public ClientData getUser() {
-		return account;
 	}
 	
 	private void refreshCypher() {
@@ -75,39 +71,42 @@ public class ClientController {
 	}
 	
 	public ClientData login(String name,  String pw) {
-		account = blockingStub.login(
+		AppCache.getInstance().user = blockingStub.login(
 				ClientLogin.newBuilder()
 				   .setName(name)
 				   .setPassword(rsaEncode(pw))
 				   .build()
 		);
-		return account;
+		AppCache.save();
+		return AppCache.getInstance().user;
 	}
 	
 	public ClientData register(String name, String pw) {
-		account = blockingStub.register(
+		AppCache.getInstance().user = blockingStub.register(
 				ClientRegister.newBuilder()
 				   .setName(name)
 				   .setPassword(rsaEncode(pw))
 				   .build()
 		);
-		return account;
+		AppCache.save();
+		return AppCache.getInstance().user;
 	}	
 	
 	public Iterator<ObjectDescriptor> getUserProjects(int offset) {
-		return blockingStub.getProjectList(Query.newBuilder().setQuery("author = " + account.getId()).setOffset(0).build());
+		return blockingStub.getProjectList(Query.newBuilder().setQuery("author = " + AppCache.getInstance().user.getId()).setOffset(0).build());
 	}
 	
 	public void logoff() {
-		blockingStub.deleteToken(DeleteTokenMessage.newBuilder().setToken(account.getToken()).setUid(account.getId()).build());
-		account = null;
+		AppCache ac = AppCache.getInstance();
+		blockingStub.deleteToken(DeleteTokenMessage.newBuilder().setToken(ac.user.getToken()).setUid(ac.user.getId()).build());
+		ac.user = null;
+		AppCache.save();
 	}
 	
 	public void saveProject(Project p) {
 		try (ByteArrayOutputStream baos = new ByteArrayOutputStream();
 				ObjectOutputStream oos = new ObjectOutputStream( baos )){
-		
-        
+		ClientData account = AppCache.getInstance().user;        
         oos.writeObject(p);
         oos.close();
 		ObjectDescriptor od = saveProject(

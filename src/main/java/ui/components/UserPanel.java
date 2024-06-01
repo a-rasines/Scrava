@@ -4,6 +4,7 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
+import domain.AppCache;
 import remote.ClientController;
 import server.ScravaProto.ClientData;
 import ui.dialogs.server.LoginDialog;
@@ -26,7 +27,7 @@ public class UserPanel extends JPanel {
 	
 	public void regenerate() {
 		removeAll();
-		ClientData user = ClientController.INSTANCE.getUser();
+		ClientData user = AppCache.getInstance().user;
 		if(user != null) {
 			JLabel lblNewLabel = new JLabel(user.getName());
 			add(lblNewLabel);

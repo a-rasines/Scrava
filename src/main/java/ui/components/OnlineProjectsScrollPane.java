@@ -7,6 +7,7 @@ import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JScrollPane;
 
+import domain.AppCache;
 import remote.ClientController;
 import server.ScravaProto.ClientData;
 import server.ScravaProto.ObjectDescriptor;
@@ -23,7 +24,7 @@ public class OnlineProjectsScrollPane extends JScrollPane {
 	private JList<Project> list = null;
 	private record Project(String name, int id) { @Override public final String toString() { return name; }	};
 	public void regenerate() {
-		ClientData user = ClientController.INSTANCE.getUser();
+		ClientData user = AppCache.getInstance().user;
 		if(user == null)
 			setViewportView(new JLabel("You need to log in / sign up to upload and download projects from the cloud"));
 		else {

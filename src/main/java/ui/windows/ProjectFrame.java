@@ -23,6 +23,7 @@ import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 
 import debug.DebugOut;
+import domain.AppCache;
 import domain.Project;
 import domain.Sprite;
 import domain.blocks.event.OnKeyPressEventBlock;
@@ -203,7 +204,7 @@ public class ProjectFrame extends JFrame implements WindowFocusListener {
     	});
     	
     	toServerMenuItem.addActionListener((e) -> {
-    		if(ClientController.INSTANCE.getUser() == null) {
+    		if(AppCache.getInstance().user == null) {
     			if(!LoginDialog.isAlreadyOpen())
     				new LoginDialog().setVisible(true);
     		} else {
