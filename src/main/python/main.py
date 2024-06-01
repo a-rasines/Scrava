@@ -40,20 +40,21 @@ class Service(grpc.ScravaServicer):
             return pb2.ClientData()
         return database.check_user(request.name, pw)
 
-    def deleteToken(self, request: pb2.SudoMessage, context):
+    def deleteToken(self, request: pb2.DeleteTokenMessage, context):
         print("Delete token")
         if(not database.delete_token(int(request.obj), request.token)):
             context.set_details("Invalid credentials")
             context.set_code(grpc.StatusCode.INVALID_ARGUMENT)
         return pb2.EmptyMessage() 
 
-    def saveProject(self, request: pb2.AuthoredObject, context) -> pb2.EmptyMessage:
+    def saveProject(self, request: pb2.AuthoredObject, context) -> pb2.ObjectDescriptor:
         if(database.check_token(request.token, request.uid)):
             database.save_project(request.obj.id, request.uid, request.obj.name, request.obj.obj)
+            return pb2.ObjectDescriptor(id=database.get_last_id(), name=request.obj.name)
         else:
             context.set_details("Invalid credentials")
             context.set_code(grpc.StatusCode.PERMISSION_DENIED)
-        return pb2.EmptyMessage()
+            return pb2.ObjectDescriptor()
 
     def getTutorialList(self, request, context):
         pass

@@ -110,7 +110,7 @@ public class ClientController {
         
         oos.writeObject(p);
         oos.close();
-		saveProject(
+		ObjectDescriptor od = saveProject(
 				AuthoredObject.newBuilder()
 							  .setToken(account.getToken())
 							  .setUid(account.getId())
@@ -119,13 +119,14 @@ public class ClientController {
 									  				  .setName(p.name)
 									  				  .setObj(Base64.getEncoder().encodeToString(baos.toByteArray()))
 									  ).build());
+		p.id = od.getId();
 		} catch(IOException e) {
 			JOptionPane.showMessageDialog(null, "Unable to save project: " + e.getMessage());
 		}
 	}
 	
-	public void saveProject(AuthoredObject so) {
-		blockingStub.saveProject(so);
+	public ObjectDescriptor saveProject(AuthoredObject so) {
+		return blockingStub.saveProject(so);
 	}
 	
 	public Project getProject (int id) {

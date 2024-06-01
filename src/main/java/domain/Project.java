@@ -19,6 +19,7 @@ import javax.swing.JOptionPane;
 import domain.values.EnumLiteral;
 import domain.values.EnumLiteral.EnumCapable;
 import domain.values.Variable;
+import remote.ClientController;
 import ui.components.ActionPanel;
 import ui.components.BlockPanel;
 import ui.components.SpritePanel;
@@ -38,7 +39,6 @@ public class Project implements Serializable {
 	}
 	
 	public static void setProject(Project p) {
-		System.out.println(p);
 		active = p;
 		SpritePanel.clearSprites();
 		for(Sprite s : p.getSprites())
@@ -94,7 +94,7 @@ public class Project implements Serializable {
 	}
 	
 	public void save() {
-		if(file == null) {
+		if(file == null && id == -1) {
 			JFileChooser fileChooser = new JFileChooser();
     		fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
             int result = fileChooser.showOpenDialog(null);
@@ -108,6 +108,8 @@ public class Project implements Serializable {
 	}
 	
 	public void save(File f) {
+		if(id != -1)
+			ClientController.INSTANCE.saveProject(this);
 		try {
 			file = f;
 			ProjectFrame.INSTANCE.reset();

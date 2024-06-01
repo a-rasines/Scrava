@@ -28,10 +28,12 @@ import domain.Sprite;
 import domain.blocks.event.OnKeyPressEventBlock;
 import domain.blocks.event.OnStartEventBlock;
 import domain.models.types.EventBlock;
+import remote.ClientController;
 import ui.EmptyLayout;
 import ui.components.ActionPanel;
 import ui.components.BlockPanel;
 import ui.components.SpritePanel;
+import ui.dialogs.server.LoginDialog;
 
 public class ProjectFrame extends JFrame implements WindowFocusListener {
 	public static boolean isStarted = false;
@@ -201,7 +203,12 @@ public class ProjectFrame extends JFrame implements WindowFocusListener {
     	});
     	
     	toServerMenuItem.addActionListener((e) -> {
-    		JOptionPane.showMessageDialog(null, "Not available");
+    		if(ClientController.INSTANCE.getUser() == null) {
+    			if(!LoginDialog.isAlreadyOpen())
+    				new LoginDialog().setVisible(true);
+    		} else {
+    			ClientController.INSTANCE.saveProject(Project.getActiveProject());
+    		}
     	});
     		
 	}

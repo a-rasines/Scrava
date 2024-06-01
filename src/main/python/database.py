@@ -24,6 +24,11 @@ def to_sql_strings(*args) -> str:
 def to_sql_string(str:str) -> str:
     return str.replace("'", "''")
 
+def get_last_id() -> int:
+    mycursor = mydb.cursor()
+    mycursor.execute("SELECT LAST_INSERT_ID()")
+    return mycursor.fetchone()[0]
+
 def check_user(username:str, pw:str) -> pb2.ClientData:
     username = to_sql_strings(username)
     mycursor = mydb.cursor()
@@ -156,4 +161,3 @@ _dtt.start()
 if __name__ == "__main__":
     print(create_user("test", SHA_256.encode("test")))
     print(check_user("test", SHA_256.encode("test")))
-    print(get_user(1, "test"))

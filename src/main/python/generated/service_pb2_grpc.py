@@ -62,7 +62,7 @@ class ScravaStub(object):
         self.saveProject = channel.unary_unary(
                 '/Scrava/saveProject',
                 request_serializer=service__pb2.AuthoredObject.SerializeToString,
-                response_deserializer=service__pb2.EmptyMessage.FromString,
+                response_deserializer=service__pb2.ObjectDescriptor.FromString,
                 _registered_method=True)
         self.getTutorialList = channel.unary_stream(
                 '/Scrava/getTutorialList',
@@ -180,7 +180,7 @@ def add_ScravaServicer_to_server(servicer, server):
             'saveProject': grpc.unary_unary_rpc_method_handler(
                     servicer.saveProject,
                     request_deserializer=service__pb2.AuthoredObject.FromString,
-                    response_serializer=service__pb2.EmptyMessage.SerializeToString,
+                    response_serializer=service__pb2.ObjectDescriptor.SerializeToString,
             ),
             'getTutorialList': grpc.unary_stream_rpc_method_handler(
                     servicer.getTutorialList,
@@ -342,7 +342,7 @@ class Scrava(object):
             target,
             '/Scrava/saveProject',
             service__pb2.AuthoredObject.SerializeToString,
-            service__pb2.EmptyMessage.FromString,
+            service__pb2.ObjectDescriptor.FromString,
             options,
             channel_credentials,
             insecure,
