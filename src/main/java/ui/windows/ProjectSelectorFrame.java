@@ -19,6 +19,7 @@ import javax.swing.border.EmptyBorder;
 import debug.DebugOut;
 import domain.AppCache;
 import domain.AppCache.ProjectData;
+import remote.ClientController;
 import domain.Project;
 import ui.components.OnlineProjectsScrollPane;
 import ui.components.UserPanel;
@@ -80,11 +81,24 @@ public class ProjectSelectorFrame extends JFrame implements WindowFocusListener 
 		contentPane.add(panel, BorderLayout.SOUTH);
 		
 		JButton btnOpen = new JButton("Open");
-		btnOpen.setEnabled(false);
+		btnOpen.addActionListener(e -> {
+			if(tabbedPane.getSelectedIndex() == 0) {
+				if(projectList.getSelectedIndex() != -1) {
+					Project.readProject(projectList.getSelectedValue().file());
+					ProjectFrame.INSTANCE.setVisible(true);
+					setVisible(false);
+				}
+			} else {
+				if (OnlineProjectsScrollPane.INSTANCE.getSelectedIndex() != -1) {
+					ClientController.INSTANCE.getProject(OnlineProjectsScrollPane.INSTANCE.getSelectedValue().id());
+					ProjectFrame.INSTANCE.setVisible(true);
+					setVisible(false);
+				}
+			}
+		});
 		panel.add(btnOpen);
 		
 		JButton btnDelete = new JButton("Delete");
-		btnDelete.setEnabled(false);
 		panel.add(btnDelete);
 		
 		JButton btnImport = new JButton("Import");
@@ -98,7 +112,7 @@ public class ProjectSelectorFrame extends JFrame implements WindowFocusListener 
             		plm.addElement(pd);
             		AppCache.save();
             		ProjectFrame.INSTANCE.setVisible(true);
-            		dispose();
+            		setVisible(false);
             	}
             	
             }

@@ -75,6 +75,7 @@ public class ProjectFrame extends JFrame implements WindowFocusListener {
 		add(BlockPanel.INSTANCE);
 		add(ActionPanel.INSTANCE);
 		add(SpritePanel.INSTANCE);
+		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		SpritePanel.addSprite(new Sprite());
 		add(startButton);
 		add(tickButton);
@@ -164,9 +165,7 @@ public class ProjectFrame extends JFrame implements WindowFocusListener {
 	private void generateJMenu() {
 		JMenuBar menuBar = new JMenuBar();									this.setJMenuBar(menuBar);
         	JMenu archiveMenu = new JMenu("Archive");							menuBar.add(archiveMenu);
-        		JMenu openMenu = new JMenu("Open");									archiveMenu.add(openMenu);
-        			JMenuItem fromFileMenuItem = new JMenuItem("From File");			openMenu.add(fromFileMenuItem);
-        			JMenuItem fromServerMenuItem = new JMenuItem("From Server");		openMenu.add(fromServerMenuItem);
+        		JMenuItem openMenuItem = new JMenuItem("Open");						archiveMenu.add(openMenuItem);
         		JMenuItem saveMenuItem = new JMenuItem("Save"); 					archiveMenu.add(saveMenuItem);
         		JMenu saveAsMenu = new JMenu("Save as");							archiveMenu.add(saveAsMenu);
         			JMenuItem toFileMenuItem = new JMenuItem("To File");				saveAsMenu.add(toFileMenuItem);
@@ -174,19 +173,22 @@ public class ProjectFrame extends JFrame implements WindowFocusListener {
         		JMenuItem exportMenuItem = new JMenuItem("Export");					archiveMenu.add(exportMenuItem);
         		JMenuItem exitMenuItem = new JMenuItem("Exit");						archiveMenu.add(exitMenuItem);
     		JMenu resourcesMenu = new JMenu("Resources");						menuBar.add(resourcesMenu);
-    		
-    	fromFileMenuItem.addActionListener((e) -> {
-    		JFileChooser fileChooser = new JFileChooser();
-            int result = fileChooser.showOpenDialog(ProjectFrame.this);
-            if (result == JFileChooser.APPROVE_OPTION)
-            	Project.readProject(fileChooser.getSelectedFile());
-            ActionPanel.INSTANCE.repaint();
-            SpritePanel.INSTANCE.repaint();
+    	openMenuItem.addActionListener(e -> {
+    		ProjectSelectorFrame.INSTANCE.setVisible(true);
+    		setVisible(false);
     	});
-    	
-    	fromServerMenuItem.addActionListener((e) -> {
-    		JOptionPane.showMessageDialog(null, "Not available");
-    	});
+//    	fromFileMenuItem.addActionListener((e) -> {
+//    		JFileChooser fileChooser = new JFileChooser();
+//            int result = fileChooser.showOpenDialog(ProjectFrame.this);
+//            if (result == JFileChooser.APPROVE_OPTION)
+//            	Project.readProject(fileChooser.getSelectedFile());
+//            ActionPanel.INSTANCE.repaint();
+//            SpritePanel.INSTANCE.repaint();
+//    	});
+//    	
+//    	fromServerMenuItem.addActionListener((e) -> {
+//    		JOptionPane.showMessageDialog(null, "Not available");
+//    	});
     	
     	saveMenuItem.addActionListener((e) -> {
     		Project.getActiveProject().save();

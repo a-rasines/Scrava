@@ -22,7 +22,7 @@ public class OnlineProjectsScrollPane extends JScrollPane {
 	}
 	
 	private JList<Project> list = null;
-	private record Project(String name, int id) { @Override public final String toString() { return name; }	};
+	public static record Project(String name, int id) { @Override public final String toString() { return name; }	};
 	public void regenerate() {
 		ClientData user = AppCache.getInstance().user;
 		if(user == null)
@@ -47,6 +47,18 @@ public class OnlineProjectsScrollPane extends JScrollPane {
 			
 		}
 		
+	}
+	
+	public int getSelectedIndex() {
+		if(AppCache.getInstance().user == null)
+			return -1;
+		else return list.getSelectedIndex();
+	}
+	
+	public Project getSelectedValue() {
+		if(AppCache.getInstance().user == null)
+			return null;
+		else return list.getSelectedValue();
 	}
 
 }
