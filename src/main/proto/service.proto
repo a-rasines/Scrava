@@ -10,6 +10,7 @@ service Scrava {
    rpc deleteToken(DeleteTokenMessage) returns (EmptyMessage) {}
 
    rpc saveProject(AuthoredObject) returns (ObjectDescriptor) {}
+   rpc deleteProject(AuthoredObject) returns (EmptyMessage) {}
 
    rpc getTutorialList(Query) returns (stream ObjectDescriptor) {}
    rpc getProjectList(Query) returns (stream ObjectDescriptor) {}

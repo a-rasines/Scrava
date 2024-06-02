@@ -2,6 +2,7 @@ package domain;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -16,6 +17,8 @@ import java.util.Set;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 
+import debug.DebugOut;
+import domain.AppCache.ProjectData;
 import domain.values.EnumLiteral;
 import domain.values.EnumLiteral.EnumCapable;
 import domain.values.Variable;
@@ -52,7 +55,7 @@ public class Project implements Serializable {
 		if(active == null)
 			active = this;
 		this.name = name;
-		registerSprite(new Sprite());
+		new Sprite();
 	}
 	
 	/**
@@ -67,6 +70,7 @@ public class Project implements Serializable {
 	}
 	
 	public void registerSprite(Sprite s) {
+		DebugOut.printStackTrace();
 		variables.putIfAbsent(s, new HashMap<>());
 	}
 	
@@ -100,8 +104,11 @@ public class Project implements Serializable {
             int result = fileChooser.showOpenDialog(null);
             if (result == JFileChooser.APPROVE_OPTION) {
             	String res = JOptionPane.showInputDialog("Set file name:");
-            	if(res.length() > 0)
+            	if(res.length() > 0) {
             		file = new File(fileChooser.getSelectedFile().getAbsolutePath() + "/" + res + ".scrv");
+            		AppCache.getInstance().importedProjects.add(new ProjectData(name, file));
+            		AppCache.save();
+            	}
             } else return;
 		}
 		save(file);
@@ -112,6 +119,7 @@ public class Project implements Serializable {
 			ClientController.INSTANCE.saveProject(this);
 		try {
 			file = f;
+			System.out.println(variables.keySet().size());
 			ProjectFrame.INSTANCE.reset();
 			FileOutputStream fileOut = new FileOutputStream(f);
 			ObjectOutputStream out = new ObjectOutputStream(fileOut);
@@ -156,7 +164,7 @@ public class Project implements Serializable {
 		}
 		
 	}
-	public static boolean readProject(File f) {
+	public static boolean readProject(File f) throws FileNotFoundException{
 		try {
 			FileInputStream fileIn = new FileInputStream(f);
 	        ObjectInputStream in = new ObjectInputStream(fileIn);
@@ -169,8 +177,10 @@ public class Project implements Serializable {
 	        temp.file = f;
 	        setProject(temp);
 	        return true;
+		} catch (FileNotFoundException e) {
+			throw e;
 		} catch (IOException e) {
-			JOptionPane.showMessageDialog(null, "The project could no tbe loaded: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(null, "The project could not be loaded: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
 			e.printStackTrace();
 		} catch (ClassNotFoundException e) { 
 			//(really) unlike

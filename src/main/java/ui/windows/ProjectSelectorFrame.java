@@ -1,26 +1,26 @@
 package ui.windows;
 
 import java.awt.BorderLayout;
-import java.awt.EventQueue;
 import java.awt.FlowLayout;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowFocusListener;
+import java.io.FileNotFoundException;
 
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JList;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.border.EmptyBorder;
 
-import debug.DebugOut;
 import domain.AppCache;
 import domain.AppCache.ProjectData;
-import remote.ClientController;
 import domain.Project;
+import remote.ClientController;
 import ui.components.OnlineProjectsScrollPane;
 import ui.components.UserPanel;
 
@@ -34,18 +34,18 @@ public class ProjectSelectorFrame extends JFrame implements WindowFocusListener 
 	/**
 	 * Launch the application.
 	 */
-	public static void main(String[] args) {
-		DebugOut.setup();
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					INSTANCE.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
-	}
+//	public static void main(String[] args) {
+//		DebugOut.setup();
+//		EventQueue.invokeLater(new Runnable() {
+//			public void run() {
+//				try {
+//					INSTANCE.setVisible(true);
+//				} catch (Exception e) {
+//					e.printStackTrace();
+//				}
+//			}
+//		});
+//	}
 
 	/**
 	 * Create the frame.
@@ -84,7 +84,15 @@ public class ProjectSelectorFrame extends JFrame implements WindowFocusListener 
 		btnOpen.addActionListener(e -> {
 			if(tabbedPane.getSelectedIndex() == 0) {
 				if(projectList.getSelectedIndex() != -1) {
-					Project.readProject(projectList.getSelectedValue().file());
+					try {
+						Project.readProject(projectList.getSelectedValue().file());
+					} catch (FileNotFoundException _e) {
+						JOptionPane.showMessageDialog(null, "The project has been moved / deleted");
+						AppCache.getInstance().importedProjects.remove(projectList.getSelectedValue());
+						AppCache.save();
+						plm.removeElement(projectList.getSelectedValue());
+						return;
+					}
 					ProjectFrame.INSTANCE.setVisible(true);
 					setVisible(false);
 				}
@@ -99,6 +107,21 @@ public class ProjectSelectorFrame extends JFrame implements WindowFocusListener 
 		panel.add(btnOpen);
 		
 		JButton btnDelete = new JButton("Delete");
+		btnDelete.addActionListener(e -> {
+			if(tabbedPane.getSelectedIndex() == 0) {
+				if(projectList.getSelectedIndex() != -1) {
+					ProjectData pd = projectList.getSelectedValue();
+					switch(JOptionPane.showConfirmDialog(null, "Delete also from storage?")) {
+						case JOptionPane.OK_OPTION:
+							pd.file().delete();
+						case JOptionPane.NO_OPTION:
+							AppCache.getInstance().importedProjects.remove(pd);
+							AppCache.save();
+							plm.removeElement(pd);
+					}
+				}
+			}
+		});
 		panel.add(btnDelete);
 		
 		JButton btnImport = new JButton("Import");
@@ -106,25 +129,38 @@ public class ProjectSelectorFrame extends JFrame implements WindowFocusListener 
 			JFileChooser fileChooser = new JFileChooser();
             int result = fileChooser.showOpenDialog(ProjectSelectorFrame.this);
             if (result == JFileChooser.APPROVE_OPTION) {
-            	if(Project.readProject(fileChooser.getSelectedFile())) {
-            		ProjectData pd = new ProjectData(Project.getActiveProject().name, fileChooser.getSelectedFile());
-            		AppCache.getInstance().importedProjects.add(pd);
-            		plm.addElement(pd);
-            		AppCache.save();
-            		ProjectFrame.INSTANCE.setVisible(true);
-            		setVisible(false);
-            	}
+            	try {
+					if(Project.readProject(fileChooser.getSelectedFile())) {
+						ProjectData pd = new ProjectData(Project.getActiveProject().name, fileChooser.getSelectedFile());
+						AppCache.getInstance().importedProjects.add(pd);
+						plm.addElement(pd);
+						AppCache.save();
+						ProjectFrame.INSTANCE.setVisible(true);
+						setVisible(false);
+					}
+				} catch (FileNotFoundException e1) { //Unlike
+					e1.printStackTrace();
+				}
             	
             }
 		});
 		panel.add(btnImport);
 		
 		JButton btnNew = new JButton("New");
+		btnNew.addActionListener(e -> {
+			String name = "";
+			while(name.length() == 0) {
+				name = JOptionPane.showInputDialog("Set project's name", "New Project");
+				if(name == null) return;
+			}
+			Project.setProject(new Project(name));
+			ProjectFrame.INSTANCE.setVisible(true);
+			setVisible(false);
+		});
 		panel.add(btnNew);
 		
 		tabbedPane.addChangeListener(e -> {
 			btnImport.setEnabled(tabbedPane.getSelectedIndex() == 0);
-			
 		});
 	}
 	

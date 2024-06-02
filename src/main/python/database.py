@@ -58,6 +58,18 @@ def check_token(token:str, uid:int) -> bool:
     mycursor.close()
     return output
 
+def _delete(table:str, conditions:str) -> bool:
+    mycursor = mydb.cursor()
+    try:
+        mycursor.execute(f"DELETE FROM {table} WHERE {conditions}")
+        mydb.commit()
+        output = mycursor.rowcount == 1
+        mycursor.close()
+        return output
+    except IntegrityError:
+        mycursor.close()
+        return False
+
 def create_user(username:str, pw:str) -> bool:
     username, pw = to_sql_strings(username, pw)
     mycursor = mydb.cursor()
@@ -100,10 +112,10 @@ def save_project(p_id: int, author:int, name:str, content:str) -> bool:
         mycursor.close()
         return False
 
-
-
 def delete_token(owner:int, token:str) -> bool:
     token = to_sql_strings(token)
+    return _delete("Token", f"owner = {owner} AND token = {token}")
+"""     token = to_sql_strings(token)
     mycursor = mydb.cursor()
     try:
         mycursor.execute(f"DELETE FROM Token WHERE owner = {owner} AND token = {token}")
@@ -113,7 +125,9 @@ def delete_token(owner:int, token:str) -> bool:
         return output
     except IntegrityError:
         mycursor.close()
-        return False
+        return False """
+def delete_project(owner: int, id: int) -> bool:
+    return _delete("Project", "owner = " + str(owner) + " AND id = " + str(id))
 
 def check_sqlinj(input:str):
     is_str = 0

@@ -4,6 +4,7 @@ import generated.service_pb2_grpc as grpc
 from cipher import *
 import database
 from concurrent import futures
+import traceback 
 
 class Service(grpc.ScravaServicer):
 
@@ -42,10 +43,16 @@ class Service(grpc.ScravaServicer):
 
     def deleteToken(self, request: pb2.DeleteTokenMessage, context):
         print("Delete token")
-        if(not database.delete_token(int(request.obj), request.token)):
+        if(not database.delete_token(request.uid, request.token)):
             context.set_details("Invalid credentials")
             context.set_code(grpc.StatusCode.INVALID_ARGUMENT)
-        return pb2.EmptyMessage() 
+        return pb2.EmptyMessage()
+    
+    def deleteProject(self, request: pb2.AuthoredObject, context):
+        try:
+            return super().deleteProject(request, context)
+        except:
+            traceback.print_exc()
 
     def saveProject(self, request: pb2.AuthoredObject, context) -> pb2.ObjectDescriptor:
         if(database.check_token(request.token, request.uid)):

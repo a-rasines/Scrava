@@ -22,7 +22,6 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 
-import debug.DebugOut;
 import domain.AppCache;
 import domain.Project;
 import domain.Sprite;
@@ -38,17 +37,12 @@ import ui.dialogs.server.LoginDialog;
 
 public class ProjectFrame extends JFrame implements WindowFocusListener {
 	public static boolean isStarted = false;
-	static {
-		DebugOut.setup();
-		new Project("New project");
-	}
-	
-	public static void main(String[] args) {
-//		for (long longVal = 4946144450195624L; longVal > 0; longVal >>= 5)
-//			System.out.print((char) (((longVal & 31 | 64) % 95) + 32));
-		INSTANCE.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		INSTANCE.setVisible(true);
-	}
+//	public static void main(String[] args) {
+////		for (long longVal = 4946144450195624L; longVal > 0; longVal >>= 5)
+////			System.out.print((char) (((longVal & 31 | 64) % 95) + 32));
+//		INSTANCE.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+//		INSTANCE.setVisible(true);
+//	}
 	
 	public static final ProjectFrame INSTANCE = new ProjectFrame();
 	private static final long serialVersionUID = -4157218152821931601L;
@@ -76,7 +70,6 @@ public class ProjectFrame extends JFrame implements WindowFocusListener {
 		add(ActionPanel.INSTANCE);
 		add(SpritePanel.INSTANCE);
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
-		SpritePanel.addSprite(new Sprite());
 		add(startButton);
 		add(tickButton);
 		add(endButton);
@@ -173,8 +166,10 @@ public class ProjectFrame extends JFrame implements WindowFocusListener {
         		JMenuItem exportMenuItem = new JMenuItem("Export");					archiveMenu.add(exportMenuItem);
         		JMenuItem exitMenuItem = new JMenuItem("Exit");						archiveMenu.add(exitMenuItem);
     		JMenu resourcesMenu = new JMenu("Resources");						menuBar.add(resourcesMenu);
+    		
     	openMenuItem.addActionListener(e -> {
     		ProjectSelectorFrame.INSTANCE.setVisible(true);
+    		ProjectSelectorFrame.INSTANCE.repaint();
     		setVisible(false);
     	});
 //    	fromFileMenuItem.addActionListener((e) -> {
