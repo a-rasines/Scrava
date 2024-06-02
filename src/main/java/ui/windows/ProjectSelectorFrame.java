@@ -119,11 +119,12 @@ public class ProjectSelectorFrame extends JFrame implements WindowFocusListener 
 		});
 		panel.add(btnImport);
 		
+		JButton btnNew = new JButton("New");
+		panel.add(btnNew);
+		
 		tabbedPane.addChangeListener(e -> {
 			btnImport.setEnabled(tabbedPane.getSelectedIndex() == 0);
 			
-			JButton btnNew = new JButton("New");
-			panel.add(btnNew);
 		});
 	}
 	
