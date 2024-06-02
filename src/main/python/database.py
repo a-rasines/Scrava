@@ -162,11 +162,10 @@ def search_tutorial(offset:int, query: str) -> list[tuple[int, str]]:
 def get_project(id: int) -> pb2.SerializedObject:
     mycursor = mydb.cursor()
     mycursor.execute(f"SELECT name, content FROM Project WHERE id = {id} LIMIT 1")
-    if mycursor.rowcount == 0: 
-        mycursor.close()
-        return None
     res = list(mycursor.fetchone())
     mycursor.close()
+    if res == None:
+        return None
     return pb2.SerializedObject(id=id, name=res[0], obj = res[1])
 
 def get_tutorial(id: int) -> pb2.SerializedObject:

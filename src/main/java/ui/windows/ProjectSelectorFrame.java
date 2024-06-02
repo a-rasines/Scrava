@@ -98,7 +98,7 @@ public class ProjectSelectorFrame extends JFrame implements WindowFocusListener 
 				}
 			} else {
 				if (OnlineProjectsScrollPane.INSTANCE.getSelectedIndex() != -1) {
-					ClientController.INSTANCE.getProject(OnlineProjectsScrollPane.INSTANCE.getSelectedValue().id());
+					Project.setProject(ClientController.INSTANCE.getProject(OnlineProjectsScrollPane.INSTANCE.getSelectedValue().id()));
 					ProjectFrame.INSTANCE.setVisible(true);
 					setVisible(false);
 				}
@@ -120,6 +120,8 @@ public class ProjectSelectorFrame extends JFrame implements WindowFocusListener 
 							plm.removeElement(pd);
 					}
 				}
+			} else {
+				
 			}
 		});
 		panel.add(btnDelete);

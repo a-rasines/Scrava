@@ -4,7 +4,6 @@ import generated.service_pb2_grpc as grpc
 from cipher import *
 import database
 from concurrent import futures
-import traceback 
 
 class Service(grpc.ScravaServicer):
 
@@ -49,10 +48,12 @@ class Service(grpc.ScravaServicer):
         return pb2.EmptyMessage()
     
     def deleteProject(self, request: pb2.AuthoredObject, context):
-        try:
-            return super().deleteProject(request, context)
-        except:
-            traceback.print_exc()
+        if(database.check_token(request.token, request.uid)):
+            database.delete_project(request.uid, request.obj.id)
+        else:
+            context.set_details("Invalid credentials")
+            context.set_code(grpc.StatusCode.PERMISSION_DENIED)
+        return pb2.EmptyMessage()
 
     def saveProject(self, request: pb2.AuthoredObject, context) -> pb2.ObjectDescriptor:
         if(database.check_token(request.token, request.uid)):
@@ -76,7 +77,7 @@ class Service(grpc.ScravaServicer):
         pass
 
     def getProject(self, request: pb2.Query, context):
-        return database.get_project(request.query)
+        return database.get_project(int(request.query))
 
 #https://grpc.io/docs/languages/python/basics/
 def serve():

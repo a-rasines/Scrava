@@ -1,7 +1,9 @@
 package remote;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.nio.charset.StandardCharsets;
 import java.security.InvalidKeyException;
@@ -124,13 +126,38 @@ public class ClientController {
 		}
 	}
 	
+	public void deleteProject(ObjectDescriptor p) {
+		ClientData cd = AppCache.getInstance().user;
+		blockingStub.deleteProject(AuthoredObject.newBuilder()
+												 .setToken(cd.getToken())
+												 .setUid(cd.getId())
+												 .setObj(SerializedObject.newBuilder().setId(p.getId()))
+												 .build());
+	}
+	
 	public ObjectDescriptor saveProject(AuthoredObject so) {
 		return blockingStub.saveProject(so);
 	}
 	
 	public Project getProject (int id) {
-		//TODO
-		return null;
+		try (ByteArrayInputStream bais = new ByteArrayInputStream(
+												Base64.getDecoder()
+													  .decode(
+															  blockingStub.getProject(
+																	  Query.newBuilder()
+																	  	   .setQuery(""+id)
+																	  	   .build()
+															  ).getObj()
+													   ));
+				ObjectInputStream ois = new ObjectInputStream( bais )){
+			return (Project) ois.readObject();
+		} catch(IOException e) {
+			JOptionPane.showMessageDialog(null, "Unable to save project: " + e.getMessage());
+			return null;
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace(); //Really unlike
+			return null;
+		}
 	}
 	
 	public Iterator<ObjectDescriptor> getTutorialList(Query q) {
