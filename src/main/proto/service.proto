@@ -62,12 +62,14 @@ message ClientData {
 message ClientLogin {
   string name = 1;
   string password = 2;
+  bytes pk = 3;
 }
 
 message ClientRegister {
   string name = 1;
   string password = 2;
   string email = 3;
+  bytes pk = 4;
 }
 
 message StringResponse {

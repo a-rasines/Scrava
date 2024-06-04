@@ -21,10 +21,14 @@ import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 import javax.swing.JOptionPane;
 
+import com.google.protobuf.ByteString;
+
 import domain.AppCache;
 import domain.Project;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
+import io.grpc.Status;
+import io.grpc.StatusRuntimeException;
 import server.ScravaGrpc;
 import server.ScravaGrpc.ScravaBlockingStub;
 import server.ScravaProto.AuthoredObject;
@@ -42,6 +46,7 @@ public class ClientController {
 	public static final ClientController INSTANCE = new ClientController("127.0.0.1", 8080);
 	private Cipher encryptCipher;
 	private PublicKey publicKey;
+	private ByteString pk = null;
 	
 	private ScravaBlockingStub blockingStub;
 	private ClientController(String ip, int port) {
@@ -51,6 +56,7 @@ public class ClientController {
 			blockingStub = ScravaGrpc.newBlockingStub(channel);
 			CipherUpdate cu = 	blockingStub.startConnection(EmptyMessage.getDefaultInstance());
 			publicKey = KeyFactory.getInstance("RSA").generatePublic(new X509EncodedKeySpec(cu.getPublicKey().toByteArray()));
+			pk = cu.getPublicKey();
 			encryptCipher.init(Cipher.ENCRYPT_MODE, publicKey);
 		} catch (InvalidKeySpecException | NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException e) { e.printStackTrace(); }
 	}
@@ -58,7 +64,8 @@ public class ClientController {
 	private void refreshCypher() {
 		CipherUpdate cu = blockingStub.refreshCypher(EmptyMessage.getDefaultInstance());
 		try {
-			publicKey = KeyFactory.getInstance("RSA").generatePublic(new X509EncodedKeySpec(Base64.getDecoder().decode(cu.getPublicKey().toByteArray())));
+			publicKey = KeyFactory.getInstance("RSA").generatePublic(new X509EncodedKeySpec(cu.getPublicKey().toByteArray()));
+			pk = cu.getPublicKey();
 			encryptCipher.init(Cipher.ENCRYPT_MODE, publicKey);
 		} catch (InvalidKeySpecException | NoSuchAlgorithmException | InvalidKeyException e) { e.printStackTrace(); }
 	}
@@ -73,23 +80,41 @@ public class ClientController {
 	}
 	
 	public ClientData login(String name,  String pw) {
-		AppCache.getInstance().user = blockingStub.login(
-				ClientLogin.newBuilder()
-				   .setName(name)
-				   .setPassword(rsaEncode(pw))
-				   .build()
-		);
+		try {
+			AppCache.getInstance().user = blockingStub.login(
+					ClientLogin.newBuilder()
+					   .setName(name)
+					   .setPassword(rsaEncode(pw))
+					   .setPk(pk)
+					   .build()
+			);
+		} catch(StatusRuntimeException e) {
+			if(e.getStatus().getCode() == Status.Code.FAILED_PRECONDITION) {
+				refreshCypher();
+				return login(name, pw);
+			} else
+				throw e;
+		}
 		AppCache.save();
 		return AppCache.getInstance().user;
 	}
 	
 	public ClientData register(String name, String pw) {
-		AppCache.getInstance().user = blockingStub.register(
-				ClientRegister.newBuilder()
-				   .setName(name)
-				   .setPassword(rsaEncode(pw))
-				   .build()
-		);
+		try {
+			AppCache.getInstance().user = blockingStub.register(
+					ClientRegister.newBuilder()
+					   .setName(name)
+					   .setPassword(rsaEncode(pw))
+					   .setPk(pk)
+					   .build()
+			);
+		} catch(StatusRuntimeException e) {
+			if(e.getStatus().getCode() == Status.Code.FAILED_PRECONDITION) {
+				refreshCypher();
+				return register(name, pw);
+			} else
+				throw e;
+		}
 		AppCache.save();
 		return AppCache.getInstance().user;
 	}	
