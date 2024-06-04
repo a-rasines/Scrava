@@ -111,7 +111,6 @@ El arbol generado al exportar:
 - Acceso a proyectos ajenos
 
 ## Librerias
-- [TxtMark](https://github.com/rjeschke/txtmark) para proyectar los tutoriales en markdown
 - [gRPC](https://github.com/grpc/grpc-java) como middleware
 - [TwelveMonkeys + Batik plugin](https://github.com/haraldk/TwelveMonkeys) para cargar mas formatos de imagen
 - [Apache Batik](https://xmlgraphics.apache.org/batik/) como libreria base para cargar SVG
