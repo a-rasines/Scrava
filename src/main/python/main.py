@@ -10,8 +10,6 @@ class Service(grpc.ScravaServicer):
 
     def startConnection(self, request: pb2.TokenMessage, context) -> pb2.CipherUpdate:
         print("Start connection with client")
-        print(request.uid)
-        print(len(request.token))
         if(len(request.token) != 0 and not database.check_token(request.token, request.uid)):
             context.set_code(StatusCode.NOT_FOUND)
             context.set_details("Invalid or expired token")

@@ -21,6 +21,7 @@ import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 import javax.swing.JOptionPane;
 
+import com.github.rjeschke.txtmark.Processor;
 import com.google.protobuf.ByteString;
 
 import domain.AppCache;
@@ -193,6 +194,11 @@ public class ClientController {
 			e.printStackTrace(); //Really unlike
 			return null;
 		}
+	}
+	public static record Tutorial(String title, String content) {}
+	public Tutorial getTutorial(int id) {
+		SerializedObject so = blockingStub.getProject(Query.newBuilder().setQuery(""+id).build());
+		return new Tutorial(Processor.process("# " + so.getName()), Processor.process(so.getObj()));
 	}
 	
 	public Iterator<ObjectDescriptor> getTutorialList(Query q) {
