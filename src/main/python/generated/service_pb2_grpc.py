@@ -41,7 +41,7 @@ class ScravaStub(object):
         """
         self.startConnection = channel.unary_unary(
                 '/Scrava/startConnection',
-                request_serializer=service__pb2.EmptyMessage.SerializeToString,
+                request_serializer=service__pb2.TokenMessage.SerializeToString,
                 response_deserializer=service__pb2.CipherUpdate.FromString,
                 _registered_method=True)
         self.login = channel.unary_unary(
@@ -56,7 +56,7 @@ class ScravaStub(object):
                 _registered_method=True)
         self.deleteToken = channel.unary_unary(
                 '/Scrava/deleteToken',
-                request_serializer=service__pb2.DeleteTokenMessage.SerializeToString,
+                request_serializer=service__pb2.TokenMessage.SerializeToString,
                 response_deserializer=service__pb2.EmptyMessage.FromString,
                 _registered_method=True)
         self.saveProject = channel.unary_unary(
@@ -170,7 +170,7 @@ def add_ScravaServicer_to_server(servicer, server):
     rpc_method_handlers = {
             'startConnection': grpc.unary_unary_rpc_method_handler(
                     servicer.startConnection,
-                    request_deserializer=service__pb2.EmptyMessage.FromString,
+                    request_deserializer=service__pb2.TokenMessage.FromString,
                     response_serializer=service__pb2.CipherUpdate.SerializeToString,
             ),
             'login': grpc.unary_unary_rpc_method_handler(
@@ -185,7 +185,7 @@ def add_ScravaServicer_to_server(servicer, server):
             ),
             'deleteToken': grpc.unary_unary_rpc_method_handler(
                     servicer.deleteToken,
-                    request_deserializer=service__pb2.DeleteTokenMessage.FromString,
+                    request_deserializer=service__pb2.TokenMessage.FromString,
                     response_serializer=service__pb2.EmptyMessage.SerializeToString,
             ),
             'saveProject': grpc.unary_unary_rpc_method_handler(
@@ -249,7 +249,7 @@ class Scrava(object):
             request,
             target,
             '/Scrava/startConnection',
-            service__pb2.EmptyMessage.SerializeToString,
+            service__pb2.TokenMessage.SerializeToString,
             service__pb2.CipherUpdate.FromString,
             options,
             channel_credentials,
@@ -330,7 +330,7 @@ class Scrava(object):
             request,
             target,
             '/Scrava/deleteToken',
-            service__pb2.DeleteTokenMessage.SerializeToString,
+            service__pb2.TokenMessage.SerializeToString,
             service__pb2.EmptyMessage.FromString,
             options,
             channel_credentials,

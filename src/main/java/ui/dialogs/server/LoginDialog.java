@@ -13,7 +13,6 @@ import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
 
-import io.grpc.Status;
 import io.grpc.StatusRuntimeException;
 import remote.ClientController;
 import ui.components.OnlineProjectsScrollPane;

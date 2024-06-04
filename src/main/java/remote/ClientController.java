@@ -36,11 +36,12 @@ import server.ScravaProto.CipherUpdate;
 import server.ScravaProto.ClientData;
 import server.ScravaProto.ClientLogin;
 import server.ScravaProto.ClientRegister;
-import server.ScravaProto.DeleteTokenMessage;
 import server.ScravaProto.EmptyMessage;
 import server.ScravaProto.ObjectDescriptor;
 import server.ScravaProto.Query;
 import server.ScravaProto.SerializedObject;
+import server.ScravaProto.TokenMessage;
+import ui.components.UserPanel;
 
 public class ClientController {
 	public static final ClientController INSTANCE = new ClientController("127.0.0.1", 8080);
@@ -54,7 +55,16 @@ public class ClientController {
 			encryptCipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
 			ManagedChannel channel = ManagedChannelBuilder.forAddress(ip, port).usePlaintext().build();
 			blockingStub = ScravaGrpc.newBlockingStub(channel);
-			CipherUpdate cu = 	blockingStub.startConnection(EmptyMessage.getDefaultInstance());
+			ClientData cacheUser = AppCache.getInstance().user;
+			CipherUpdate cu;
+			try {
+				cu = blockingStub.startConnection(TokenMessage.newBuilder().setToken(cacheUser.getToken()).setUid(cacheUser.getId()).build());
+			} catch(StatusRuntimeException | NullPointerException e) {
+				AppCache.getInstance().user = null;
+				AppCache.save();
+				UserPanel.INSTANCE.regenerate();
+				cu = blockingStub.startConnection(TokenMessage.newBuilder().build());
+			}
 			publicKey = KeyFactory.getInstance("RSA").generatePublic(new X509EncodedKeySpec(cu.getPublicKey().toByteArray()));
 			pk = cu.getPublicKey();
 			encryptCipher.init(Cipher.ENCRYPT_MODE, publicKey);
@@ -125,7 +135,7 @@ public class ClientController {
 	
 	public void logoff() {
 		AppCache ac = AppCache.getInstance();
-		blockingStub.deleteToken(DeleteTokenMessage.newBuilder().setToken(ac.user.getToken()).setUid(ac.user.getId()).build());
+		blockingStub.deleteToken(TokenMessage.newBuilder().setToken(ac.user.getToken()).setUid(ac.user.getId()).build());
 		ac.user = null;
 		AppCache.save();
 	}

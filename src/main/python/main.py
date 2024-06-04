@@ -8,8 +8,13 @@ from concurrent import futures
 
 class Service(grpc.ScravaServicer):
 
-    def startConnection(self, _: pb2.EmptyMessage, context) -> pb2.CipherUpdate:
+    def startConnection(self, request: pb2.TokenMessage, context) -> pb2.CipherUpdate:
         print("Start connection with client")
+        print(request.uid)
+        print(len(request.token))
+        if(len(request.token) != 0 and not database.check_token(request.token, request.uid)):
+            context.set_code(StatusCode.NOT_FOUND)
+            context.set_details("Invalid or expired token")
         return pb2.CipherUpdate(publicKey=RSA.get_public_key())
     
     def refreshCypher(self, _: pb2.EmptyMessage, context) -> pb2.CipherUpdate:
@@ -48,7 +53,7 @@ class Service(grpc.ScravaServicer):
             return pb2.ClientData()
         return database.check_user(request.name, pw)
 
-    def deleteToken(self, request: pb2.DeleteTokenMessage, context):
+    def deleteToken(self, request: pb2.TokenMessage, context):
         print("Delete token")
         if(not database.delete_token(request.uid, request.token)):
             context.set_details("Invalid credentials")

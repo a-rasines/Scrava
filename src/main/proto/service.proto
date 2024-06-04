@@ -4,10 +4,10 @@ option java_package = "server";
 option java_outer_classname = "ScravaProto";
 
 service Scrava {
-   rpc startConnection(EmptyMessage) returns (CipherUpdate) {}
+   rpc startConnection(TokenMessage) returns (CipherUpdate) {}
    rpc login(ClientLogin) returns (ClientData) {}
    rpc register(ClientRegister) returns (ClientData) {}
-   rpc deleteToken(DeleteTokenMessage) returns (EmptyMessage) {}
+   rpc deleteToken(TokenMessage) returns (EmptyMessage) {}
 
    rpc saveProject(AuthoredObject) returns (ObjectDescriptor) {}
    rpc deleteProject(AuthoredObject) returns (EmptyMessage) {}
@@ -27,7 +27,7 @@ message Query {
   int32 offset = 2;
 }
 
-message DeleteTokenMessage {
+message TokenMessage {
   string token = 1;
   int32 uid = 2;
 }

@@ -14,7 +14,7 @@ _sym_db = _symbol_database.Default()
 
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\rservice.proto\"&\n\x05Query\x12\r\n\x05query\x18\x01 \x01(\t\x12\x0e\n\x06offset\x18\x02 \x01(\x05\"0\n\x12\x44\x65leteTokenMessage\x12\r\n\x05token\x18\x01 \x01(\t\x12\x0b\n\x03uid\x18\x02 \x01(\x05\"L\n\x0e\x41uthoredObject\x12\r\n\x05token\x18\x01 \x01(\t\x12\x0b\n\x03uid\x18\x02 \x01(\x05\x12\x1e\n\x03obj\x18\x03 \x01(\x0b\x32\x11.SerializedObject\"9\n\x10SerializedObject\x12\n\n\x02id\x18\x01 \x01(\x05\x12\x0c\n\x04name\x18\x02 \x01(\t\x12\x0b\n\x03obj\x18\x03 \x01(\t\",\n\x10ObjectDescriptor\x12\n\n\x02id\x18\x01 \x01(\x05\x12\x0c\n\x04name\x18\x02 \x01(\t\"!\n\x0c\x43ipherUpdate\x12\x11\n\tpublicKey\x18\x01 \x01(\x0c\"5\n\nClientData\x12\n\n\x02id\x18\x01 \x01(\x05\x12\x0c\n\x04name\x18\x02 \x01(\t\x12\r\n\x05token\x18\x03 \x01(\t\"9\n\x0b\x43lientLogin\x12\x0c\n\x04name\x18\x01 \x01(\t\x12\x10\n\x08password\x18\x02 \x01(\t\x12\n\n\x02pk\x18\x03 \x01(\x0c\"K\n\x0e\x43lientRegister\x12\x0c\n\x04name\x18\x01 \x01(\t\x12\x10\n\x08password\x18\x02 \x01(\t\x12\r\n\x05\x65mail\x18\x03 \x01(\t\x12\n\n\x02pk\x18\x04 \x01(\x0c\"\"\n\x0eStringResponse\x12\x10\n\x08response\x18\x01 \x01(\t\"\x0e\n\x0c\x45mptyMessage2\x95\x04\n\x06Scrava\x12\x31\n\x0fstartConnection\x12\r.EmptyMessage\x1a\r.CipherUpdate\"\x00\x12$\n\x05login\x12\x0c.ClientLogin\x1a\x0b.ClientData\"\x00\x12*\n\x08register\x12\x0f.ClientRegister\x1a\x0b.ClientData\"\x00\x12\x33\n\x0b\x64\x65leteToken\x12\x13.DeleteTokenMessage\x1a\r.EmptyMessage\"\x00\x12\x33\n\x0bsaveProject\x12\x0f.AuthoredObject\x1a\x11.ObjectDescriptor\"\x00\x12\x31\n\rdeleteProject\x12\x0f.AuthoredObject\x1a\r.EmptyMessage\"\x00\x12\x30\n\x0fgetTutorialList\x12\x06.Query\x1a\x11.ObjectDescriptor\"\x00\x30\x01\x12/\n\x0egetProjectList\x12\x06.Query\x1a\x11.ObjectDescriptor\"\x00\x30\x01\x12/\n\rrefreshCypher\x12\r.EmptyMessage\x1a\r.CipherUpdate\"\x00\x12*\n\x0bgetTutorial\x12\x06.Query\x1a\x11.SerializedObject\"\x00\x12)\n\ngetProject\x12\x06.Query\x1a\x11.SerializedObject\"\x00\x42\x15\n\x06serverB\x0bScravaProtob\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\rservice.proto\"&\n\x05Query\x12\r\n\x05query\x18\x01 \x01(\t\x12\x0e\n\x06offset\x18\x02 \x01(\x05\"*\n\x0cTokenMessage\x12\r\n\x05token\x18\x01 \x01(\t\x12\x0b\n\x03uid\x18\x02 \x01(\x05\"L\n\x0e\x41uthoredObject\x12\r\n\x05token\x18\x01 \x01(\t\x12\x0b\n\x03uid\x18\x02 \x01(\x05\x12\x1e\n\x03obj\x18\x03 \x01(\x0b\x32\x11.SerializedObject\"9\n\x10SerializedObject\x12\n\n\x02id\x18\x01 \x01(\x05\x12\x0c\n\x04name\x18\x02 \x01(\t\x12\x0b\n\x03obj\x18\x03 \x01(\t\",\n\x10ObjectDescriptor\x12\n\n\x02id\x18\x01 \x01(\x05\x12\x0c\n\x04name\x18\x02 \x01(\t\"!\n\x0c\x43ipherUpdate\x12\x11\n\tpublicKey\x18\x01 \x01(\x0c\"5\n\nClientData\x12\n\n\x02id\x18\x01 \x01(\x05\x12\x0c\n\x04name\x18\x02 \x01(\t\x12\r\n\x05token\x18\x03 \x01(\t\"9\n\x0b\x43lientLogin\x12\x0c\n\x04name\x18\x01 \x01(\t\x12\x10\n\x08password\x18\x02 \x01(\t\x12\n\n\x02pk\x18\x03 \x01(\x0c\"K\n\x0e\x43lientRegister\x12\x0c\n\x04name\x18\x01 \x01(\t\x12\x10\n\x08password\x18\x02 \x01(\t\x12\r\n\x05\x65mail\x18\x03 \x01(\t\x12\n\n\x02pk\x18\x04 \x01(\x0c\"\"\n\x0eStringResponse\x12\x10\n\x08response\x18\x01 \x01(\t\"\x0e\n\x0c\x45mptyMessage2\x8f\x04\n\x06Scrava\x12\x31\n\x0fstartConnection\x12\r.TokenMessage\x1a\r.CipherUpdate\"\x00\x12$\n\x05login\x12\x0c.ClientLogin\x1a\x0b.ClientData\"\x00\x12*\n\x08register\x12\x0f.ClientRegister\x1a\x0b.ClientData\"\x00\x12-\n\x0b\x64\x65leteToken\x12\r.TokenMessage\x1a\r.EmptyMessage\"\x00\x12\x33\n\x0bsaveProject\x12\x0f.AuthoredObject\x1a\x11.ObjectDescriptor\"\x00\x12\x31\n\rdeleteProject\x12\x0f.AuthoredObject\x1a\r.EmptyMessage\"\x00\x12\x30\n\x0fgetTutorialList\x12\x06.Query\x1a\x11.ObjectDescriptor\"\x00\x30\x01\x12/\n\x0egetProjectList\x12\x06.Query\x1a\x11.ObjectDescriptor\"\x00\x30\x01\x12/\n\rrefreshCypher\x12\r.EmptyMessage\x1a\r.CipherUpdate\"\x00\x12*\n\x0bgetTutorial\x12\x06.Query\x1a\x11.SerializedObject\"\x00\x12)\n\ngetProject\x12\x06.Query\x1a\x11.SerializedObject\"\x00\x42\x15\n\x06serverB\x0bScravaProtob\x06proto3')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
@@ -24,26 +24,26 @@ if not _descriptor._USE_C_DESCRIPTORS:
   _globals['DESCRIPTOR']._serialized_options = b'\n\006serverB\013ScravaProto'
   _globals['_QUERY']._serialized_start=17
   _globals['_QUERY']._serialized_end=55
-  _globals['_DELETETOKENMESSAGE']._serialized_start=57
-  _globals['_DELETETOKENMESSAGE']._serialized_end=105
-  _globals['_AUTHOREDOBJECT']._serialized_start=107
-  _globals['_AUTHOREDOBJECT']._serialized_end=183
-  _globals['_SERIALIZEDOBJECT']._serialized_start=185
-  _globals['_SERIALIZEDOBJECT']._serialized_end=242
-  _globals['_OBJECTDESCRIPTOR']._serialized_start=244
-  _globals['_OBJECTDESCRIPTOR']._serialized_end=288
-  _globals['_CIPHERUPDATE']._serialized_start=290
-  _globals['_CIPHERUPDATE']._serialized_end=323
-  _globals['_CLIENTDATA']._serialized_start=325
-  _globals['_CLIENTDATA']._serialized_end=378
-  _globals['_CLIENTLOGIN']._serialized_start=380
-  _globals['_CLIENTLOGIN']._serialized_end=437
-  _globals['_CLIENTREGISTER']._serialized_start=439
-  _globals['_CLIENTREGISTER']._serialized_end=514
-  _globals['_STRINGRESPONSE']._serialized_start=516
-  _globals['_STRINGRESPONSE']._serialized_end=550
-  _globals['_EMPTYMESSAGE']._serialized_start=552
-  _globals['_EMPTYMESSAGE']._serialized_end=566
-  _globals['_SCRAVA']._serialized_start=569
-  _globals['_SCRAVA']._serialized_end=1102
+  _globals['_TOKENMESSAGE']._serialized_start=57
+  _globals['_TOKENMESSAGE']._serialized_end=99
+  _globals['_AUTHOREDOBJECT']._serialized_start=101
+  _globals['_AUTHOREDOBJECT']._serialized_end=177
+  _globals['_SERIALIZEDOBJECT']._serialized_start=179
+  _globals['_SERIALIZEDOBJECT']._serialized_end=236
+  _globals['_OBJECTDESCRIPTOR']._serialized_start=238
+  _globals['_OBJECTDESCRIPTOR']._serialized_end=282
+  _globals['_CIPHERUPDATE']._serialized_start=284
+  _globals['_CIPHERUPDATE']._serialized_end=317
+  _globals['_CLIENTDATA']._serialized_start=319
+  _globals['_CLIENTDATA']._serialized_end=372
+  _globals['_CLIENTLOGIN']._serialized_start=374
+  _globals['_CLIENTLOGIN']._serialized_end=431
+  _globals['_CLIENTREGISTER']._serialized_start=433
+  _globals['_CLIENTREGISTER']._serialized_end=508
+  _globals['_STRINGRESPONSE']._serialized_start=510
+  _globals['_STRINGRESPONSE']._serialized_end=544
+  _globals['_EMPTYMESSAGE']._serialized_start=546
+  _globals['_EMPTYMESSAGE']._serialized_end=560
+  _globals['_SCRAVA']._serialized_start=563
+  _globals['_SCRAVA']._serialized_end=1090
 # @@protoc_insertion_point(module_scope)
