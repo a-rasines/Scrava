@@ -1,4 +1,4 @@
-package markdown;
+package parsers;
 
 public class MdParser {
 	

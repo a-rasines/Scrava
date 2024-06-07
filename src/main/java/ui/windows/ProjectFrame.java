@@ -7,6 +7,7 @@ import java.awt.Toolkit;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.KeyEvent;
+import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowFocusListener;
 import java.io.File;
@@ -28,6 +29,7 @@ import domain.Sprite;
 import domain.blocks.event.OnKeyPressEventBlock;
 import domain.blocks.event.OnStartEventBlock;
 import domain.models.types.EventBlock;
+import parsers.ProjectExporter;
 import remote.ClientController;
 import ui.EmptyLayout;
 import ui.components.ActionPanel;
@@ -64,12 +66,12 @@ public class ProjectFrame extends JFrame implements WindowFocusListener {
 		JButton startButton = new JButton("Start");
 		JButton tickButton = new JButton("Tick");
 		JButton endButton = new JButton("End");
+		setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 		projectName = "Untitled";
 		setLayout(new EmptyLayout());
 		add(BlockPanel.INSTANCE);
 		add(ActionPanel.INSTANCE);
 		add(SpritePanel.INSTANCE);
-		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		add(startButton);
 		add(tickButton);
 		add(endButton);
@@ -113,6 +115,13 @@ public class ProjectFrame extends JFrame implements WindowFocusListener {
         	
         });
         addWindowFocusListener(this);
+        addWindowListener(new WindowAdapter() {
+        	@Override
+        	public void windowClosing(WindowEvent e) {
+        		setVisible(false);
+        		ProjectSelectorFrame.INSTANCE.setVisible(true);
+        	}
+        });
 		
 		startButton.addActionListener((e) -> {
 			isTick = false;
@@ -172,18 +181,15 @@ public class ProjectFrame extends JFrame implements WindowFocusListener {
     		ProjectSelectorFrame.INSTANCE.repaint();
     		setVisible(false);
     	});
-//    	fromFileMenuItem.addActionListener((e) -> {
-//    		JFileChooser fileChooser = new JFileChooser();
-//            int result = fileChooser.showOpenDialog(ProjectFrame.this);
-//            if (result == JFileChooser.APPROVE_OPTION)
-//            	Project.readProject(fileChooser.getSelectedFile());
-//            ActionPanel.INSTANCE.repaint();
-//            SpritePanel.INSTANCE.repaint();
-//    	});
-//    	
-//    	fromServerMenuItem.addActionListener((e) -> {
-//    		JOptionPane.showMessageDialog(null, "Not available");
-//    	});
+    	
+    	exportMenuItem.addActionListener((e) -> {
+    		JFileChooser fileChooser = new JFileChooser();
+    		fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+            int result = fileChooser.showOpenDialog(ProjectFrame.this);
+            if (result == JFileChooser.APPROVE_OPTION) {
+            	ProjectExporter.exportTo(new File(fileChooser.getSelectedFile().getAbsolutePath() + "/" + projectName));
+            }
+    	});
     	
     	saveMenuItem.addActionListener((e) -> {
     		Project.getActiveProject().save();

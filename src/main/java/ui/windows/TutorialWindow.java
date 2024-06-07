@@ -10,7 +10,7 @@ import javax.swing.JPanel;
 import javax.swing.border.BevelBorder;
 import javax.swing.text.html.HTMLEditorKit;
 
-import markdown.MdParser;
+import parsers.MdParser;
 import remote.ClientController.Tutorial;
 
 public class TutorialWindow extends JFrame{
@@ -20,7 +20,8 @@ public class TutorialWindow extends JFrame{
 	public TutorialWindow(Tutorial t) {
 		JPanel parent = new JPanel(new BorderLayout());
 		setContentPane(parent);
-		setMinimumSize(new Dimension(200, 200));
+		setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+		setMinimumSize(new Dimension(500, 500));
 		parent.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 		JEditorPane jep = new JEditorPane();
 		jep.setEditorKit(new HTMLEditorKit());
@@ -66,8 +67,7 @@ public class TutorialWindow extends JFrame{
 				+ "`## Subtitle` <br>"
 				+ "`### Sub-subtitle`\n"
 				+ "## Ordering text \n"
-				+ "You may be tempted to use the enter key to change line, but the library used to render text it's not the best with that, therefore it's better practice to write `<br>`"));
-		System.exit(0);
+				+ "You may be tempted to use the enter key to change line, but the library used to render text it's not the best with that, therefore it's better practice to write `<br>`")).setVisible(true);
 	}
 
 }

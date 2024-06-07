@@ -1,0 +1,298 @@
+package base;
+
+import java.awt.Image;
+import java.awt.Point;
+import java.awt.image.BufferedImage;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.imageio.ImageIO;
+
+public abstract class Sprite {
+	
+	/**
+	 * Get's the resource from the resources folder located in the defined location
+	 * @param name the relative path from the resources folder (file name + extension included)
+	 * @return The BufferedImage instance containing the information of the image in that location
+	 * @throws IOException If the format is not supported
+	 * @throws FileNotFoundException If the path does not lead to a file
+	 */
+	public static BufferedImage importTexture(String name) throws IOException, FileNotFoundException {
+		return ImageIO.read(ClassLoader.getSystemClassLoader().getResource(name));
+	}
+	/**
+	 * This is a generic handle for the events cached by {@link EventSystem}
+	 */
+	public static class EventHandle implements Runnable {
+		private Runnable rn;
+		/**
+		 * Generates an event handle from a class method
+		 * @param m method that represents the event handle. This method MUST be a Runnable (no arguments, returns void)
+		 * @param owner the instance of sprite that invokes the event 
+		 */
+		public EventHandle(Method m, Sprite owner) { this.rn = () -> {try {m.invoke(owner); } catch (IllegalAccessException | InvocationTargetException e) { e.printStackTrace(); }}; }
+		
+		/**
+		 * Generates an event handle from a runnable function. <br>
+ 		 * A runnable function is one that does not have any argument and returns void
+		 * These can be initiated using <br><strong>() -> {/* code here *<a>/}</strong><br> or <br><strong> this::functionName </strong> <br>
+		 * @param runnable The function that will be run when the event triggers
+		 */
+		public EventHandle(Runnable runnable) {this.rn = runnable;}
+		@Override public void run() { rn.run(); }
+		
+	}
+	/**
+	 * This is an {@link EventHandle} that also receives a key for event filtering
+	 */
+	public static class KeyEventHandle extends EventHandle {
+		private int key;
+		
+		public KeyEventHandle(Runnable rn, int key) {
+			super(rn);
+			this.key = key;
+		}
+		/**
+		 * Returns the key code that should trigger this event handle
+		 * @return
+		 */
+		public int getKeyCode() {
+			return key;
+		}
+	}
+	/**
+	 * This enum represents all handled event types. <br>
+	 * To add a new value, you have to add a comma after the last all-caps value and add a new name for the next with the kind of event handle to use on that event
+	 */
+	public static enum EventType {
+		/**
+		 * {@link Sprite.EventHandle EventHandle} required to handle this event
+		 */
+		START(EventHandle.class),
+		/**
+		 * {@link Sprite.KeyEventHandle KeyEventHandle} required to handle this event
+		 */
+		KEY_PRESSED(KeyEventHandle.class)/*,
+		
+		EXAMPLE_OTHER_VALUE(EventHandle.class); //REMOVE /* and * / to add this value to the enum 
+		*/
+		;
+		
+		/**
+		 * All event handles must be an instance of the class referenced in this variable for the correct handling of the event
+		 */
+		public final Class<? extends EventHandle> supportedHandle;
+		private EventType(Class<? extends EventHandle> supportedHandle) { this.supportedHandle = supportedHandle; }
+	}
+	
+	
+	private Point position; //This is the position of the sprite in the x and y axis inside the window
+	private List<BufferedImage> textures; //Here are stored all the textures of the sprite
+	private int activeTexture; //From the list, the texture in this position is considered the active one
+	private Image renderedTexture; //This is the selected texture with all modifications applied
+	private double scale = 1; //The scale of the texture
+	private boolean autoDetectEvents = false; //This flag allows the events to be registered by the function's name (true) or manually (false)
+	private Map<EventType, List<EventHandle>> events; 
+	
+	/**
+	 * Creates a new Sprite instance only defining the textures of the sprite.
+	 * @param textures The textures the Sprite uses
+	 * @throws IllegalArgumentException if the list is empty
+	 * @throws NullPointerException if null is present in the list
+	 */
+	protected Sprite(List<BufferedImage> textures) {
+		this.position = new Point(0, 0); //As no coordinates are given, the object starts at (0,0)
+		if(textures.size() < 1)
+			throw new IllegalArgumentException("The textures list must have at least one texture");
+		else if (textures.contains(null))
+			throw new NullPointerException("At least one texture is null, meaning that it hasn't loaded correctly");
+		this.textures = new ArrayList<>(textures); //To avoid conflicts with special list types, the textures list is copied into an ArrayList
+		this.activeTexture = 0; //As no active texture is specified, the first one is treated as the active
+	}
+	
+	/**
+	 * Creates a new Sprite instance with a custom initial texture
+	 * @param textures The textures the Sprite uses
+	 * @param activeTexture The index of the default texture being 0 the first and (textures.size() - 1) the last
+	 * @throws IllegalArgumentException if the list is empty
+	 * @throws NullPointerException if null is present in the list
+	 */
+	protected Sprite(List<BufferedImage> textures, int activeTexture) {
+		this.position = new Point(0, 0); //As no coordinates are given, the object starts at (0,0)
+		if(textures.size() < 1)
+			throw new IllegalArgumentException("The textures list must have at least one texture");
+		else if (textures.contains(null))
+			throw new NullPointerException("At least one texture is null, meaning that it hasn't loaded correctly");
+		this.textures = new ArrayList<>(textures); //To avoid conflicts with special list types, the textures list is copied into an ArrayList
+		this.activeTexture = activeTexture;
+	}
+	
+	/**
+	 * Creates a new Sprite instance defining where to spawn.
+	 * @param initialPosition The position in the screen where the sprite will be spawned
+	 * @param textures The textures the Sprite uses
+	 * @throws IllegalArgumentException if the list is empty
+	 * @throws NullPointerException if null is present in the list
+	 */
+	protected Sprite(Point initialPosition, List<BufferedImage> textures) {
+		this.position = initialPosition;
+		if(textures.size() < 1)
+			throw new IllegalArgumentException("The textures list must have at least one texture");
+		else if (textures.contains(null))
+			throw new NullPointerException("At least one texture is null, meaning that it hasn't loaded correctly");
+		this.textures = new ArrayList<>(textures); //To avoid conflicts with special list types, the textures list is copied into an ArrayList
+		this.activeTexture = 0; //As no active texture is specified, the first one is treated as the active
+	}
+	/**
+	 * Creates a new Sprite with custom values
+	 * @param initialPosition The position in the screen where the sprite will be spawned
+	 * @param textures The textures the Sprite uses
+	 * @param activeTexture The index of the default texture being 0 the first and (textures.size() - 1) the last
+	 * @throws IllegalArgumentException if the list is empty
+	 * @throws NullPointerException if null is present in the list
+	 */
+	protected Sprite(Point initialPosition, List<BufferedImage> textures, int activeTexture) {
+		this.position = initialPosition;
+		if(textures.size() < 1)
+			throw new IllegalArgumentException("The textures list must have at least one texture");
+		else if (textures.contains(null))
+			throw new NullPointerException("At least one texture is null, meaning that it hasn't loaded correctly");
+		this.textures = new ArrayList<>(textures); //To avoid conflicts with special list types, the textures list is copied into an ArrayList
+		this.activeTexture = activeTexture;
+	}
+	
+	/**
+	 * This function is a global Sprite cloner.<br>
+	 * For this to work, the default constructor must be able to generate the full sprite.<br>
+	 * It is recommended to implement your own cloneSprite function in your sprite as this is not a fast or reliable way as it depends on a light implementation of the class for it to work
+	 */
+	public Sprite cloneSprite() throws ReflectiveOperationException {
+		Constructor<? extends Sprite> constructor = this.getClass().getConstructor(); //Gets the default constructor
+		constructor.setAccessible(true);
+		Sprite newInstance = constructor.newInstance(); //Create new instance using the default constructor
+		
+		Class<?> currentClass = getClass();
+		//As there's no way to get inherited fields, the program must pass through every class between Sprite and the inherited one's
+		while (currentClass != Object.class /*parent of Sprite*/) {
+			for(Field field : currentClass.getDeclaredFields()) { //Gets all the fields from the current class
+				field.setAccessible(true); //Otherwise the function may give IllegalAccessException
+				field.set(newInstance, field.get(this)); //Transfers the value
+			}
+			currentClass = currentClass.getSuperclass();
+		}		
+		return newInstance;
+	}
+	
+	/**
+	 * Returns the position where the Sprite is located
+	 * @return a Point instance with the coordinates in the x and y axis
+	 */
+	public final Point getPosition() {
+		return position;
+	}
+	
+	/**
+	 * Set's the event handle detection system
+	 * @param autodetect if true, the handles are automatically obtained from function name, else you'll have to manually register them using the registerEvent function
+	 */
+	public final void autoDetectEvents(boolean autoDetect) {
+		if(this.autoDetectEvents != autoDetect)
+			events = null;
+		this.autoDetectEvents = autoDetect;
+		
+	}
+	/**
+	 * Returns all the runnables that should be triggered by the event
+	 * @param eventType The kind of event that's being triggered
+	 * @return
+	 */
+	public final List<? extends EventHandle> getEventHandles(EventType eventType) {
+		if(events == null) {
+			events = new HashMap<>();
+			if(autoDetectEvents) {
+				for(Method m : getClass().getDeclaredMethods())
+					if(m.getName().startsWith("onStart") && m.getParameterCount() == 0) {
+						m.setAccessible(true);
+						events.putIfAbsent(EventType.START, new ArrayList<>());
+						events.get(EventType.START).add(new EventHandle(() -> { try { m.invoke(this); } catch (IllegalAccessException | InvocationTargetException e) { e.printStackTrace();	}}));
+					}
+			}
+		}
+		return events.getOrDefault(eventType, List.of());
+	}
+	
+	/**
+	 * Registers a new handle for the event type
+	 * @param type The type of event that will trigger the handle
+	 * @param handle The code that will trigger with the event
+	 * @throws IllegalArgumentException if the handle is not an instance of the correct class or autoEventDetection is true
+	 */
+	public void registerEvent(EventType type, EventHandle handle) {
+		if(!type.supportedHandle.isInstance(handle))
+			throw new IllegalArgumentException("The handle must be an instance of " + type.supportedHandle + " for this event");
+		else if (autoDetectEvents)
+			throw new IllegalArgumentException("Auto event detection is on, meaning that events can not be registered manually");
+		else if (handle == null || type == null)
+			return;
+		else {
+			events.putIfAbsent(type, new ArrayList<>());
+			events.get(type).add(handle);
+		}
+	}
+	/**
+	 * Registers a new handle for the event type if this does not require extra arguments
+	 * @param type The type of event that will trigger the handle
+	 * @param handle The code that will trigger with the event
+	 * @throws IllegalArgumentException if the handle cannot be {@link EventHandle} or autoEventDetection is true
+	 */
+	public void registerEvent(EventType type, Runnable handle) {
+		if(!(type.supportedHandle == EventHandle.class))
+			throw new IllegalArgumentException("This event requires extra parameters for the correct execution");
+		else if (autoDetectEvents)
+			throw new IllegalArgumentException("Auto event detection is on, meaning that events can not be registered manually");
+		else if (handle == null || type == null)
+			return;
+		else {
+			events.putIfAbsent(type, new ArrayList<>());
+			events.get(type).add(new EventHandle(handle));
+		}
+	}
+	/**
+	 * 
+	 * @param scale
+	 */
+	public void setScale(double scale) {
+		//Change scale variable's value
+		this.scale = scale;
+		//Get the selected texture
+		BufferedImage temp = textures.get(activeTexture);
+		//Resize the texture to the dimensions that would have the scalated version using the fast algorithm for fast results (For better results the algorithm can be changed)
+		this.renderedTexture = temp.getScaledInstance((int)(temp.getWidth() * scale), (int)(temp.getHeight() * scale), Image.SCALE_FAST);
+	}
+	
+	/**
+	 * Returns the active texture of the sprite
+	 */
+	public final Image getTexture() {
+		if(renderedTexture == null)
+			setScale(scale);
+		return renderedTexture;
+	}
+	
+	/**
+	 * Changes to the texture in the selected index
+	 * @param index
+	 */
+	public final void changeTexture(int index) {
+		if(index > 0 && index < this.textures.size()) //Check for valid index
+			this.activeTexture = index;
+	}
+}

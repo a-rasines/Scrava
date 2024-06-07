@@ -93,14 +93,14 @@ public class ProjectSelectorFrame extends JFrame implements WindowFocusListener 
 						plm.removeElement(projectList.getSelectedValue());
 						return;
 					}
-					ProjectFrame.INSTANCE.setVisible(true);
 					setVisible(false);
+					ProjectFrame.INSTANCE.setVisible(true);
 				}
 			} else {
 				if (OnlineProjectsScrollPane.INSTANCE.getSelectedIndex() != -1) {
 					Project.setProject(ClientController.INSTANCE.getProject(OnlineProjectsScrollPane.INSTANCE.getSelectedValue().id()));
-					ProjectFrame.INSTANCE.setVisible(true);
 					setVisible(false);
+					ProjectFrame.INSTANCE.setVisible(true);
 				}
 			}
 		});

@@ -1,0 +1,15 @@
+package generated;
+
+import base.Sprite;
+
+public class {{SpriteName}} extends Sprite{
+	
+	{{Variables}}
+	
+	public {{SpriteName}}() {
+		super(List.of({{Textures}}));
+	}
+	
+	{{events}}
+
+}

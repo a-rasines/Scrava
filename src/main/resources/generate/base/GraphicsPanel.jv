@@ -1,0 +1,69 @@
+package base;
+
+
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.Graphics;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+
+public class GraphicsPanel extends JPanel{
+	private static final long serialVersionUID = 1L;
+	/**
+	 * For access ease, this is the only instance of GraphicsPanel, calling this variable gives you access to all of the class' options
+	 */
+	public static final GraphicsPanel INSTANCE = new GraphicsPanel();
+	
+	// Here are stored all rendered sprites
+	private List<Sprite> sprites;
+	
+	private GraphicsPanel() {
+		sprites = new ArrayList<>();
+	}
+	
+	/**
+	 * Adds a new sprite to render
+	 * @param s The sprite instance to add to the render queue
+	 */
+	public void addSprite(Sprite s) {
+		sprites.add(s);
+	}
+	
+	/**
+	 * Returns a copy of the list containing the sprites. No modification in the list will affect the simulation
+	 * @return
+	 */
+	public List<Sprite> getSprites() {
+		return new ArrayList<>(sprites);
+	}
+	
+	/**
+	 * Removes an sprite instance from the simulation
+	 * @param sprite
+	 */
+	public void removeSprite(Sprite sprite) {
+		sprites.remove(sprite);
+	}
+	
+	//Here's where all the render magic occurs
+	@Override
+	public void paintComponents(Graphics g) {
+		for(Sprite s : sprites)
+			g.drawImage(s.getTexture(), s.getPosition().x, s.getPosition().y, null);
+	}
+	
+	public static void main(String[] args) {
+		JFrame frame = new JFrame(); //Creates the window
+		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE); //Terminate the program after closing
+		frame.setSize(new Dimension(1000, 667)); //The size is set to keep the proportion shown in the editor
+		frame.setResizable(false); //Remove this line if you want your user to be able to adjust the size of the game
+		frame.add(new GraphicsPanel(), BorderLayout.CENTER); //Adds the graphic component
+		//Handled events
+		
+		
+		frame.setVisible(true); //Makes the window appear
+	}
+}

@@ -1,0 +1,128 @@
+package base;
+
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
+import java.awt.event.MouseWheelEvent;
+import java.awt.event.MouseWheelListener;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowFocusListener;
+import java.awt.event.WindowListener;
+
+import javax.swing.JFrame;
+
+import generate.base.Sprite.EventHandle;
+import generate.base.Sprite.EventType;
+import generate.base.Sprite.KeyEventHandle;
+
+/**
+ * This class represents the handler of all events happening in the window
+ */
+public class EventSystem implements KeyListener,
+									
+									MouseListener, 
+									MouseMotionListener, 
+									MouseWheelListener,  
+									
+									WindowListener,
+									WindowFocusListener {
+	
+	/**
+	 * Handles the event system of the frame where the graphicsPanel is
+	 * @param frame
+	 * @param graphicsPanel
+	 */
+	public static void handle(JFrame frame, GraphicsPanel graphicsPanel) {
+		EventSystem es = new EventSystem(graphicsPanel);
+		frame.addMouseListener(es);
+		frame.addMouseMotionListener(es);
+		frame.addMouseWheelListener(es);
+		frame.addKeyListener(es);
+		frame.addWindowListener(es);
+	}
+	
+	private GraphicsPanel gp;
+	
+	/**
+	 * Generates a new event listener for the GraphicsPanel's window
+	 * @param graphicsPanel
+	 */
+	private EventSystem(GraphicsPanel graphicsPanel) {
+		this.gp = graphicsPanel;
+	}
+
+	//This is run when the window it's shown
+	@Override
+	public void windowOpened(WindowEvent e) {
+		
+		//Run all onStart functions
+		for (Sprite s : gp.getSprites()) 
+			s.getEventHandles(EventType.START).forEach((v) -> v.run());
+	}
+
+	// This is run when the X button is pressed
+	@Override public void windowClosing(WindowEvent e) {}
+	
+	// This is run when the window completly closes
+	@Override public void windowClosed(WindowEvent e) {}
+	
+	// This is run when the window is minimized
+	@Override public void windowIconified(WindowEvent e) {}
+	
+	// This is run when the window is back from minimized
+	@Override public void windowDeiconified(WindowEvent e) {}
+	
+	// setActive() event
+	@Override public void windowActivated(WindowEvent e) {}
+	
+	// setActive() event
+	@Override public void windowDeactivated(WindowEvent e) {}
+	
+	//This is run when the window is opened, clicked while other window it's over it or selected in the applications' bar (the one on the top of the screen in the case of mac, bottom on the case of Windows or a side depending on the linux distro)
+	@Override public void windowGainedFocus(WindowEvent e) {}
+	//This is run when the window is minimized or you click away
+	@Override public void windowLostFocus(WindowEvent e) {}
+	
+	// Only works if the key is pressed and released in a small gap of time
+	@Override public void keyTyped(KeyEvent e) {}
+	
+	// This is run when the key has started to be pressed or continues to be pressed (multiple triggers)
+	@Override
+	public void keyPressed(KeyEvent e) {
+		for(Sprite s : gp.getSprites())
+			for(EventHandle eh : s.getEventHandles(EventType.KEY_PRESSED)) {
+				KeyEventHandle keh = (KeyEventHandle) eh;
+				if(keh.getKeyCode() == e.getKeyCode())keh.run();
+			}
+	}
+	// This is run when the pressed key is released 
+	@Override public void keyReleased(KeyEvent e) {}
+	
+	//This is run when the mouse is pressed and released in a small gap of time
+	@Override public void mouseClicked(MouseEvent e) {}
+	
+	// This is run when the mouse is pressed (single trigger)
+	@Override public void mousePressed(MouseEvent e) {}
+	
+	//This is run when the mouse button previously pressed is released
+	@Override public void mouseReleased(MouseEvent e) {}
+	
+	//This is run when the mouse hovers the window
+	@Override public void mouseEntered(MouseEvent e) {}
+	
+	//This is run when the mouse stops hovering the window
+	@Override public void mouseExited(MouseEvent e) {}
+	
+	//This is run when, while a mouse button is pressed, the mouse moves 
+	@Override public void mouseDragged(MouseEvent e) {}
+	
+	//This is run when, without any mouse button clicked, the mouse is moved
+	@Override public void mouseMoved(MouseEvent e) {}
+	
+	//This is run when the mouse wheel is scrolled
+	@Override public void mouseWheelMoved(MouseWheelEvent e) {}
+
+	
+}
