@@ -193,4 +193,9 @@ public class Sprite implements Serializable{
     	Project.getActiveProject().deleteSprite(this);
     	SpritePanel.deleteSprite(this);
     }
+    
+    @Override
+    public String toString() {
+    	return getClass().getSimpleName() + "@" + Integer.toHexString(hashCode());
+    }
 }

@@ -1,13 +1,15 @@
 package generated;
 
-import base.Sprite;
+{{Imports}}
 
-public class {{SpriteName}} extends Sprite{
+// Normally you would import Sprite instead of adding the package, but this is made so you can name the Sprite as Sprite
+public class {{SpriteName}} extends base.Sprite {
 	
 	{{Variables}}
 	
 	public {{SpriteName}}() {
 		super(List.of({{Textures}}));
+		setScale({{Scale}});
 	}
 	
 	{{events}}

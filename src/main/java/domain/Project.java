@@ -44,6 +44,7 @@ public class Project implements Serializable {
 	public static void setProject(Project p) {
 		active = p;
 		SpritePanel.clearSprites();
+		System.out.println("Sprite count:" + (p.getSprites().size() - 1));
 		for(Sprite s : p.getSprites())
 			if(s != null)
 				SpritePanel.addSprite(s);
@@ -79,6 +80,7 @@ public class Project implements Serializable {
 	}
 	
 	public Set<Sprite> getSprites() {
+		System.out.println(variables.keySet());
 		return variables.keySet();
 	}
 	
@@ -131,7 +133,7 @@ public class Project implements Serializable {
 		}  
 	}
 	
-	private final transient VariableEnumCapable ENUM_INSTANCE = new VariableEnumCapable();
+	private transient VariableEnumCapable ENUM_INSTANCE;
 	private class VariableEnumCapable implements EnumCapable<Variable<?>> {
 		private static final long serialVersionUID = -3026004184272864437L;
 
@@ -194,7 +196,8 @@ public class Project implements Serializable {
 	 * @return
 	 */
 	public EnumLiteral<Variable<?>> getVariablesEnumLiteral(IRenderable parent) {
-		
+		if(ENUM_INSTANCE == null)
+			ENUM_INSTANCE = new VariableEnumCapable();
 		return new EnumLiteral<>(ENUM_INSTANCE, parent);
 	}
 }

@@ -41,7 +41,7 @@ public class SpritePanel extends JLayeredPane implements ComponentListener {
 	private JLabel addButton;
 	
 	public static void addSprite(Sprite s) {
-		System.out.println("add" + s.toString());
+		System.out.println("add " + s.toString());
 		INSTANCE.sprites.addElement(s);
 		if(INSTANCE.sl.getSelectedIndex() == -1)
 			INSTANCE.sl.setSelectedIndex(0);
@@ -55,8 +55,6 @@ public class SpritePanel extends JLayeredPane implements ComponentListener {
 	}
 	
 	public static  Sprite getSprite() {
-		System.out.println(INSTANCE.sl.getSelectedIndex());
-		System.out.println(INSTANCE.sl.getSelectedValue());
 		return INSTANCE.sl.getSelectedValue();
 	}
 	public static List<Sprite> getSprites() {

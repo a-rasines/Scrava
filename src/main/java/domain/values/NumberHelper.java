@@ -16,15 +16,13 @@ public class NumberHelper {
 			try {
 				return (Class) in.getField("TYPE").get(null);
 			} catch (IllegalArgumentException | IllegalAccessException | NoSuchFieldException | SecurityException e) {
-				e.printStackTrace();
-				throw new RuntimeException(e);
+				return in;
 			}
 		else
 			try {
 				return Class.forName(in.getPackageName() + "." + in.getSimpleName().substring(0,1).toUpperCase() + in.getSimpleName().substring(1));
 			} catch (ClassNotFoundException e) {
-				e.printStackTrace();
-				throw new RuntimeException(e);
+				return in;
 			}
 	}
 	

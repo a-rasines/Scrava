@@ -120,6 +120,10 @@ public class Variable<T> extends AbstractLiteral<T> implements SimpleRenderable 
 		return this.name;
 	}
 	
+	public String getInitialization() {
+		return NumberHelper.getEquivalent(this.initialValue().getClass()).getSimpleName() + " " + name + " = " + (this.initialValue() instanceof String? "\"" + this.initialValue() + "\"" : this.initialValue()) + ";";
+	}
+	
 	/**
 	 * Gets the line representing the definition of the variable
 	 * e.g: String varname = "defaultValue";
