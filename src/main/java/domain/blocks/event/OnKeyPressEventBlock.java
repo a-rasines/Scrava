@@ -1,5 +1,7 @@
 package domain.blocks.event;
 
+import java.awt.event.KeyEvent;
+
 import domain.Sprite;
 import domain.models.interfaces.Valuable;
 import domain.models.types.EventBlock;
@@ -43,6 +45,12 @@ public class OnKeyPressEventBlock extends KeyEventBlock {
 	@Override
 	public String getTitle() {
 		return "On " + VARIABLE_ENUM + " press";
+	}
+	
+	@Override
+	public String getHead() {
+		
+		return "public void onKeyPress_" + KeyEvent.getKeyText(KEY.value())+"__" + Integer.toHexString(hashCode()) + "() ";
 	}
 
 }

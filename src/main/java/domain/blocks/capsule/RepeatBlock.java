@@ -1,5 +1,6 @@
 package domain.blocks.capsule;
 
+import java.util.Set;
 import java.util.function.Supplier;
 
 import domain.Sprite;
@@ -84,6 +85,11 @@ public class RepeatBlock extends CapsuleBlock{
 			return --count > 0;
 
 		}
+	}
+	@Override
+	public void getImports(Set<String> imports) {
+		super.getImports(imports);
+		variable.getImports(imports);
 	}
 
 	@Override

@@ -2,6 +2,7 @@ package base;
 
 import java.awt.Image;
 import java.awt.Point;
+import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -56,6 +57,23 @@ public abstract class Sprite {
 	public static class KeyEventHandle extends EventHandle {
 		private int key;
 		
+		/**
+		 * Generates an event handle from a class method
+		 * @param m method that represents the event handle. This method MUST be a Runnable (no arguments, returns void)
+		 * @param owner the instance of sprite that invokes the event 
+		 * @param key keycode of the key that should trigger the event
+		 */
+		public KeyEventHandle(Method m, Sprite owner, int key) {
+			super(m, owner);
+			this.key = key;
+		}
+		/**
+		 * Generates an event handle from a runnable function. <br>
+ 		 * A runnable function is one that does not have any argument and returns void
+		 * These can be initiated using <br><strong>() -> {/* code here *<a>/}</strong><br> or <br><strong> this::functionName </strong> <br>
+		 * @param runnable The function that will be run when the event triggers
+		 * @param key keycode of the key that should trigger the event
+		 */
 		public KeyEventHandle(Runnable rn, int key) {
 			super(rn);
 			this.key = key;
@@ -94,7 +112,8 @@ public abstract class Sprite {
 	}
 	
 	
-	private Point position; //This is the position of the sprite in the x and y axis inside the window
+	private int x;
+	private int y;
 	private List<BufferedImage> textures; //Here are stored all the textures of the sprite
 	private int activeTexture; //From the list, the texture in this position is considered the active one
 	private Image renderedTexture; //This is the selected texture with all modifications applied
@@ -109,13 +128,15 @@ public abstract class Sprite {
 	 * @throws NullPointerException if null is present in the list
 	 */
 	protected Sprite(List<BufferedImage> textures) {
-		this.position = new Point(0, 0); //As no coordinates are given, the object starts at (0,0)
+		this.x = 0;
+		this.y = 0;
 		if(textures.size() < 1)
 			throw new IllegalArgumentException("The textures list must have at least one texture");
 		else if (textures.contains(null))
 			throw new NullPointerException("At least one texture is null, meaning that it hasn't loaded correctly");
 		this.textures = new ArrayList<>(textures); //To avoid conflicts with special list types, the textures list is copied into an ArrayList
 		this.activeTexture = 0; //As no active texture is specified, the first one is treated as the active
+		GraphicsPanel.INSTANCE.addSprite(this); //We register the sprite so it's rendered
 	}
 	
 	/**
@@ -126,13 +147,15 @@ public abstract class Sprite {
 	 * @throws NullPointerException if null is present in the list
 	 */
 	protected Sprite(List<BufferedImage> textures, int activeTexture) {
-		this.position = new Point(0, 0); //As no coordinates are given, the object starts at (0,0)
+		this.x = 0;
+		this.y = 0;
 		if(textures.size() < 1)
 			throw new IllegalArgumentException("The textures list must have at least one texture");
 		else if (textures.contains(null))
 			throw new NullPointerException("At least one texture is null, meaning that it hasn't loaded correctly");
 		this.textures = new ArrayList<>(textures); //To avoid conflicts with special list types, the textures list is copied into an ArrayList
 		this.activeTexture = activeTexture;
+		GraphicsPanel.INSTANCE.addSprite(this); //We register the sprite so it's rendered
 	}
 	
 	/**
@@ -143,13 +166,15 @@ public abstract class Sprite {
 	 * @throws NullPointerException if null is present in the list
 	 */
 	protected Sprite(Point initialPosition, List<BufferedImage> textures) {
-		this.position = initialPosition;
+		this.x = initialPosition.x;
+		this.y = initialPosition.y;
 		if(textures.size() < 1)
 			throw new IllegalArgumentException("The textures list must have at least one texture");
 		else if (textures.contains(null))
 			throw new NullPointerException("At least one texture is null, meaning that it hasn't loaded correctly");
 		this.textures = new ArrayList<>(textures); //To avoid conflicts with special list types, the textures list is copied into an ArrayList
 		this.activeTexture = 0; //As no active texture is specified, the first one is treated as the active
+		GraphicsPanel.INSTANCE.addSprite(this); //We register the sprite so it's rendered
 	}
 	/**
 	 * Creates a new Sprite with custom values
@@ -160,13 +185,15 @@ public abstract class Sprite {
 	 * @throws NullPointerException if null is present in the list
 	 */
 	protected Sprite(Point initialPosition, List<BufferedImage> textures, int activeTexture) {
-		this.position = initialPosition;
+		this.x = initialPosition.x;
+		this.y = initialPosition.y;
 		if(textures.size() < 1)
 			throw new IllegalArgumentException("The textures list must have at least one texture");
 		else if (textures.contains(null))
 			throw new NullPointerException("At least one texture is null, meaning that it hasn't loaded correctly");
 		this.textures = new ArrayList<>(textures); //To avoid conflicts with special list types, the textures list is copied into an ArrayList
 		this.activeTexture = activeTexture;
+		GraphicsPanel.INSTANCE.addSprite(this); //We register the sprite so it's rendered
 	}
 	
 	/**
@@ -196,7 +223,33 @@ public abstract class Sprite {
 	 * @return a Point instance with the coordinates in the x and y axis
 	 */
 	public final Point getPosition() {
-		return position;
+		return new Point(x, y);
+	}
+	
+	/**
+	 * Returns the x position of the sprite in screen
+	 * @return
+	 */
+	public final int getX() {
+		return x;
+	}
+	
+	/**
+	 * Returns the y position of the sprite in screen
+	 * @return
+	 */
+	public final int getY() {
+		return y;
+	}
+	
+	/**
+	 * Moves the sprite to the new position
+	 * @param x
+	 * @param y
+	 */
+	public void moveTo(int x, int y) {
+		this.x = x;
+		this.y = y;
 	}
 	
 	/**
@@ -219,10 +272,23 @@ public abstract class Sprite {
 			events = new HashMap<>();
 			if(autoDetectEvents) {
 				for(Method m : getClass().getDeclaredMethods())
-					if(m.getName().startsWith("onStart") && m.getParameterCount() == 0) {
+					if(m.getParameterCount() != 0) continue;
+				
+					else if(m.getName().startsWith("onStart")) {
 						m.setAccessible(true);
 						events.putIfAbsent(EventType.START, new ArrayList<>());
-						events.get(EventType.START).add(new EventHandle(() -> { try { m.invoke(this); } catch (IllegalAccessException | InvocationTargetException e) { e.printStackTrace();	}}));
+						events.get(EventType.START).add(new EventHandle(m, this));
+					
+					} else if(m.getName().startsWith("onKeyPress") && !m.getName().equals("onKeyPress")) {
+						events.putIfAbsent(EventType.KEY_PRESSED, new ArrayList<>());
+						String key = "VK" + m.getName().split("__")[0].replace("onKeyPress", "");
+						try {
+							int keycode = (int) KeyEvent.class.getDeclaredField(key).get(null);
+							events.get(EventType.KEY_PRESSED).add(new KeyEventHandle(m, this, keycode));
+						} catch (IllegalArgumentException | IllegalAccessException | NoSuchFieldException
+								| SecurityException e) {
+							throw new IllegalArgumentException(e);
+						}
 					}
 			}
 		}

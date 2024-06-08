@@ -28,7 +28,7 @@ public class MoveBlock extends CoordinateBlock{
 
 	@Override
 	public String getCode() {
-		return "this.moveTo(this.x" + (this.getX() == null? "":" + " + this.getX().getCode()) + ", this.y" + (this.getY() == null? "":" + " + this.getY().getCode()) + ");";
+		return "this.moveTo(this.getX()" + (this.getX() == null? "":" + " + this.getX().getCode()) + ", this.getY()" + (this.getY() == null? "":" + " + this.getY().getCode()) + ");";
 	}
 
 	@Override

@@ -13,9 +13,9 @@ import java.awt.event.WindowListener;
 
 import javax.swing.JFrame;
 
-import generate.base.Sprite.EventHandle;
-import generate.base.Sprite.EventType;
-import generate.base.Sprite.KeyEventHandle;
+import base.Sprite.EventHandle;
+import base.Sprite.EventType;
+import base.Sprite.KeyEventHandle;
 
 /**
  * This class represents the handler of all events happening in the window

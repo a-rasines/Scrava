@@ -50,7 +50,6 @@ public class ProjectFrame extends JFrame implements WindowFocusListener {
 	private static final long serialVersionUID = -4157218152821931601L;
 	private static final List<Supplier<Boolean>> activeTicks = new ArrayList<>();
 	
-	public String projectName;
 	private static boolean isFocused = true;
 	private static boolean isTick = false;
 	
@@ -67,7 +66,6 @@ public class ProjectFrame extends JFrame implements WindowFocusListener {
 		JButton tickButton = new JButton("Tick");
 		JButton endButton = new JButton("End");
 		setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
-		projectName = "Untitled";
 		setLayout(new EmptyLayout());
 		add(BlockPanel.INSTANCE);
 		add(ActionPanel.INSTANCE);
@@ -187,7 +185,7 @@ public class ProjectFrame extends JFrame implements WindowFocusListener {
     		fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
             int result = fileChooser.showOpenDialog(ProjectFrame.this);
             if (result == JFileChooser.APPROVE_OPTION) {
-            	ProjectExporter.exportTo(new File(fileChooser.getSelectedFile().getAbsolutePath() + "/" + projectName));
+            	ProjectExporter.exportTo(new File(fileChooser.getSelectedFile().getAbsolutePath() + "/" + Project.getActiveProject().name));
             }
     	});
     	

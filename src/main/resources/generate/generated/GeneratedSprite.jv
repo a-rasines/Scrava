@@ -1,5 +1,6 @@
 package generated;
 
+import java.util.List;
 {{Imports}}
 
 // Normally you would import Sprite instead of adding the package, but this is made so you can name the Sprite as Sprite
@@ -12,6 +13,6 @@ public class {{SpriteName}} extends base.Sprite {
 		setScale({{Scale}});
 	}
 	
-	{{events}}
+	{{Events}}
 
 }

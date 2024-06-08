@@ -1,5 +1,7 @@
 package domain.models.types;
 
+import java.util.Set;
+
 import domain.models.interfaces.Valuable;
 import domain.values.AbstractLiteral;
 import ui.renderers.IRenderer;
@@ -60,6 +62,11 @@ public abstract  class ValuableModifier<In, Out> implements Valuable<Out>, Simpl
 	@Override
 	public BlockCategory getCategory() {
 		return BlockCategory.OPERATOR;
+	}
+	
+	@Override
+	public void getImports(Set<String> imports) {
+		value.getImports(imports);
 	}
 
 }

@@ -35,6 +35,7 @@ public class IfElseBlock extends MultipleOptionCapsuleBlock{
 	@Override
 	public void getImports(Set<String> imports) {
 		forEach(v-> v.getImports(imports));
+		condition.getImports(imports);
 		
 	}
 

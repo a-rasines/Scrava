@@ -18,10 +18,5 @@ public abstract class EventBlock extends CapsuleBlock{
 	public boolean attachable() {
 		return false;
 	}
-	
-	@Override
-	public String getHead() {
-		return null;
-	}
 
 }

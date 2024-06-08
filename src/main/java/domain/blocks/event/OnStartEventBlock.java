@@ -43,5 +43,10 @@ public class OnStartEventBlock extends EventBlock {
 
 	@Override
 	public boolean isAplicable(Valuable<?> v) {return false;}
+	
+	@Override
+	public String getHead() {
+		return "public void onStart_" + Integer.toHexString(hashCode()) + "()";
+	}
 
 }

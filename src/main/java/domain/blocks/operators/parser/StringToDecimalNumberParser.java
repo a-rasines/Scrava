@@ -1,7 +1,5 @@
 package domain.blocks.operators.parser;
 
-import java.util.Set;
-
 import domain.BlockInvokationException;
 import domain.Sprite;
 import domain.models.interfaces.Translatable;
@@ -25,9 +23,6 @@ public class StringToDecimalNumberParser extends ValuableModifier<String, Double
 	public String getCode() {
 		return "Double.parseDouble(\""+value.value()+"\")";
 	}
-
-	@Override
-	public void getImports(Set<String> imports) {}
 
 	@Override
 	public Double value() {

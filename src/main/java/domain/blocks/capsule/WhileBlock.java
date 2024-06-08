@@ -1,5 +1,6 @@
 package domain.blocks.capsule;
 
+import java.util.Set;
 import java.util.function.Supplier;
 
 import domain.Sprite;
@@ -101,5 +102,11 @@ public class WhileBlock extends CapsuleBlock{
 	@Override
 	public boolean attachable() {
 		return true;
+	}
+	
+	@Override
+	public void getImports(Set<String> imports) {
+		super.getImports(imports);
+		condition.getImports(imports);
 	}
 }
