@@ -244,6 +244,14 @@ public abstract class Sprite {
 		this.y = y;
 	}
 	
+	public void setX(int x) {
+		this.x = x;
+	}
+	
+	public void setY(int y) {
+		this.y = y;
+	}
+	
 	/**
 	 * Set's the event handle detection system
 	 * @param autodetect if true, the handles are automatically obtained from function name, else you'll have to manually register them using the registerEvent function
@@ -323,10 +331,7 @@ public abstract class Sprite {
 			events.get(type).add(new EventHandle(handle));
 		}
 	}
-	/**
-	 * 
-	 * @param scale
-	 */
+
 	public void setScale(double scale) {
 		//Change scale variable's value
 		this.scale = scale;
@@ -334,6 +339,10 @@ public abstract class Sprite {
 		BufferedImage temp = textures.get(activeTexture);
 		//Resize the texture to the dimensions that would have the scalated version using the fast algorithm for fast results (For better results the algorithm can be changed)
 		this.renderedTexture = temp.getScaledInstance((int)(temp.getWidth() * scale), (int)(temp.getHeight() * scale), Image.SCALE_FAST);
+	}
+	
+	public double getScale() {
+		return scale;
 	}
 	
 	/**

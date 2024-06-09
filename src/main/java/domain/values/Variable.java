@@ -172,7 +172,7 @@ public class Variable<T> extends AbstractLiteral<T> implements SimpleRenderable 
 	}
 	@Override
 	public String getCode() {
-		return this.name;
+		return nat?"this.get" + this.name.substring(0, 1).toUpperCase() + this.name.substring(1) + "()" : this.name;
 	}
 	
 	public String getInitialization() {
