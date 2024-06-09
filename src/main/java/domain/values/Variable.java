@@ -1,5 +1,6 @@
 package domain.values;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -17,6 +18,27 @@ import ui.renderers.SimpleBlockRenderer.SimpleRenderable;
  * @param <T>
  */
 public class Variable<T> extends AbstractLiteral<T> implements SimpleRenderable {
+	
+	/**
+	 * A value pointer to create multiple instances of the same variable (for renderer purposes)
+	 * @param <T>
+	 */
+	public static class Value<T> implements Serializable {
+		private static final long serialVersionUID = -6209168702389374905L;
+		
+		public T value;
+		public T initialValue;
+		private Value(T value) {
+			this.value = value;
+			this.initialValue = value;
+		}
+		public Value(T value, T initialValue) {
+			this.value = value;
+			this.initialValue = initialValue;
+		}
+		
+		
+	}
 
 	private static final long serialVersionUID = 6146036704484981438L;
 	
@@ -71,20 +93,38 @@ public class Variable<T> extends AbstractLiteral<T> implements SimpleRenderable 
 		return output;
 	}
 	
+	public AbstractLiteral<T> create(Sprite s) {
+		return new Variable<>(name, value(), sprite, nat);
+	}
+	
 	
 	public final String name;
 	private boolean nat;
 	public final Sprite sprite;
+	private SimpleBlockRenderer sbr;
+	private Value<T> value;
 	
 	private Variable(String name, T value, Sprite sprite, boolean isNative) {
 		super(value, null);
 		this.name = name;
+		this.value = new Value<>(value);
 		this.sprite = sprite;
 		this.nat = isNative;
+		this.sbr = new SimpleBlockRenderer(this);
 	}
+	
+	private Variable(String name, Value<T> value, Sprite sprite, boolean isNative) {
+		super(value.value, null);
+		this.name = name;
+		this.value = value;
+		this.sprite = sprite;
+		this.nat = isNative;
+		this.sbr = new SimpleBlockRenderer(this);
+	}
+	
 	@Override
 	public SimpleBlockRenderer getRenderer() {
-		return new SimpleBlockRenderer(this);
+		return sbr;
 	}
 	
 	/**
@@ -100,7 +140,7 @@ public class Variable<T> extends AbstractLiteral<T> implements SimpleRenderable 
 	}
 	
 	public Variable<?> setValue(T value) {
-		this.value = value;
+		this.value.value = value;
 		return this;
 	}
 	
@@ -111,9 +151,24 @@ public class Variable<T> extends AbstractLiteral<T> implements SimpleRenderable 
 	public String toString() {
 		return (sprite==null?"GlobalVariables":sprite.getName()) +"."+name; 
 	}
+	
 	@Override
 	public T value() {
-		return value;
+		return value.value;
+	}
+	
+	@SuppressWarnings("unchecked")
+	@Override
+	public void setValue(Object object, boolean update) {
+		this.value.value = (T)object;
+		if(update)
+			this.value.initialValue = (T)object;
+		super.setValue(object, update);
+	}
+	
+	@Override
+	public T initialValue() {
+		return value.initialValue;
 	}
 	@Override
 	public String getCode() {
@@ -130,7 +185,7 @@ public class Variable<T> extends AbstractLiteral<T> implements SimpleRenderable 
 	 * @return
 	 */
 	public String getDefinition() {
-		return value.getClass().getName() + " " + name + " = " + ((initialValue() instanceof String)?'"'+initialValue().toString()+"'":initialValue())+";";
+		return value.value.getClass().getName() + " " + name + " = " + ((initialValue() instanceof String)?'"'+initialValue().toString()+"'":initialValue())+";";
 	}
 	@Override
 	public void getImports(Set<String> imports) {}
@@ -142,12 +197,20 @@ public class Variable<T> extends AbstractLiteral<T> implements SimpleRenderable 
 	@SuppressWarnings("unchecked")
 	@Override
 	public void setValue(String str) {
-		if(initialValue() instanceof String)
-			this.setValue((T)str, true);
-		else if(initialValue() instanceof Number)
-			this.setValue((T)NumberHelper.parse(str, (Class<? extends Number>) value.getClass()), true);
-		else if(initialValue() instanceof Boolean)
-			this.setValue((T)(Boolean)Boolean.parseBoolean(str), true);
+		switch(initialValue()) {
+			case String s:
+				this.setValue((T)str, true);
+				break;
+			case Number n:
+				this.setValue((T)NumberHelper.parse(str, n.getClass()), true);
+				break;
+			case Boolean b:
+				this.setValue((T)(Boolean)Boolean.parseBoolean(str), true);
+				break;
+			default:
+				
+		}
+			
 	}
 	@Override
 	public Valuable<?> getVariableAt(int i) {return null;} // N/A
@@ -167,12 +230,11 @@ public class Variable<T> extends AbstractLiteral<T> implements SimpleRenderable 
 	}
 	@Override
 	public BlockCategory getCategory() {
-		if(value() instanceof Number)
-			return BlockCategory.NUMBER_VARIABLE;
-		else if(value() instanceof Boolean)
-			return BlockCategory.BOOLEAN_VARIABLE;
-		else
-			return BlockCategory.STRING_VARIABLE;
+		return switch(value()) {
+			case Number n ->  BlockCategory.NUMBER_VARIABLE;
+			case Boolean b -> BlockCategory.BOOLEAN_VARIABLE;
+			default -> BlockCategory.STRING_VARIABLE;
+		};
 	}
 
 }
