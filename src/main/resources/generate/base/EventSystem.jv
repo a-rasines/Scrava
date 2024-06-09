@@ -59,7 +59,10 @@ public class EventSystem implements KeyListener,
 		
 		//Run all onStart functions
 		for (Sprite s : gp.getSprites()) 
-			s.getEventHandles(EventType.START).forEach((v) -> v.run());
+			s.getEventHandles(EventType.START).forEach((v) -> new Thread(() -> {
+				v.run();
+				GraphicsPanel.INSTANCE.repaint();
+			}).start());
 	}
 
 	// This is run when the X button is pressed
@@ -94,7 +97,10 @@ public class EventSystem implements KeyListener,
 		for(Sprite s : gp.getSprites())
 			for(EventHandle eh : s.getEventHandles(EventType.KEY_PRESSED)) {
 				KeyEventHandle keh = (KeyEventHandle) eh;
-				if(keh.getKeyCode() == e.getKeyCode())keh.run();
+				if(keh.getKeyCode() == e.getKeyCode())new Thread(() -> {
+					keh.run();
+					GraphicsPanel.INSTANCE.repaint();
+				}).start();
 			}
 	}
 	// This is run when the pressed key is released 

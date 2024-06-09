@@ -132,8 +132,6 @@ public abstract class Sprite {
 		this.y = 0;
 		if(textures.size() < 1)
 			throw new IllegalArgumentException("The textures list must have at least one texture");
-		else if (textures.contains(null))
-			throw new NullPointerException("At least one texture is null, meaning that it hasn't loaded correctly");
 		this.textures = new ArrayList<>(textures); //To avoid conflicts with special list types, the textures list is copied into an ArrayList
 		this.activeTexture = 0; //As no active texture is specified, the first one is treated as the active
 		GraphicsPanel.INSTANCE.addSprite(this); //We register the sprite so it's rendered
@@ -151,8 +149,6 @@ public abstract class Sprite {
 		this.y = 0;
 		if(textures.size() < 1)
 			throw new IllegalArgumentException("The textures list must have at least one texture");
-		else if (textures.contains(null))
-			throw new NullPointerException("At least one texture is null, meaning that it hasn't loaded correctly");
 		this.textures = new ArrayList<>(textures); //To avoid conflicts with special list types, the textures list is copied into an ArrayList
 		this.activeTexture = activeTexture;
 		GraphicsPanel.INSTANCE.addSprite(this); //We register the sprite so it's rendered
@@ -170,8 +166,6 @@ public abstract class Sprite {
 		this.y = initialPosition.y;
 		if(textures.size() < 1)
 			throw new IllegalArgumentException("The textures list must have at least one texture");
-		else if (textures.contains(null))
-			throw new NullPointerException("At least one texture is null, meaning that it hasn't loaded correctly");
 		this.textures = new ArrayList<>(textures); //To avoid conflicts with special list types, the textures list is copied into an ArrayList
 		this.activeTexture = 0; //As no active texture is specified, the first one is treated as the active
 		GraphicsPanel.INSTANCE.addSprite(this); //We register the sprite so it's rendered
@@ -189,8 +183,6 @@ public abstract class Sprite {
 		this.y = initialPosition.y;
 		if(textures.size() < 1)
 			throw new IllegalArgumentException("The textures list must have at least one texture");
-		else if (textures.contains(null))
-			throw new NullPointerException("At least one texture is null, meaning that it hasn't loaded correctly");
 		this.textures = new ArrayList<>(textures); //To avoid conflicts with special list types, the textures list is copied into an ArrayList
 		this.activeTexture = activeTexture;
 		GraphicsPanel.INSTANCE.addSprite(this); //We register the sprite so it's rendered

@@ -2,12 +2,15 @@ package base;
 
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 public class GraphicsPanel extends JPanel{
@@ -30,6 +33,7 @@ public class GraphicsPanel extends JPanel{
 	 */
 	public void addSprite(Sprite s) {
 		sprites.add(s);
+		repaint();
 	}
 	
 	/**
@@ -46,11 +50,14 @@ public class GraphicsPanel extends JPanel{
 	 */
 	public void removeSprite(Sprite sprite) {
 		sprites.remove(sprite);
+		repaint();
 	}
 	
 	//Here's where all the render magic occurs
 	@Override
-	public void paintComponents(Graphics g) {
+	public void paintComponent(Graphics g) {
+		g.setColor(Color.white);
+		g.fillRect(0, 0, getWidth(), getHeight()); //Background
 		for(Sprite s : sprites)
 			g.drawImage(s.getTexture(), s.getPosition().x, s.getPosition().y, null);
 	}
@@ -60,9 +67,16 @@ public class GraphicsPanel extends JPanel{
 		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE); //Terminate the program after closing
 		frame.setSize(new Dimension(1000, 667)); //The size is set to keep the proportion shown in the editor
 		frame.setResizable(false); //Remove this line if you want your user to be able to adjust the size of the game
-		frame.add(new GraphicsPanel(), BorderLayout.CENTER); //Adds the graphic component
-		//Handled events
+		frame.add(GraphicsPanel.INSTANCE, BorderLayout.CENTER); //Adds the graphic component
+		EventSystem.handle(frame, INSTANCE);
 		
+		try {
+			{{SpriteConstructors}}
+		} catch(IOException e) {
+			JOptionPane.showMessageDialog(null, "Could not load sprites: " + e.getMessage());
+			e.printStackTrace();
+			return;
+		}
 		
 		frame.setVisible(true); //Makes the window appear
 	}

@@ -11,6 +11,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowFocusListener;
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
@@ -185,7 +186,13 @@ public class ProjectFrame extends JFrame implements WindowFocusListener {
     		fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
             int result = fileChooser.showOpenDialog(ProjectFrame.this);
             if (result == JFileChooser.APPROVE_OPTION) {
-            	ProjectExporter.exportTo(new File(fileChooser.getSelectedFile().getAbsolutePath() + "/" + Project.getActiveProject().name));
+            	try {
+					ProjectExporter.exportTo(new File(fileChooser.getSelectedFile().getAbsolutePath() + "/" + Project.getActiveProject().name));
+					JOptionPane.showMessageDialog(null, "Project succesfully exported");
+				} catch (IOException e1) {
+					JOptionPane.showMessageDialog(this, "Something went wrong exporting the project: " + e1.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+					e1.printStackTrace();
+				}
             }
     	});
     	

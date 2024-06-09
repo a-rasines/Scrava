@@ -1,6 +1,7 @@
 package generated;
 
 import java.util.List;
+import java.io.IOException;
 {{Imports}}
 
 // Normally you would import Sprite instead of adding the package, but this is made so you can name the Sprite as Sprite
@@ -8,9 +9,10 @@ public class {{SpriteName}} extends base.Sprite {
 	
 	{{Variables}}
 	
-	public {{SpriteName}}() {
+	public {{SpriteName}}() throws IOException {
 		super(List.of({{Textures}}));
 		setScale({{Scale}});
+		autoDetectEvents(true); //set to false or remove line to manually register events
 	}
 	
 	{{Events}}
