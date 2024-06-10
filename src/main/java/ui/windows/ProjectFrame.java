@@ -36,6 +36,7 @@ import ui.EmptyLayout;
 import ui.components.ActionPanel;
 import ui.components.BlockPanel;
 import ui.components.SpritePanel;
+import ui.dialogs.TutorialDialog;
 import ui.dialogs.server.LoginDialog;
 
 public class ProjectFrame extends JFrame implements WindowFocusListener {
@@ -173,7 +174,7 @@ public class ProjectFrame extends JFrame implements WindowFocusListener {
         			JMenuItem toServerMenuItem = new JMenuItem("To Server");			saveAsMenu.add(toServerMenuItem);
         		JMenuItem exportMenuItem = new JMenuItem("Export");					archiveMenu.add(exportMenuItem);
         		JMenuItem exitMenuItem = new JMenuItem("Exit");						archiveMenu.add(exitMenuItem);
-    		JMenu resourcesMenu = new JMenu("Resources");						menuBar.add(resourcesMenu);
+    		JMenuItem resourcesMenu = new JMenuItem("Resources");						menuBar.add(resourcesMenu);
     		
     	openMenuItem.addActionListener(e -> {
     		ProjectSelectorFrame.INSTANCE.setVisible(true);
@@ -218,6 +219,11 @@ public class ProjectFrame extends JFrame implements WindowFocusListener {
     		} else {
     			ClientController.INSTANCE.saveProject(Project.getActiveProject());
     		}
+    	});
+    	resourcesMenu.addActionListener((e) -> {
+    		System.out.println(TutorialDialog.isAlreadyOpen());
+    		if(!TutorialDialog.isAlreadyOpen())
+    			new TutorialDialog().setVisible(true);
     	});
     		
 	}

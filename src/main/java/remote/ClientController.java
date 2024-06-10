@@ -196,7 +196,7 @@ public class ClientController {
 	}
 	public static record Tutorial(String title, String content) {}
 	public Tutorial getTutorial(int id) {
-		SerializedObject so = blockingStub.getProject(Query.newBuilder().setQuery(""+id).build());
+		SerializedObject so = blockingStub.getTutorial(Query.newBuilder().setQuery(""+id).build());
 		return new Tutorial(so.getName(), so.getObj());
 	}
 	

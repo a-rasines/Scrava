@@ -75,8 +75,10 @@ class Service(grpc.ScravaServicer):
             context.set_code(StatusCode.PERMISSION_DENIED)
             return pb2.ObjectDescriptor()
 
-    def getTutorialList(self, request, context):
-        pass
+    def getTutorialList(self, request: pb2.Query, context) -> pb2.ObjectDescriptor:
+        res = database.search_tutorial(request.offset, request.query)
+        for element in res:
+            yield pb2.ObjectDescriptor(id=element[0], name = element[1])
 
     def getProjectList(self, request: pb2.Query, context) -> pb2.ObjectDescriptor:
         res = database.search_projects(request.offset, request.query)
@@ -84,8 +86,8 @@ class Service(grpc.ScravaServicer):
             yield pb2.ObjectDescriptor(id=element[0], name = element[1])
 
 
-    def getTutorial(self, request, context):
-        pass
+    def getTutorial(self, request: pb2.Query, context):
+        return database.get_tutorial(int(request.query))
 
     def getProject(self, request: pb2.Query, context):
         return database.get_project(int(request.query))

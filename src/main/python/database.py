@@ -153,8 +153,9 @@ def search_projects(offset:int, query: str) -> list[tuple[int, str]]:
 
 def search_tutorial(offset:int, query: str) -> list[tuple[int, str]]:
     mycursor = mydb.cursor()
-    query = to_sql_string(query)
-    mycursor.execute(f"SELECT id, name FROM Tutorial WHERE name LIKE '%{query}%' LIMIT 30 OFFSET {offset}")
+    if(check_sqlinj(query)):
+        return []
+    mycursor.execute(f"SELECT id, name FROM Tutorial WHERE {query} LIMIT 30 OFFSET {offset}")
     output = mycursor.fetchall()
     mycursor.close()
     return output
@@ -171,10 +172,10 @@ def get_project(id: int) -> pb2.SerializedObject:
 def get_tutorial(id: int) -> pb2.SerializedObject:
     mycursor = mydb.cursor()
     mycursor.execute(f"SELECT name, content FROM Tutorial WHERE id = {id} LIMIT 1")
-    if mycursor.rowcount == 0: 
+    res = list(mycursor.fetchone())
+    if res == None: 
         mycursor.close()
         return None
-    res = list(mycursor.fetchone())
     mycursor.close()
     return pb2.SerializedObject(id=id, name=res[0], obj = res[1])
 
