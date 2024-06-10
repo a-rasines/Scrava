@@ -71,7 +71,12 @@ public abstract class OperatorBlock<T, R> implements Valuable<R>, SimpleRenderab
 	}
 	@Override
 	public BlockCategory getCategory() {
-		return BlockCategory.OPERATOR;
+		if(value() instanceof Number)
+			return BlockCategory.OPERATOR;
+		else if(value() instanceof Boolean)
+			return BlockCategory.CONDITIONAL;
+		else
+			return BlockCategory.STRING_OPERATOR;
 	}
 
 	@Override

@@ -39,6 +39,7 @@ public class SimpleBlockRenderer implements DragableRenderer{
 				STRING_VARIABLE(IRenderer.getRes("textures/variable/stringvarstart.svg"), IRenderer.getRes("textures/variable/stringvarend.svg")),
 				BOOLEAN_VARIABLE(IRenderer.getRes("textures/variable/booleanvarstart.svg"), IRenderer.getRes("textures/variable/booleanvarend.svg")),
 				CONDITIONAL(IRenderer.getRes("textures/operator/conditional_start.svg"), IRenderer.getRes("textures/operator/conditional_end.svg")),
+				STRING_OPERATOR(IRenderer.getRes("textures/operator/string_operator.svg"), IRenderer.getRes("textures/operator/string_operator_end.svg"))
 				;
 			
 			/**
