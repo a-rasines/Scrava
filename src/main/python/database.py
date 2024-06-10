@@ -17,7 +17,11 @@ mydb = mysql.connector.connect(
 def to_sql_strings(*args) -> str:
     args = list(args)
     for i in range(len(args)):
-        args[i] = "'" + args[i].replace("'", "''") + "'"
+        args[i] = list(args[i])
+        for c in range(len(args[i])):
+            if(args[i][c] == "'" and args[i][c - 1] != '\\'):
+                args[i].insert(c + 1, "'")       
+        args[i] = "'" + str(args[i]) + "'"
     if(len(args) == 1):
         return args[0]
     return tuple(args)
@@ -131,13 +135,14 @@ def delete_project(owner: int, id: int) -> bool:
 
 def check_sqlinj(input:str):
     is_str = 0
-    for char in input:
-        if char == ';' and is_str == 0:
+    input = list(input)
+    for char in range(len(input)):
+        if input[char] == ';' and is_str == 0:
            return True
-        elif char == '"':
+        elif input[char] == '"' and input[char - 1] != '\\':
             if is_str == 0: is_str = 1
             elif is_str == 1: is_str = 0
-        elif char == "'":
+        elif input[char] == "'" and input[char - 1] != '\\':
             if is_str == 0: is_str = 2
             elif is_str == 2: is_str = 0
     return False
