@@ -260,9 +260,9 @@ public class BlockPanel extends JLayeredPane {
 						if(DEBUG_SHOW_HITBOXES) {
 							g0.setColor(Color.green);
 							Rect hb = b.getClickable().getPosition();
-							g0.drawRect(hb.x + x, hb.y + y, hb.w, hb.h);
+							g0.drawRect((int)((hb.x + x) * zoom), (int)((hb.y + y) * zoom), (int)(hb.w * zoom), (int)(hb.h * zoom));
 							g0.setColor(Color.red);
-							g0.drawRect(b.getX() + x, b.getY() + y, b.getWidth(), b.getHeight());
+							g0.drawRect((int)((b.getX() + x) * zoom), (int)((b.getY() + y)*zoom), (int)(b.getWidth() * zoom), (int)(b.getHeight() * zoom));
 						}
 					}
 				}
