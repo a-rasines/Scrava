@@ -8,6 +8,6 @@ public class MainClass {
 	public static void main(String[] args) {
 		DebugOut.setup();
 		AppCache.load();
-		new ProjectSelectorFrame().setVisible(true);
+		ProjectSelectorFrame.INSTANCE.setVisible(true);
 	}
 }
