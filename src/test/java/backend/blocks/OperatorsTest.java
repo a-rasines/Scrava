@@ -44,7 +44,7 @@ public class OperatorsTest {
 	
 	@Test
 	public void divideTest() {
-		assertEquals(new DivideOperator(NUMBER2, NUMBER2).value(), 2l/2l);
+		assertEquals(new DivideOperator(NUMBER2, NUMBER2).value(), 2.0/2.0); //All numbers are turned into floats inside divide operator
 		assertEquals(new DivideOperator(NUMBER2, NUMBER2).getCode(), "2 / 2");
 	}
 	
@@ -62,7 +62,7 @@ public class OperatorsTest {
 	
 	@Test
 	public void modulusTest() {
-		assertEquals(new ModulusOperator(NUMBER3, NUMBER2).value(), 3l%2l);
+		assertEquals(new ModulusOperator(NUMBER3, NUMBER2).value(), 3.0%2);
 		assertEquals(new ModulusOperator(NUMBER3, NUMBER2).getCode(), "3 % 2");
 	}
 	

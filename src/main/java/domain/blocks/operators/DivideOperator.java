@@ -23,7 +23,7 @@ public class DivideOperator  extends OperatorBlock<Number, Number>{
 	}
 
 	@Override
-	public Number value(Valuable<? extends Number> left, Valuable<? extends Number> right) {				
+	public Number value(Valuable<? extends Number> left, Valuable<? extends Number> right) {
 		var lft = switch(left.value()) {
 			case Double dl -> dl;
 			case Float fl -> fl;
