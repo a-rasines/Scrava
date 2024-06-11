@@ -21,7 +21,7 @@ def to_sql_strings(*args) -> str:
         for c in range(len(args[i])):
             if(args[i][c] == "'" and args[i][c - 1] != '\\'):
                 args[i].insert(c + 1, "'")       
-        args[i] = "'" + str(args[i]) + "'"
+        args[i] = "'" + "".join(args[i]) + "'"
     if(len(args) == 1):
         return args[0]
     return tuple(args)
