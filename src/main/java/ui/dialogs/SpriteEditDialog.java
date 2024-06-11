@@ -124,6 +124,10 @@ public class SpriteEditDialog extends ScDialog implements ListCellRenderer<Buffe
 						textField_1.addKeyListener(new DoubleKeyListener(textField_1));
 						list.addListSelectionListener((e) -> {
 							BufferedImage temp = list.getSelectedValue();
+							if(temp == null) {
+								list.setSelectedIndex(0);
+								return;
+							}
 							double scale = 1;
 							try {
 								scale = Double.parseDouble(textField_1.getText());
@@ -155,6 +159,18 @@ public class SpriteEditDialog extends ScDialog implements ListCellRenderer<Buffe
 							 }
 						});
 						panel_2.add(addTextureButton);
+					}
+					{
+						JButton btnRemoveTexture = new JButton("Remove Texture");
+						btnRemoveTexture.addActionListener((e) -> {
+							if(dlm.size() > 1 && list.getSelectedIndex() != -1) {
+								BufferedImage bi = list.getSelectedValue();
+								dlm.remove(list.getSelectedIndex());
+								s.setSelectedTexture(0);
+								s.getTextures().remove(bi);
+							}
+						});
+						panel_2.add(btnRemoveTexture);
 					}
 				}
 			}
