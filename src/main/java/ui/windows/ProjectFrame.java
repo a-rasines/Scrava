@@ -36,8 +36,8 @@ import ui.EmptyLayout;
 import ui.components.ActionPanel;
 import ui.components.BlockPanel;
 import ui.components.SpritePanel;
-import ui.dialogs.TutorialDialog;
 import ui.dialogs.server.LoginDialog;
+import ui.dialogs.server.TutorialDialog;
 
 public class ProjectFrame extends JFrame implements WindowFocusListener {
 	public static boolean isStarted = false;

@@ -17,17 +17,13 @@ mydb = mysql.connector.connect(
 def to_sql_strings(*args) -> str:
     args = list(args)
     for i in range(len(args)):
-        args[i] = list(args[i])
-        for c in range(len(args[i])):
-            if(args[i][c] == "'" and args[i][c - 1] != '\\'):
-                args[i].insert(c + 1, "'")       
-        args[i] = "'" + "".join(args[i]) + "'"
+        args[i] = "'" + args[i].replace("\\", "\\\\").replace("'", "''") + "'"
     if(len(args) == 1):
         return args[0]
     return tuple(args)
 
 def to_sql_string(str:str) -> str:
-    return str.replace("'", "''")
+    return str.replace("\\", "\\\\").replace("'", "''")
 
 def get_last_id() -> int:
     mycursor = mydb.cursor()
@@ -107,6 +103,22 @@ def save_project(p_id: int, author:int, name:str, content:str) -> bool:
         mydb.commit()
         if mycursor.rowcount == 0:
             mycursor.execute(f"INSERT INTO Project(author, name, content) VALUES ({author}, {name}, {content})")
+            mydb.commit()
+            output = mycursor.rowcount == 1
+            mycursor.close()
+            return output
+        return True
+    except IntegrityError:
+        mycursor.close()
+        return False
+def save_tutorial(p_id: int, author:int, name:str, content:str) -> bool:
+    name, content = to_sql_strings(name, content)
+    mycursor = mydb.cursor()
+    try:
+        mycursor.execute(f"UPDATE Tutorial SET name= {name}, content={content} WHERE id = {p_id} AND author = {author}")
+        mydb.commit()
+        if mycursor.rowcount == 0:
+            mycursor.execute(f"INSERT INTO Tutorial(author, name, content) VALUES ({author}, {name}, {content})")
             mydb.commit()
             output = mycursor.rowcount == 1
             mycursor.close()

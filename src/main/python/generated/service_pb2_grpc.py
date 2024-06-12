@@ -64,6 +64,11 @@ class ScravaStub(object):
                 request_serializer=service__pb2.AuthoredObject.SerializeToString,
                 response_deserializer=service__pb2.ObjectDescriptor.FromString,
                 _registered_method=True)
+        self.saveTutorial = channel.unary_unary(
+                '/Scrava/saveTutorial',
+                request_serializer=service__pb2.AuthoredObject.SerializeToString,
+                response_deserializer=service__pb2.EmptyMessage.FromString,
+                _registered_method=True)
         self.deleteProject = channel.unary_unary(
                 '/Scrava/deleteProject',
                 request_serializer=service__pb2.AuthoredObject.SerializeToString,
@@ -124,6 +129,12 @@ class ScravaServicer(object):
         raise NotImplementedError('Method not implemented!')
 
     def saveProject(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def saveTutorial(self, request, context):
         """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
@@ -192,6 +203,11 @@ def add_ScravaServicer_to_server(servicer, server):
                     servicer.saveProject,
                     request_deserializer=service__pb2.AuthoredObject.FromString,
                     response_serializer=service__pb2.ObjectDescriptor.SerializeToString,
+            ),
+            'saveTutorial': grpc.unary_unary_rpc_method_handler(
+                    servicer.saveTutorial,
+                    request_deserializer=service__pb2.AuthoredObject.FromString,
+                    response_serializer=service__pb2.EmptyMessage.SerializeToString,
             ),
             'deleteProject': grpc.unary_unary_rpc_method_handler(
                     servicer.deleteProject,
@@ -359,6 +375,33 @@ class Scrava(object):
             '/Scrava/saveProject',
             service__pb2.AuthoredObject.SerializeToString,
             service__pb2.ObjectDescriptor.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def saveTutorial(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/Scrava/saveTutorial',
+            service__pb2.AuthoredObject.SerializeToString,
+            service__pb2.EmptyMessage.FromString,
             options,
             channel_credentials,
             insecure,

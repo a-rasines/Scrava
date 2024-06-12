@@ -10,6 +10,7 @@ service Scrava {
    rpc deleteToken(TokenMessage) returns (EmptyMessage) {}
 
    rpc saveProject(AuthoredObject) returns (ObjectDescriptor) {}
+   rpc saveTutorial(AuthoredObject) returns (EmptyMessage) {}
    rpc deleteProject(AuthoredObject) returns (EmptyMessage) {}
 
    rpc getTutorialList(Query) returns (stream ObjectDescriptor) {}
@@ -70,10 +71,6 @@ message ClientRegister {
   string password = 2;
   string email = 3;
   bytes pk = 4;
-}
-
-message StringResponse {
-  string response = 1;
 }
 
 message EmptyMessage {}

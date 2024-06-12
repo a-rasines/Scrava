@@ -12,8 +12,11 @@ import java.security.NoSuchAlgorithmException;
 import java.security.PublicKey;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.X509EncodedKeySpec;
+import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
@@ -203,9 +206,42 @@ public class ClientController {
 	public Iterator<ObjectDescriptor> getTutorialList(Query q) {
 		return blockingStub.getTutorialList(q);
 	}
+
+	public static record IdObject(int id, String name) {
+		@Override
+		public final String toString() {
+			return name;
+		}
+	}
 	
-	public static void main(String[] args) {
-		System.out.println(ClientController.INSTANCE.login("test", "test"));
+	public List<IdObject> getUserTutorials() {
+		List<IdObject> res = new ArrayList<>();
+		List<IdObject> temp = new LinkedList<>();
+		int offset = 0;
+		do {
+			temp.clear();
+			Iterator<ObjectDescriptor> iod = blockingStub.getTutorialList(Query.newBuilder().setQuery("author=" + AppCache.getInstance().user.getId()).setOffset(offset).build());
+			while (iod.hasNext()) {
+				ObjectDescriptor actual = iod.next();
+				temp.add(new IdObject(actual.getId(), actual.getName()));
+			}
+			res.addAll(temp);
+			offset += 30;
+		} while(temp.size() == 30);
+		
+		return res;
+	}
+	
+	public void saveTutorial(int id, String name, String content) {
+		blockingStub.saveTutorial(AuthoredObject.newBuilder()
+												.setUid(AppCache.getInstance().user.getId())
+												.setToken(AppCache.getInstance().user.getToken())
+												.setObj(SerializedObject.newBuilder()
+																		.setId(id)
+																		.setName(name)
+																		.setObj(content)
+																		.build())
+												.build());
 	}
 	
 }

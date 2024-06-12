@@ -74,6 +74,14 @@ class Service(grpc.ScravaServicer):
             context.set_details("Invalid credentials")
             context.set_code(StatusCode.PERMISSION_DENIED)
             return pb2.ObjectDescriptor()
+    def saveTutorial(self, request:pb2.AuthoredObject, context) -> pb2.EmptyMessage:
+        if(database.check_token(request.token, request.uid)):
+            database.save_tutorial(request.obj.id, request.uid, request.obj.name, request.obj.obj)
+            return pb2.EmptyMessage()
+        else:
+            context.set_details("Invalid credentials")
+            context.set_code(StatusCode.PERMISSION_DENIED)
+            return pb2.EmptyMessage()
 
     def getTutorialList(self, request: pb2.Query, context) -> pb2.ObjectDescriptor:
         res = database.search_tutorial(request.offset, request.query)
