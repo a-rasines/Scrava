@@ -7,9 +7,7 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -30,7 +28,6 @@ public class LiteralRenderer implements IRenderer {
 	
 	private static final long serialVersionUID = 4947025860653468394L;
 	
-	private transient final static Map<LiteralRenderable<?>, LiteralRenderer> RENDS_MAP = new HashMap<>();
 	public float opacity = 1f;
 	
 	public static LiteralRenderer of(LiteralRenderable<?> block, String type, BlockClickable parent) {
@@ -193,7 +190,6 @@ public class LiteralRenderer implements IRenderer {
 	@Override
 	public void delete() {
 		System.out.println("delete " + getBlock());
-		RENDS_MAP.remove(this.block);
 	}
 
 	@Override

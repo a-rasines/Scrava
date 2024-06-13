@@ -21,7 +21,7 @@ import ui.renderers.SimpleBlockRenderer.SimpleRenderable.BlockCategory;
 public class SimpleBlockRenderer implements DragableRenderer{
 	private static final long serialVersionUID = 2111348834794671783L;
 	
-	public static interface SimpleRenderable<R> extends Translatable, IRenderable, VariableHolder, Valuable<R> {
+	public static interface SimpleRenderable<R> extends IRenderable, VariableHolder, Valuable<R> {
 		
 		public String getTitle();
 		
@@ -60,7 +60,7 @@ public class SimpleBlockRenderer implements DragableRenderer{
 	
 	private int x;
 	private int y;
-	protected final SimpleRenderable block;
+	protected final SimpleRenderable<?> block;
 	protected transient BufferedImage rendred = null;
 	protected final BlockClickable clickable;
 	
@@ -69,14 +69,14 @@ public class SimpleBlockRenderer implements DragableRenderer{
 		return rendred;
 	}
 	
-	public SimpleBlockRenderer(SimpleRenderable block) {
+	public SimpleBlockRenderer(SimpleRenderable<?> block) {
 		this.block = block;
 		this.x = 0;
 		this.y = 0;
 		this.clickable = new BlockClickable(this, null);
 	}
 	
-	public SimpleBlockRenderer(SimpleRenderable block, int x, int y) {
+	public SimpleBlockRenderer(SimpleRenderable<?> block, int x, int y) {
 		this.block = block;
 		this.x = x;
 		this.y = y;
