@@ -17,7 +17,7 @@ import ui.renderers.SimpleBlockRenderer.SimpleRenderable;
  * Represents a sprite or global variable
  * @param <T>
  */
-public class Variable<T> extends AbstractLiteral<T> implements SimpleRenderable {
+public class Variable<T> extends AbstractLiteral<T> implements SimpleRenderable<T> {
 	
 	/**
 	 * A value pointer to create multiple instances of the same variable (for renderer purposes)

@@ -9,7 +9,7 @@ import ui.renderers.LiteralRenderer.LiteralRenderable;
 import ui.renderers.SimpleBlockRenderer;
 import ui.renderers.SimpleBlockRenderer.SimpleRenderable;
 
-public abstract class OperatorBlock<T, R> implements Valuable<R>, SimpleRenderable {
+public abstract class OperatorBlock<T, R> implements SimpleRenderable<R> {
 	
 	private SimpleBlockRenderer sbr;
 	@Override

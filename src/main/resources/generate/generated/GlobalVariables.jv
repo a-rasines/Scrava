@@ -1,0 +1,11 @@
+package generated;
+
+{{Imports}}
+
+/**
+ * In this class are contained all the variables that can be accessed by multiple Sprites
+ */
+public class GlobalVariables {
+	
+	{{Variables}}
+}

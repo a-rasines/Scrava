@@ -190,10 +190,37 @@ public class SpriteEditDialog extends ScDialog implements ListCellRenderer<Buffe
 			{
 				JButton okButton = new JButton("OK");
 				okButton.addActionListener((e) -> {
+					if(textField.getText().length() == 0) {
+						JOptionPane.showMessageDialog(null, "The sprite needs a name");
+						return;
+					}
+					
+					if(SpriteCreateDialog.RESERVED_KEYWORDS.contains(textField.getText())) {
+						JOptionPane.showMessageDialog(null, "The name is a reserved keyword in Java, please select another");
+						return;
+					}
+					
+					if(textField.getText().charAt(0) >= '0' && textField.getText().charAt(0) <= '9') {
+						JOptionPane.showMessageDialog(null, "The name cannot start with a number");
+						return;
+					}
+					
+					if(textField.getText().matches("_*")) {
+						JOptionPane.showMessageDialog(null, "Name must contain at least one alphabetic letter");
+						return;
+					}
+					
+					for(Sprite _s : SpritePanel.getSprites())
+						if(_s.getName().equals(textField.getText())) {
+							JOptionPane.showMessageDialog(null, "There's already an sprite with that name");
+							return;
+						}
+					s.setName(textField.getText());
+					
 					try {
 						s.getScale().setValue(Double.parseDouble(textField_1.getText()), true);
 					} catch(NumberFormatException _e) {}
-					s.setName(textField.getText());
+					
 					List<BufferedImage> textures = s.getTextures();
 					textures.clear();
 					Enumeration<BufferedImage> el = dlm.elements();

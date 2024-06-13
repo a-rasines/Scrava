@@ -4,6 +4,7 @@ import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.util.List;
 
 import javax.imageio.ImageIO;
 import javax.swing.BoxLayout;
@@ -40,6 +41,14 @@ public class SpriteCreateDialog extends ScDialog {
 		}
 	}
 	private BufferedImage img = Sprite.DEFAULT_TEXTURE;
+	public static transient final List<String> RESERVED_KEYWORDS = List.of(new String[] { //List provided by Chat-GPT
+			"abstract", "assert", "boolean", "break", "byte", "case", "catch", "char", "class", 
+	        "const", "continue", "default", "do", "double", "else", "enum", "extends", "final", 
+	        "finally", "float", "for", "goto", "if", "implements", "import", "instanceof", 
+	        "int", "interface", "long", "native", "new", "null", "package", "private", "protected", 
+	        "public", "return", "short", "static", "strictfp", "super", "switch", "synchronized", 
+	        "this", "throw", "throws", "transient", "try", "void", "volatile", "while"
+	});
 	
 	public SpriteCreateDialog() {
 		setBounds(100, 100, 400, 180);
@@ -108,6 +117,22 @@ public class SpriteCreateDialog extends ScDialog {
 				JOptionPane.showMessageDialog(null, "The sprite needs a name");
 				return;
 			}
+			
+			if(RESERVED_KEYWORDS.contains(textField.getText())) {
+				JOptionPane.showMessageDialog(null, "The name is a reserved keyword in Java, please select another");
+				return;
+			}
+			
+			if(textField.getText().charAt(0) >= '0' && textField.getText().charAt(0) <= '9') {
+				JOptionPane.showMessageDialog(null, "The name cannot start with a number");
+				return;
+			}
+			
+			if(textField.getText().matches("_*")) {
+				JOptionPane.showMessageDialog(null, "Name must contain at least one alphabetic letter");
+				return;
+			}
+			
 			for(Sprite s : SpritePanel.getSprites())
 				if(s.getName().equals(textField.getText())) {
 					JOptionPane.showMessageDialog(null, "There's already an sprite with that name");

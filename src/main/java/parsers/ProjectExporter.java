@@ -72,6 +72,21 @@ public class ProjectExporter {
 			}
 		}
 		
+		try (InputStream is = ClassLoader.getSystemClassLoader().getResourceAsStream("generate/generated/GlobalVariables.jv");
+			 FileOutputStream fos = new FileOutputStream(srcFolder.getAbsolutePath() + "/generated/GlobalVariables.java")){
+			String globalVariables = new String(is.readAllBytes(), StandardCharsets.UTF_8);
+			is.close();
+			Set<String> imports = new HashSet<>();
+			for (Variable<?> v : Project.getActiveProject().getVariablesOf(null).values()) {
+				v.getImports(imports);
+				globalVariables.replace("{{Variables}}", v.getDefinition() + "\n\t{{Variables}}");
+			}
+			globalVariables = globalVariables.replace("\n\t{{Variables}}", "");
+			for(String inport : imports)
+				globalVariables = globalVariables.replace("{{Imports}}", inport + "\n{{Imports}}");
+			globalVariables = globalVariables.replace("{{Imports}}", "");
+		}
+		
 	}
 	private static void prepareSprite(Sprite s, File srcFolder, File resourcesFolder, String sprite) throws IOException {
 		if(s == null) return;
@@ -83,7 +98,7 @@ public class ProjectExporter {
 			else if(!v.name.equals("x") && !v.name.equals("y"))
 				sprite = sprite.replace("{{Variables}}", v.getInitialization() + "\n\t{{Variables}}");
 		}
-		sprite = sprite.replace("{{Variables}}", "");
+		sprite = sprite.replace("\t{{Variables}}", "");
 		for(BufferedImage bi : s.getTextures()) {
 			ImageIO.write(bi, "png", new File(resourcesFolder.getAbsolutePath() + "/" + Integer.toHexString(bi.hashCode()) + ".png"));
 			sprite = sprite.replace("{{Textures}}", "importTexture(\"" + Integer.toHexString(bi.hashCode()) + ".png" + "\"),\n					  {{Textures}}");

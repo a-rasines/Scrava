@@ -21,7 +21,7 @@ import ui.renderers.SimpleBlockRenderer.SimpleRenderable.BlockCategory;
 public class SimpleBlockRenderer implements DragableRenderer{
 	private static final long serialVersionUID = 2111348834794671783L;
 	
-	public static interface SimpleRenderable extends Translatable, IRenderable, VariableHolder{
+	public static interface SimpleRenderable<R> extends Translatable, IRenderable, VariableHolder, Valuable<R> {
 		
 		public String getTitle();
 		

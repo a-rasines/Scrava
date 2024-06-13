@@ -9,7 +9,7 @@ import ui.renderers.LiteralRenderer.LiteralRenderable;
 import ui.renderers.SimpleBlockRenderer;
 import ui.renderers.SimpleBlockRenderer.SimpleRenderable;
 
-public abstract  class ValuableModifier<In, Out> implements Valuable<Out>, SimpleRenderable {
+public abstract  class ValuableModifier<In, Out> implements SimpleRenderable<Out> {
 	
 	private static final long serialVersionUID = -5061705048710723500L;
 	protected Valuable<In> value;
