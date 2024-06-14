@@ -57,7 +57,6 @@ public class SpritePanel extends JLayeredPane implements ComponentListener {
 	}
 	
 	public static  Sprite getSprite() {
-		System.out.println(INSTANCE.sl.getSelectedIndex());
 		return INSTANCE.sl.getSelectedValue();
 	}
 	public static List<Sprite> getSprites() {

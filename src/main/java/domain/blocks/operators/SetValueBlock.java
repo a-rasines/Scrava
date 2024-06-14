@@ -11,6 +11,7 @@ import domain.values.AbstractLiteral;
 import domain.values.EnumLiteral;
 import domain.values.IVariable;
 import domain.values.StaticVariable;
+import ui.components.BlockPanel;
 import ui.renderers.LiteralRenderer.LiteralRenderable;
 
 public class SetValueBlock extends FunctionBlock {
@@ -24,11 +25,14 @@ public class SetValueBlock extends FunctionBlock {
 
 	public SetValueBlock(Sprite s) {
 		super(s);
-		value = (AbstractLiteral<?>) AbstractLiteral.getDefault(variables.value(), this);
+		value = (AbstractLiteral<?>) AbstractLiteral.getDefault(variables.value().value(), this);
 		variables.setValueListener((_s, v) -> {
-			if(value instanceof AbstractLiteral al) al.getRenderer().delete();
+			if(value instanceof AbstractLiteral al) {
+				al.getRenderer().delete();
+			}
 			else value.getRenderer().delete();
-			value = AbstractLiteral.getDefault(variables.value(), this);
+			value = AbstractLiteral.getDefault(variables.value().value(), this);
+			getRenderer().update();
 			defVal = value;
 		});
 	}
