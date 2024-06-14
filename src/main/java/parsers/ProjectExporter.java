@@ -15,7 +15,8 @@ import javax.imageio.ImageIO;
 import domain.Project;
 import domain.Sprite;
 import domain.models.types.EventBlock;
-import domain.values.Variable;
+import domain.values.IVariable;
+import domain.values.StaticVariable;
 import ui.renderers.IRenderer.DragableRenderer;
 
 public class ProjectExporter {
@@ -77,9 +78,10 @@ public class ProjectExporter {
 			String globalVariables = new String(is.readAllBytes(), StandardCharsets.UTF_8);
 			is.close();
 			Set<String> imports = new HashSet<>();
-			for (Variable<?> v : Project.getActiveProject().getVariablesOf(null).values()) {
+			for (IVariable<?> v : Project.getActiveProject().getVariablesOf(null).values()) {
 				v.getImports(imports);
-				globalVariables.replace("{{Variables}}", v.getDefinition() + "\n\t{{Variables}}");
+				if(v instanceof StaticVariable<?> sv)
+					globalVariables.replace("{{Variables}}", sv.getInitialization() + "\n\t{{Variables}}");
 			}
 			globalVariables = globalVariables.replace("\n\t{{Variables}}", "");
 			for(String inport : imports)
@@ -92,11 +94,11 @@ public class ProjectExporter {
 		if(s == null) return;
 		sprite = sprite.replaceAll("\\{\\{SpriteName}}", s.getName());
 		
-		for(Variable<?> v : Project.getActiveProject().getVariablesOf(s).values()) {
-			if(v.name.equals("scale"))
-				sprite = sprite.replaceAll("\\{\\{Scale}}", ""+v.initialValue());
-			else if(!v.name.equals("x") && !v.name.equals("y"))
-				sprite = sprite.replace("{{Variables}}", v.getInitialization() + "\n\t{{Variables}}");
+		for(IVariable<?> v : Project.getActiveProject().getVariablesOf(s).values()) {
+			if(v.getName().equals("scale") && v instanceof StaticVariable<?> sv)
+				sprite = sprite.replaceAll("\\{\\{Scale}}", ""+sv.initialValue());
+			else if(!v.getName().equals("x") && !v.getName().equals("y")  && v instanceof StaticVariable<?> sv)
+				sprite = sprite.replace("{{Variables}}", sv.getInitialization() + "\n\t{{Variables}}");
 		}
 		sprite = sprite.replace("\t{{Variables}}", "");
 		for(BufferedImage bi : s.getTextures()) {

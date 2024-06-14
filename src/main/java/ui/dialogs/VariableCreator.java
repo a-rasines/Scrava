@@ -17,7 +17,8 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
-import domain.values.Variable;
+import domain.values.IVariable;
+import domain.values.StaticVariable;
 import ui.components.BlockSelectorPanel;
 import ui.components.SpritePanel;
 
@@ -144,19 +145,19 @@ public class VariableCreator extends ScDialog {
 				return;
 			}
 			if(globalVariable.isSelected()) {
-				if(Variable.getGlobalVariable(nameField.getText()) != null) {
+				if(IVariable.getGlobalVariable(nameField.getText()) != null) {
 					JOptionPane.showMessageDialog(null, "Variable with that name already exists");
 					return;
 				}else {
-					Variable.createGlobalVariable(nameField.getText(), ((VariableType)valueType.getSelectedItem()).parser.apply(valueField.getText()));
+					StaticVariable.createGlobalVariable(nameField.getText(), ((VariableType)valueType.getSelectedItem()).parser.apply(valueField.getText()));
 					BlockSelectorPanel.INSTANCE.update();
 					dispose();
 				}
-			} else if(Variable.getVariable(SpritePanel.getSprite(), nameField.getText()) != null) {
+			} else if(IVariable.getVariable(SpritePanel.getSprite(), nameField.getText()) != null) {
 				JOptionPane.showMessageDialog(null, "Variable with that name already exists");
 				return;
 			}else {
-				Variable.createVariable(SpritePanel.getSprite(), nameField.getText(), ((VariableType)valueType.getSelectedItem()).parser.apply(valueField.getText()));
+				StaticVariable.createVariable(SpritePanel.getSprite(), nameField.getText(), ((VariableType)valueType.getSelectedItem()).parser.apply(valueField.getText()));
 				BlockSelectorPanel.INSTANCE.update();
 				dispose();
 			}

@@ -1,9 +1,9 @@
 package backend.blocks.literals;
 
-import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 
 import java.util.HashMap;
+import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -36,8 +36,8 @@ public class EnumLiteralTest {
 
 
 		@Override
-		public LiteralEnum[] getValues() {
-			return values();
+		public List<LiteralEnum> getValues() {
+			return List.of(values());
 		}
 	}
 	private static HashMap<String, String> pseudoEnum = new HashMap<>() {
@@ -69,8 +69,8 @@ public class EnumLiteralTest {
 	
 	@Test
 	public void checkGetValues() {
-		assertArrayEquals(enumLiteral.possibleValues(), LiteralEnum.values());
-		assertArrayEquals(mapLiteral.possibleValues(), pseudoEnum.values().toArray());
+		assertEquals(enumLiteral.possibleValues(), LiteralEnum.values());
+		assertEquals(mapLiteral.possibleValues(), pseudoEnum.values().toArray());
 		
 	}
 

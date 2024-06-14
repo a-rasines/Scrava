@@ -34,6 +34,9 @@ public class BiggerThanBlock extends ComparatorBlock<Number>{
 	
 	@Override
 	public boolean compare(Number left, Number right) {
+		System.out.println(left + " > " + right + " " + (left.longValue() == right.longValue()? 
+			   left.doubleValue() > right.doubleValue() 
+			 : left.longValue() > right.longValue()));
 		return left.longValue() == right.longValue()? 
 			   left.doubleValue() > right.doubleValue() 
 			 : left.longValue() > right.longValue();

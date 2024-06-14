@@ -3,14 +3,38 @@ package ui.domain;
 import java.util.List;
 import java.util.function.Supplier;
 
-import domain.blocks.capsule.*;
-import domain.blocks.conditional.*;
-import domain.blocks.conditional.bool.*;
-import domain.blocks.event.*;
-import domain.blocks.movement.*;
-import domain.blocks.operators.*;
-import domain.blocks.operators.parser.*;
-import domain.values.Variable;
+import domain.blocks.capsule.IfBlock;
+import domain.blocks.capsule.IfElseBlock;
+import domain.blocks.capsule.RepeatBlock;
+import domain.blocks.capsule.WhileBlock;
+import domain.blocks.conditional.BiggerOrEqualThanBlock;
+import domain.blocks.conditional.BiggerThanBlock;
+import domain.blocks.conditional.EqualsBlock;
+import domain.blocks.conditional.SmallerOrEqualThanBlock;
+import domain.blocks.conditional.SmallerThanBlock;
+import domain.blocks.conditional.bool.AndBlock;
+import domain.blocks.conditional.bool.OrBlock;
+import domain.blocks.event.OnKeyPressEventBlock;
+import domain.blocks.event.OnStartEventBlock;
+import domain.blocks.movement.MoveBlock;
+import domain.blocks.movement.MoveToBlock;
+import domain.blocks.movement.MoveXBlock;
+import domain.blocks.movement.MoveXToBlock;
+import domain.blocks.movement.MoveYBlock;
+import domain.blocks.movement.MoveYToBlock;
+import domain.blocks.operators.AddOperator;
+import domain.blocks.operators.AppendOperator;
+import domain.blocks.operators.DivideOperator;
+import domain.blocks.operators.MaxOperator;
+import domain.blocks.operators.MinOperator;
+import domain.blocks.operators.ModulusOperator;
+import domain.blocks.operators.MultiplyOperator;
+import domain.blocks.operators.RandomOperator;
+import domain.blocks.operators.SetValueBlock;
+import domain.blocks.operators.SubstractOperator;
+import domain.blocks.operators.parser.StringToDecimalNumberParser;
+import domain.blocks.operators.parser.StringToIntegerNumberParser;
+import domain.values.IVariable;
 import ui.renderers.IRenderer;
 
 public enum BlockSection {
@@ -37,7 +61,7 @@ public enum BlockSection {
 	}),
 	
 	VARIABLE(0xffe97d00, () -> {
-		List<Variable<?>> variables = Variable.getVisibleVariables();
+		List<IVariable<?>> variables = IVariable.getVisibleVariables();
 		IRenderer[] output = new IRenderer[variables.size() + 1];
 		output[0] = new SetValueBlock(null).getRenderer();
 		for(int i = 0; i < variables.size(); i++)

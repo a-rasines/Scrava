@@ -155,7 +155,7 @@ public class ProjectSelectorFrame extends JFrame implements WindowFocusListener 
 				name = JOptionPane.showInputDialog("Set project's name", "New Project");
 				if(name == null) return;
 			}
-			Project.setProject(new Project(name));
+			Project.newProject(name);
 			ProjectFrame.INSTANCE.setVisible(true);
 			setVisible(false);
 		});

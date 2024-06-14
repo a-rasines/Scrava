@@ -9,14 +9,16 @@ import domain.models.interfaces.Valuable;
 import domain.models.types.FunctionBlock;
 import domain.values.AbstractLiteral;
 import domain.values.EnumLiteral;
-import domain.values.Variable;
+import domain.values.IVariable;
+import domain.values.StaticVariable;
 import ui.renderers.LiteralRenderer.LiteralRenderable;
 
 public class SetValueBlock extends FunctionBlock {
 
 	private static final long serialVersionUID = -1072262290642640507L;
 	
-	private EnumLiteral<Variable<?>> variables = Project.getActiveProject().getVariablesEnumLiteral(this);
+	@SuppressWarnings("rawtypes")
+	private EnumLiteral<StaticVariable> variables = Project.getActiveProject().getStaticVariablesEnumLiteral(this);
 	private Valuable<?> value;
 	private Valuable<?> defVal;
 
@@ -49,8 +51,8 @@ public class SetValueBlock extends FunctionBlock {
 
 	@Override
 	public String getCode() {
-		Variable<?> var = variables.value();
-		return var.isGlobal()?"GlobalVariables." + var.name + " = " + value.getCode()+";":"this." + var.name + " = " + value.getCode()+";";
+		IVariable<?> var = variables.value();
+		return var.isGlobal()?"GlobalVariables." + var.getName() + " = " + value.getCode()+";":"this." + var.getName() + " = " + value.getCode()+";";
 	}
 
 	@Override

@@ -8,20 +8,24 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 
-import debug.DebugOut;
 import domain.AppCache.ProjectData;
+import domain.values.DinamicVariable;
 import domain.values.EnumLiteral;
 import domain.values.EnumLiteral.EnumCapable;
-import domain.values.Variable;
+import domain.values.IVariable;
+import domain.values.StaticVariable;
 import remote.ClientController;
 import ui.components.ActionPanel;
 import ui.components.BlockPanel;
@@ -30,6 +34,21 @@ import ui.renderers.IRenderer.IRenderable;
 import ui.windows.ProjectFrame;
 
 public class Project implements Serializable {
+	
+	/**
+	 * Here the variables get their dinamic and other transient variables
+	 * @param s
+	 */
+	public void insertVariables(Sprite s) {
+		
+	}
+	
+	/**
+	 * Here the dinamic and other transient global variables are inserted
+	 */
+	public void insertGlobalVariables() {
+		
+	}
 	
 	private static final long serialVersionUID = -7008939450955709656L;
 	private static Project active = null;
@@ -52,10 +71,19 @@ public class Project implements Serializable {
 		ActionPanel.INSTANCE.repaint();
 	}
 	
+	public static void newProject(String name) {
+		SpritePanel.clearSprites();
+		active = new Project(name);
+		System.out.println("Sprite count:" + (active.getSprites().size() - 1));
+		ActionPanel.INSTANCE.repaint();
+	}
+	
 	public Project(String name) {
 		if(active == null)
 			active = this;
 		this.name = name;
+		registerSprite(null);
+		insertGlobalVariables();
 		new Sprite();
 	}
 	
@@ -64,15 +92,19 @@ public class Project implements Serializable {
 	 * 
 	 * null Sprite = global variable
 	 */
-	private HashMap<Sprite, HashMap<String, Variable<?>>> variables = new HashMap<>();
+	private HashMap<Sprite, HashMap<String, IVariable<?>>> variables = new HashMap<>();
 	
 	{
 		variables.put(null, new HashMap<>());
 	}
 	
-	public void registerSprite(Sprite s) {
-		DebugOut.printStackTrace();
-		variables.putIfAbsent(s, new HashMap<>());
+	public synchronized void registerSprite(Sprite s) {
+		if(variables.putIfAbsent(s, new HashMap<>()) == null && s != null) {
+			if(active == this)
+				SpritePanel.addSprite(s);
+			insertVariables(s);
+		}
+		
 	}
 	
 	public void deleteSprite(Sprite s) {
@@ -80,11 +112,12 @@ public class Project implements Serializable {
 	}
 	
 	public Set<Sprite> getSprites() {
-		System.out.println(variables.keySet());
 		return variables.keySet();
 	}
 	
-	public void registerVariable(Sprite s, String name, Variable<?> v) {
+	public void registerVariable(Sprite s, String name, IVariable<?> v) {
+		if(variables.get(s) == null)
+			registerSprite(s);
 		variables.get(s).putIfAbsent(name, v);
 	}
 	
@@ -92,10 +125,10 @@ public class Project implements Serializable {
 		variables.get(s).remove(name);
 	}
 	
-	public Variable<?> getVariable(Sprite s, String name) {
+	public IVariable<?> getVariable(Sprite s, String name) {
 		return variables.get(s).get(name);
 	}
-	public Map<String, Variable<?>> getVariablesOf(Sprite s) {
+	public Map<String, IVariable<?>> getVariablesOf(Sprite s) {
 		return variables.get(s);
 	}
 	
@@ -116,6 +149,25 @@ public class Project implements Serializable {
 		save(file);
 	}
 	
+	private void writeObject(ObjectOutputStream oos) throws IOException {
+		for(Map<String, IVariable<?>> s : variables.values())
+			for(IVariable<?> v : new ArrayList<>(s.values()))
+				if(v instanceof DinamicVariable<?> dv)
+					variables.get(dv.getSprite()).remove(dv.getName());
+			
+        oos.defaultWriteObject();
+    }
+	
+	private void readObject(ObjectInputStream ois)  throws IOException, ClassNotFoundException  {
+		ois.defaultReadObject();
+		for (Sprite s : variables.keySet()) {
+			if(s != null)
+				insertVariables(s);
+		}
+		insertGlobalVariables();
+			
+    }
+	
 	public void save(File f) {
 		if(id != -1)
 			ClientController.INSTANCE.saveProject(this);
@@ -133,27 +185,47 @@ public class Project implements Serializable {
 		}  
 	}
 	
-	private transient VariableEnumCapable ENUM_INSTANCE;
-	private class VariableEnumCapable implements EnumCapable<Variable<?>> {
+	@SuppressWarnings("rawtypes")
+	private transient VariableEnumCapable<IVariable> ENUM_INSTANCE;
+	@SuppressWarnings("rawtypes")
+	private transient VariableEnumCapable<StaticVariable> STATIC_ENUM_INSTANCE;
+	@SuppressWarnings("rawtypes")
+	private transient VariableEnumCapable<DinamicVariable> DINAMIC_ENUM_INSTANCE;
+	
+	@SuppressWarnings("rawtypes")
+	private class VariableEnumCapable<T extends IVariable> implements EnumCapable<T> {
 		private static final long serialVersionUID = -3026004184272864437L;
+		private Class<T> clazz;
+		
+		public VariableEnumCapable(Class<T> clazz) {
+			this.clazz = clazz;
+		}
 
+		@SuppressWarnings("unchecked")
 		@Override
-		public Variable<?> valueof(String value) {
-			Variable<?> v = variables.get(null).get(value);
+		public T valueof(String value) {
+			T v = (T)variables.get(null).get(value);
 			if(v == null)
-				v = variables.get(SpritePanel.getSprite()).get(value);
+				v = (T)variables.get(SpritePanel.getSprite()).get(value);
 			return v;
 		}
 
+		@SuppressWarnings("unchecked")
 		@Override
-		public Variable<?>[] getValues() {
-			Variable<?>[] var = new Variable<?>[variables.get(null).size() + variables.get(SpritePanel.getSprite()).size()];
-			Iterator<Variable<?>> it = variables.get(null).values().iterator();
-			for(int i = 0; i < variables.get(null).size(); i++)
-				var[i] = (Variable<?>) it.next();
+		public List<T> getValues() {
+			List<T> var = new LinkedList<>();
+			Iterator<IVariable<?>> it = variables.get(null).values().iterator();
+			for(int i = 0; i < variables.get(null).size(); i++) {
+				IVariable<?> next = it.next();
+				if(clazz.isInstance(next))
+					var.add((T)next);
+			}
 			it = variables.get(SpritePanel.getSprite()).values().iterator();
-			for(int i = variables.get(null).size(); i < variables.get(null).size() + variables.get(SpritePanel.getSprite()).size(); i++)
-				var[i] = (Variable<?>) it.next();
+			for(int i = variables.get(null).size(); i < variables.get(null).size() + variables.get(SpritePanel.getSprite()).size(); i++) {
+				IVariable<?> next = it.next();
+				if(clazz.isInstance(next))
+					var.add((T)next);
+			}
 			return var;
 		}
 
@@ -191,13 +263,48 @@ public class Project implements Serializable {
 		return false;
 	}
 	
+	
 	/**
 	 * Returns an {@link domain.values.EnumLiteral EnumLiteral} version of the variables' map
 	 * @return
 	 */
-	public EnumLiteral<Variable<?>> getVariablesEnumLiteral(IRenderable parent) {
-		if(ENUM_INSTANCE == null)
-			ENUM_INSTANCE = new VariableEnumCapable();
-		return new EnumLiteral<>(ENUM_INSTANCE, parent);
+	@SuppressWarnings("rawtypes")
+	public EnumLiteral<IVariable> getVariablesEnumLiteral(IRenderable parent) {
+		if(ENUM_INSTANCE == null) {
+			ENUM_INSTANCE = new VariableEnumCapable<>(IVariable.class);
+			STATIC_ENUM_INSTANCE = new VariableEnumCapable<StaticVariable>(StaticVariable.class);
+			DINAMIC_ENUM_INSTANCE = new VariableEnumCapable<DinamicVariable>(DinamicVariable.class);
+		}
+		return new EnumLiteral<IVariable>(ENUM_INSTANCE, parent);
 	}
+	
+	/**
+	 * Returns an {@link domain.values.EnumLiteral EnumLiteral} version of the variables' map
+	 * @return
+	 */
+	@SuppressWarnings("rawtypes")
+	public EnumLiteral<StaticVariable> getStaticVariablesEnumLiteral(IRenderable parent) {
+		if(STATIC_ENUM_INSTANCE == null) {
+			ENUM_INSTANCE = new VariableEnumCapable<>(IVariable.class);
+			STATIC_ENUM_INSTANCE = new VariableEnumCapable<StaticVariable>(StaticVariable.class);
+			DINAMIC_ENUM_INSTANCE = new VariableEnumCapable<DinamicVariable>(DinamicVariable.class);
+		}
+		return new EnumLiteral<StaticVariable>(STATIC_ENUM_INSTANCE, parent);
+	}
+	
+	/**
+	 * Returns an {@link domain.values.EnumLiteral EnumLiteral} version of the variables' map
+	 * @return
+	 */
+	@SuppressWarnings("rawtypes")
+	public EnumLiteral<DinamicVariable> getDinamicVariablesEnumLiteral(IRenderable parent) {
+		if(DINAMIC_ENUM_INSTANCE == null) {
+			ENUM_INSTANCE = new VariableEnumCapable<>(IVariable.class);
+			STATIC_ENUM_INSTANCE = new VariableEnumCapable<StaticVariable>(StaticVariable.class);
+			DINAMIC_ENUM_INSTANCE = new VariableEnumCapable<DinamicVariable>(DinamicVariable.class);
+		}
+		return new EnumLiteral<DinamicVariable>(DINAMIC_ENUM_INSTANCE, parent);
+	}
+	
+	
 }

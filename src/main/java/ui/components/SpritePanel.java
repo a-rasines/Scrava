@@ -46,15 +46,18 @@ public class SpritePanel extends JLayeredPane implements ComponentListener {
 		if(INSTANCE.sl.getSelectedIndex() == -1)
 			INSTANCE.sl.setSelectedIndex(0);
 		INSTANCE.sl.setVisibleRowCount(INSTANCE.sprites.size()%3==0?INSTANCE.sprites.size()/3:INSTANCE.sprites.size()/3 + 1);
+		System.out.println(INSTANCE.sprites.size());
 		BlockPanel.INSTANCE.changeSprite();
 		ActionPanel.INSTANCE.repaint();
 	}
 	
 	public static void clearSprites() {
+		INSTANCE.sl.setSelectedIndex(-1);
 		INSTANCE.sprites.clear();
 	}
 	
 	public static  Sprite getSprite() {
+		System.out.println(INSTANCE.sl.getSelectedIndex());
 		return INSTANCE.sl.getSelectedValue();
 	}
 	public static List<Sprite> getSprites() {
@@ -138,7 +141,9 @@ public class SpritePanel extends JLayeredPane implements ComponentListener {
 				g.setColor(getSelectionBackground());
 				g.fillRect(0, 0, 120, 140);
 			}
-			g.drawImage(value.getRendered().getScaledInstance(100, 100, BufferedImage.SCALE_FAST), 10, 10, null);
+			try {
+				g.drawImage(value.getRendered().getScaledInstance(100, 100, BufferedImage.SCALE_FAST), 10, 10, null);
+			} catch(NullPointerException e) {}
 			g.setFont(new Font( DragableRenderer.font.getName(), Font.PLAIN, 20 ));
 			g.setColor(Color.black);
 			g.drawString(value.getName().length() > 10 ? value.getName().substring(0, 7) + "..." : value.getName(), 10, 130);

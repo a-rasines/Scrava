@@ -1,8 +1,9 @@
 package domain.values;
 
 import java.io.Serializable;
-import java.lang.reflect.Array;
 import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.function.BiConsumer;
 
@@ -17,7 +18,7 @@ public class EnumLiteral<T> extends AbstractLiteral<T> {
 	
 	public static interface EnumCapable<T> extends Serializable {
 		T valueof(String value);
-		T[] getValues();
+		List<T> getValues();
 		String[] names();
 	}
 	
@@ -46,12 +47,11 @@ public class EnumLiteral<T> extends AbstractLiteral<T> {
 		}
 
 		@Override
-		public T[] getValues() {
-			@SuppressWarnings("unchecked")
-			T[] output = (T[]) Array.newInstance(map.values().iterator().next().getClass(), map.size());
+		public List<T> getValues() {
+			List<T> output = new LinkedList<>();
 			Iterator<T> vs = map.values().iterator();
 			for(int i = 0; i < map.size(); i++)
-				output[i] = vs.next();
+				output.add(vs.next());
 			return output;
 		}
 
@@ -76,7 +76,7 @@ public class EnumLiteral<T> extends AbstractLiteral<T> {
 	 * @param values
 	 */
 	public EnumLiteral(EnumCapable<T> ec, IRenderable parent) {
-		super(ec.getValues()[0], parent);
+		super(ec.getValues().get(0), parent);
 		name = ec.names()[0];
 		behaviour = ec;
 	}
@@ -92,7 +92,7 @@ public class EnumLiteral<T> extends AbstractLiteral<T> {
 		valueListener.accept(str, value);
 	}
 	
-	public T[] possibleValues() {
+	public List<T> possibleValues() {
 		return behaviour.getValues();
 	}
 	
@@ -106,7 +106,7 @@ public class EnumLiteral<T> extends AbstractLiteral<T> {
 
 	@Override
 	public boolean isEmpty() {
-		return behaviour.getValues()[0] == value;
+		return behaviour.getValues().get(0) == value;
 	}
 	
 	

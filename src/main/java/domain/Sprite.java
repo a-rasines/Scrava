@@ -19,7 +19,7 @@ import javax.imageio.ImageIO;
 import domain.blocks.event.KeyEventBlock;
 import domain.blocks.event.OnStartEventBlock;
 import domain.models.types.EventBlock;
-import domain.values.Variable;
+import domain.values.StaticVariable;
 import ui.components.SpritePanel;
 import ui.renderers.IRenderer;
 import ui.renderers.IRenderer.DragableRenderer;
@@ -30,14 +30,11 @@ import ui.renderers.IRenderer.DragableRenderer;
 public class Sprite implements Serializable{
 	private static final long serialVersionUID = 2195406778691654466L;
 	
-	{
-		Project.getActiveProject().registerSprite(this);
-	}
-	
 	private String name;
-	private Variable<Long> xPos = Variable.createVariable(this, "x", 0l, true);
-	private Variable<Long> yPos = Variable.createVariable(this, "y", 0l, true);
-	private Variable<Double> scale = Variable.createVariable(this, "scale", 1., true);
+	private Project p;
+	private StaticVariable<Long> xPos;
+	private StaticVariable<Long> yPos;
+	private StaticVariable<Double> scale;
 	private final List<DragableRenderer> blocks = new LinkedList<>();
 	private transient Map<Class<? extends EventBlock>, List<EventBlock>> eventMap = null;
 	public static final BufferedImage DEFAULT_TEXTURE = IRenderer.getRes("textures/sprite/def.svg");
@@ -49,11 +46,19 @@ public class Sprite implements Serializable{
 	}
 	
 	public Sprite(String name, BufferedImage texture) {
+		this(Project.getActiveProject(), name, texture);
+	}
+	
+	public Sprite(Project p, String name, BufferedImage texture) {
 		eventMap = new HashMap<>();
 		textures.add(texture);
 		this.name = name;
+		this.p = p;
+		scale = StaticVariable.createVariable(this, "scale", 1., true);
+		xPos = StaticVariable.createVariable(this, "x", 0l, true);
+		yPos = StaticVariable.createVariable(this, "y", 0l, true);
+		System.out.println("constructor end");
 	}
-	
 	//																													EVENTS
 	
 	public void registerEvent(EventBlock event) {
@@ -109,6 +114,10 @@ public class Sprite implements Serializable{
 	
 	//																											GETTERS / SETTERS
 	
+	public Project getProject() {
+		return p;
+	}
+	
 	public void setSelectedTexture(int st) {
 		if(st >= 0 && st < textures.size())
 			this.selectedTexture = st;
@@ -141,7 +150,7 @@ public class Sprite implements Serializable{
 	 * Gets the x position handler of the sprite
 	 * @return The {@link domain.values.Variable Variable} corresponding to the X position
 	 */
-	public Variable<Long> getX() {
+	public StaticVariable<Long> getX() {
 		return xPos;
 	}
 	
@@ -149,11 +158,11 @@ public class Sprite implements Serializable{
 	 * Gets the y position handler of the sprite
 	 * @return The {@link domain.values.Variable Variable} corresponding to the Y position
 	 */
-	public Variable<Long> getY() {
+	public StaticVariable<Long> getY() {
 		return yPos;
 	}
 	
-	public Variable<Double> getScale() {
+	public StaticVariable<Double> getScale() {
 		return scale;
 	}
 	

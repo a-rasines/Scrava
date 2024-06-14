@@ -1,23 +1,17 @@
 package domain.values;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Set;
 
 import domain.Project;
 import domain.Sprite;
-import domain.models.interfaces.Valuable;
-import ui.components.SpritePanel;
-import ui.renderers.LiteralRenderer.LiteralRenderable;
 import ui.renderers.SimpleBlockRenderer;
-import ui.renderers.SimpleBlockRenderer.SimpleRenderable;
 
 /**
- * Represents a sprite or global variable
+ * Represents a static variable. This kind of variables get their value from user input
  * @param <T>
  */
-public class Variable<T> extends AbstractLiteral<T> implements SimpleRenderable<T> {
+public class StaticVariable<T> extends AbstractLiteral<T> implements IVariable<T> {
 	
 	/**
 	 * A value pointer to create multiple instances of the same variable (for renderer purposes)
@@ -26,7 +20,7 @@ public class Variable<T> extends AbstractLiteral<T> implements SimpleRenderable<
 	public static class Value<T> implements Serializable {
 		private static final long serialVersionUID = -6209168702389374905L;
 		
-		public T value;
+		private T value;
 		public T initialValue;
 		private Value(T value) {
 			this.value = value;
@@ -49,7 +43,7 @@ public class Variable<T> extends AbstractLiteral<T> implements SimpleRenderable<
 	 * @param value Initial value of the variable
 	 * @return
 	 */
-	public static <T> Variable<T> createGlobalVariable(String name, T value) {
+	public static <T> StaticVariable<T> createGlobalVariable(String name, T value) {
 		return createVariable(null, name, value);
 	}
 	
@@ -61,7 +55,7 @@ public class Variable<T> extends AbstractLiteral<T> implements SimpleRenderable<
 	 * @param value initial value of the variable
 	 * @return
 	 */
-	public static <T> Variable<T> createVariable(Sprite s, String name, T value) {
+	public static <T> StaticVariable<T> createVariable(Sprite s, String name, T value) {
 		return createVariable(s, name, value, false);
 	}
 	/**
@@ -73,38 +67,28 @@ public class Variable<T> extends AbstractLiteral<T> implements SimpleRenderable<
 	 * @param whether it must be inmune to variable deleting
 	 * @return
 	 */
-	public static <T> Variable<T> createVariable(Sprite s, String name, T value, boolean nat) {
-		Variable<T> var = new Variable<T>(name, value, s, nat);
+	public static <T> StaticVariable<T> createVariable(Sprite s, String name, T value, boolean nat) {
+		StaticVariable<T> var = new StaticVariable<T>(name, value, s, nat);
+		if(s != null)
+			s.getProject().registerVariable(s, name, var);
+		else
 		Project.getActiveProject().registerVariable(s, name, var);
 		return var;
 	}
 	
-	public static Variable<?> getGlobalVariable(String name) {
-		return getVariable(null, name);
-	}
-	
-	public static Variable<?> getVariable(Sprite s, String name) {
-		return Project.getActiveProject().getVariable(s, name);
-	}
-	
-	public static List<Variable<?>> getVisibleVariables() {
-		List<Variable<?>> output = new ArrayList<>(Project.getActiveProject().getVariablesOf(null).values());
-		output.addAll(Project.getActiveProject().getVariablesOf(SpritePanel.getSprite()).values());
-		return output;
-	}
-	
+	@Override
 	public AbstractLiteral<T> create(Sprite s) {
-		return new Variable<>(name, value(), sprite, nat);
+		return new StaticVariable<>(name, value, sprite, nat);
 	}
 	
 	
-	public final String name;
+	private String name;
 	private boolean nat;
 	public final Sprite sprite;
 	private SimpleBlockRenderer sbr;
 	private Value<T> value;
 	
-	private Variable(String name, T value, Sprite sprite, boolean isNative) {
+	private StaticVariable(String name, T value, Sprite sprite, boolean isNative) {
 		super(value, null);
 		this.name = name;
 		this.value = new Value<>(value);
@@ -113,7 +97,7 @@ public class Variable<T> extends AbstractLiteral<T> implements SimpleRenderable<
 		this.sbr = new SimpleBlockRenderer(this);
 	}
 	
-	private Variable(String name, Value<T> value, Sprite sprite, boolean isNative) {
+	private StaticVariable(String name, Value<T> value, Sprite sprite, boolean isNative) {
 		super(value.value, null);
 		this.name = name;
 		this.value = value;
@@ -139,7 +123,9 @@ public class Variable<T> extends AbstractLiteral<T> implements SimpleRenderable<
 		return Project.getActiveProject().getVariable(null, this.name) != null;
 	}
 	
-	public Variable<?> setValue(T value) {
+	public StaticVariable<?> setValue(T value) {
+		if(name.equals("x"))
+			System.out.println(this.value.value);
 		this.value.value = value;
 		return this;
 	}
@@ -154,12 +140,16 @@ public class Variable<T> extends AbstractLiteral<T> implements SimpleRenderable<
 	
 	@Override
 	public T value() {
+		if(name.equals("x"))
+			System.out.println(name + " " + value.value);
 		return value.value;
 	}
 	
 	@SuppressWarnings("unchecked")
 	@Override
 	public void setValue(Object object, boolean update) {
+		if(name.equals("x"))
+			System.out.println(value);
 		this.value.value = (T)object;
 		if(update)
 			this.value.initialValue = (T)object;
@@ -168,6 +158,7 @@ public class Variable<T> extends AbstractLiteral<T> implements SimpleRenderable<
 	
 	@Override
 	public T initialValue() {
+		System.out.println("b");
 		return value.initialValue;
 	}
 	@Override
@@ -175,18 +166,15 @@ public class Variable<T> extends AbstractLiteral<T> implements SimpleRenderable<
 		return nat?"this.get" + this.name.substring(0, 1).toUpperCase() + this.name.substring(1) + "()" : this.name;
 	}
 	
-	public String getInitialization() {
-		return NumberHelper.getEquivalent(this.initialValue().getClass()).getSimpleName() + " " + name + " = " + (this.initialValue() instanceof String? "\"" + this.initialValue() + "\"" : this.initialValue()) + ";";
-	}
-	
 	/**
 	 * Gets the line representing the definition of the variable
 	 * e.g: String varname = "defaultValue";
 	 * @return
 	 */
-	public String getDefinition() {
-		return value.value.getClass().getName() + " " + name + " = " + ((initialValue() instanceof String)?'"'+initialValue().toString()+"'":initialValue())+";";
+	public String getInitialization() {
+		return NumberHelper.getEquivalent(this.initialValue().getClass()).getSimpleName() + " " + name + " = " + (this.initialValue() instanceof String? "\"" + this.initialValue() + "\"" : this.initialValue()) + ";";
 	}
+	
 	@Override
 	public void getImports(Set<String> imports) {}
 	
@@ -212,29 +200,21 @@ public class Variable<T> extends AbstractLiteral<T> implements SimpleRenderable<
 		}
 			
 	}
+
 	@Override
-	public Valuable<?> getVariableAt(int i) {return null;} // N/A
-	public Valuable<?>[] getAllVariables() {return new Valuable[0];} // N/A
-	public void setVariableAt(int i, Valuable<?> v) {} // N/A
-	public void removeVariableAt(int i) {} // N/A
-	public LiteralRenderable<?> removeVariable(Valuable<?> v) {return null;} // N/A
-	public void replaceVariable(Valuable<?> old, Valuable<?> newValue) {} // N/A
-	
-	@Override
-	public boolean isAplicable(Valuable<?> v) {
-		return false;
-	}
-	@Override
-	public String getTitle() {
+	public String getName() {
 		return name;
 	}
+
 	@Override
-	public BlockCategory getCategory() {
-		return switch(value()) {
-			case Number n ->  BlockCategory.NUMBER_VARIABLE;
-			case Boolean b -> BlockCategory.BOOLEAN_VARIABLE;
-			default -> BlockCategory.STRING_VARIABLE;
-		};
+	public void setName(String s) {
+		this.name = s;
+		
+	}
+	
+	@Override
+	public Sprite getSprite() {
+		return sprite;
 	}
 
 }

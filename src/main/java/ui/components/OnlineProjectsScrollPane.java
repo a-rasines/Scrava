@@ -28,22 +28,26 @@ public class OnlineProjectsScrollPane extends JScrollPane {
 		if(user == null)
 			setViewportView(new JLabel("You need to log in / sign up to upload and download projects from the cloud"));
 		else {
-			DefaultListModel<Project> lm = new DefaultListModel<>();
-			int count;
-			int offset = 0;
-			do {
-				count = 0;
-				Iterator<ObjectDescriptor> ls = ClientController.INSTANCE.getUserProjects(offset);
-				while(ls.hasNext()) {
-					ObjectDescriptor actual = ls.next();
-					lm.addElement(new Project(actual.getName(), actual.getId()));
-					count++;
-				}
-				offset += 30;
-			
-			} while (count == 30);
-			list = new JList<>(lm);
-			setViewportView(list);
+			try {
+				DefaultListModel<Project> lm = new DefaultListModel<>();
+				int count;
+				int offset = 0;
+				do {
+					count = 0;
+					Iterator<ObjectDescriptor> ls = ClientController.INSTANCE.getUserProjects(offset);
+					while(ls.hasNext()) {
+						ObjectDescriptor actual = ls.next();
+						lm.addElement(new Project(actual.getName(), actual.getId()));
+						count++;
+					}
+					offset += 30;
+				
+				} while (count == 30);
+				list = new JList<>(lm);
+				setViewportView(list);
+			} catch(Exception e) {
+				setViewportView(new JLabel("No conection with server"));
+			}
 			
 		}
 		
