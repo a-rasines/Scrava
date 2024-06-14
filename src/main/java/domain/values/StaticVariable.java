@@ -124,8 +124,6 @@ public class StaticVariable<T> extends AbstractLiteral<T> implements IVariable<T
 	}
 	
 	public StaticVariable<?> setValue(T value) {
-		if(name.equals("x"))
-			System.out.println(this.value.value);
 		this.value.value = value;
 		return this;
 	}
@@ -140,16 +138,12 @@ public class StaticVariable<T> extends AbstractLiteral<T> implements IVariable<T
 	
 	@Override
 	public T value() {
-		if(name.equals("x"))
-			System.out.println(name + " " + value.value);
 		return value.value;
 	}
 	
 	@SuppressWarnings("unchecked")
 	@Override
 	public void setValue(Object object, boolean update) {
-		if(name.equals("x"))
-			System.out.println(value);
 		this.value.value = (T)object;
 		if(update)
 			this.value.initialValue = (T)object;

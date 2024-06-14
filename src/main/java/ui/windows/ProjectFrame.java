@@ -198,10 +198,12 @@ public class ProjectFrame extends JFrame implements WindowFocusListener {
     	});
     	
     	saveMenuItem.addActionListener((e) -> {
+    		reset();
     		Project.getActiveProject().save();
     	});
     	
     	toFileMenuItem.addActionListener((e) -> {
+    		reset();
     		JFileChooser fileChooser = new JFileChooser();
     		fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
             int result = fileChooser.showOpenDialog(ProjectFrame.this);
@@ -213,6 +215,7 @@ public class ProjectFrame extends JFrame implements WindowFocusListener {
     	});
     	
     	toServerMenuItem.addActionListener((e) -> {
+    		reset();
     		if(AppCache.getInstance().user == null) {
     			if(!LoginDialog.isAlreadyOpen())
     				new LoginDialog().setVisible(true);
