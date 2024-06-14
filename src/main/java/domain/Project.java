@@ -15,6 +15,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import javax.swing.JFileChooser;
@@ -233,8 +234,12 @@ public class Project implements Serializable {
 		@Override
 		public String[] names() {
 			HashSet<String> s = new HashSet<>();
-			s.addAll(variables.get(null).keySet());
-			s.addAll(variables.get(SpritePanel.getSprite()).keySet());
+			for(Entry<String, IVariable<?>> e : variables.get(null).entrySet())
+				if(clazz.isInstance(e.getValue()))
+					s.add(e.getKey());
+			for(Entry<String, IVariable<?>> e : variables.get(SpritePanel.getSprite()).entrySet())
+				if(clazz.isInstance(e.getValue()))
+					s.add(e.getKey());
 			return s.toArray(new String[s.size()]);
 		}
 		
