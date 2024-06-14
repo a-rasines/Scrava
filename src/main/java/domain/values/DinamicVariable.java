@@ -1,5 +1,6 @@
 package domain.values;
 
+import domain.Project;
 import domain.Sprite;
 import ui.renderers.IRenderer;
 import ui.renderers.SimpleBlockRenderer;
@@ -32,5 +33,15 @@ public abstract class DinamicVariable<T> implements IVariable<T>{
 	@Override
 	public Sprite getSprite() {
 		return s;
+	}
+	
+	@Override
+	public boolean isNative() {
+		return true;
+	}
+	
+	@Override
+	public boolean isGlobal() {
+		return Project.getActiveProject().getVariable(null, name) != null;
 	}
 }

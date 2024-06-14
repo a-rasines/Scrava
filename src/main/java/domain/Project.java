@@ -26,6 +26,7 @@ import domain.values.EnumLiteral;
 import domain.values.EnumLiteral.EnumCapable;
 import domain.values.IVariable;
 import domain.values.StaticVariable;
+import domain.values.dinamicVariable.SystemTimeMillisVariable;
 import remote.ClientController;
 import ui.components.ActionPanel;
 import ui.components.BlockPanel;
@@ -47,7 +48,7 @@ public class Project implements Serializable {
 	 * Here the dinamic and other transient global variables are inserted
 	 */
 	public void insertGlobalVariables() {
-		
+		registerVariable(null, "epoch time (ms)", new SystemTimeMillisVariable());
 	}
 	
 	private static final long serialVersionUID = -7008939450955709656L;
