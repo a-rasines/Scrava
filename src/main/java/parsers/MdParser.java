@@ -51,12 +51,12 @@ public class MdParser {
 				case '<':
 					if(inTitle && (buffer.substring(i, i+4).equals("<br>") || buffer.substring(i, i+5).equals("<\br>")))
 						inTitle = false;
-					else if(inTitle || inString)
+					else if(inTitle || inString || !(buffer.substring(i, i+4).equals("<br>") || buffer.substring(i, i+5).equals("<\br>")))
 						offset += replace(buffer, 1, "&lt;", i + offset);
 					break;
 				
 				case '>':
-					if(inTitle || inString) 
+					if(inTitle || inString || !(buffer.substring(i - 3, i + 1).equals("<br>") || buffer.substring(i - 4, i + 1).equals("<\br>"))) 
 						offset += replace(buffer, 1, "&gt;", i + offset);
 					break;
 				
