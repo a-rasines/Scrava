@@ -140,7 +140,9 @@ public class TutorialDialog extends ScDialog {
 			temp.deleteOnExit();
 			Tutorial so = ClientController.INSTANCE.getTutorial(selected.id());
 			System.out.println(so.content());
-			fos.write(MdParser.tutorialToHTML(so).getBytes());
+			byte[] out = MdParser.tutorialToHTML(so).getBytes();
+			System.out.println(new String(out, StandardCharsets.UTF_8));
+			fos.write(out);
 			Desktop.getDesktop().browse(temp.toURI());
 		} catch (FileNotFoundException e1) {
 			e1.printStackTrace();

@@ -145,12 +145,14 @@ public class MdParser {
 				int indt = 0;
 				while(lines[i].substring(indt * 2).startsWith("| "))
 					indt ++;
+				System.out.println(indt + " " + indentations);
 				if(indentations > indt)
 					for(int j = 0; j < indentations - indt; j++)
 						lines[i - 1] += "</div>";
 				else if(indentations < indt)
 					for(int j = 0; j < indt - indentations; j++)
-						lines[i] = "<div>" + lines[i];
+						lines[i] = "<div class=\"vertical-bar\">" + lines[i].substring(indt * 2);
+				indentations = indt;
 			} else {
 				lines[i] = "<p>" + lines[i] + "</p>";
 				for(int j = 0; j < indentations; j++)
