@@ -10,5 +10,5 @@ The last way is using titles / subtitles, this can archieved using hastags, tran
 `## Subtitle`
 `### Sub-subtitle`
 ## Ordering text
-You may be tempted to use the enter key to change line, but the library used to render text it's not the best with that, therefore it's better practice to write `&lt;br&rt;` everywhere there's not a title, as there check for the change line character. 
+You may be tempted to use the enter key to change line, but the library used to render text it's not the best with that, therefore it's better practice to write `<br>` everywhere there's not a title, as there check for the change line character. 
 Markdown also allows to make lists

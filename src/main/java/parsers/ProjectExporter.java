@@ -17,6 +17,8 @@ import domain.Sprite;
 import domain.models.types.EventBlock;
 import domain.values.IVariable;
 import domain.values.StaticVariable;
+import parsers.textures.TextureManager;
+import parsers.textures.TextureManager.ImageData;
 import ui.renderers.IRenderer.DragableRenderer;
 
 public class ProjectExporter {
@@ -68,8 +70,9 @@ public class ProjectExporter {
 		try (InputStream is = ClassLoader.getSystemClassLoader().getResourceAsStream("generate/generated/GeneratedSprite.jv")){
 			String spriteBase = new String(is.readAllBytes(), StandardCharsets.UTF_8);
 			is.close();
+			TextureManager tm = new TextureManager();
 			for (Sprite s : Project.getActiveProject().getSprites()) {
-				prepareSprite(s, srcFolder, resourcesFolder, spriteBase);
+				prepareSprite(tm, s, srcFolder, resourcesFolder, spriteBase);
 			}
 		}
 		
@@ -90,7 +93,7 @@ public class ProjectExporter {
 		}
 		
 	}
-	private static void prepareSprite(Sprite s, File srcFolder, File resourcesFolder, String sprite) throws IOException {
+	private static void prepareSprite(TextureManager tm, Sprite s, File srcFolder, File resourcesFolder, String sprite) throws IOException {
 		if(s == null) return;
 		sprite = sprite.replaceAll("\\{\\{SpriteName}}", s.getName());
 		
@@ -102,8 +105,13 @@ public class ProjectExporter {
 		}
 		sprite = sprite.replace("\t{{Variables}}", "");
 		for(BufferedImage bi : s.getTextures()) {
-			ImageIO.write(bi, "png", new File(resourcesFolder.getAbsolutePath() + "/" + Integer.toHexString(bi.hashCode()) + ".png"));
-			sprite = sprite.replace("{{Textures}}", "importTexture(\"" + Integer.toHexString(bi.hashCode()) + ".png" + "\"),\n					  {{Textures}}");
+			ImageData im = tm.addImage(bi);
+			if(im.file == null) {
+				File f = new File(resourcesFolder.getAbsolutePath() + "/" + Integer.toHexString(bi.hashCode()) + ".png");
+				ImageIO.write(bi, "png", f);
+				im.file = f;
+			}
+			sprite = sprite.replace("{{Textures}}", "importTexture(\"" + im.file.getPath().replace(resourcesFolder.getAbsolutePath(), "")+ "\"),\n					  {{Textures}}");
 		}
 		sprite = sprite.replace(",\n					  {{Textures}}", "");
 		

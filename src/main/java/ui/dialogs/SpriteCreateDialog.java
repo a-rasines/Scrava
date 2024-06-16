@@ -140,7 +140,6 @@ public class SpriteCreateDialog extends ScDialog {
 				}
 			Sprite s = new Sprite(textField.getText(), img);
 			s.getScale().setValue(Double.parseDouble(zoomField.getText()), true);
-			SpritePanel.addSprite(s);
 			dispose();
 		});
 		buttonPane.add(okButton);
