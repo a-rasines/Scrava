@@ -45,7 +45,7 @@ public class OnlineProjectsScrollPane extends JScrollPane {
 				} while (count == 30);
 				list = new JList<>(lm);
 				setViewportView(list);
-			} catch(Exception e) {
+			} catch(Exception | Error e) {
 				setViewportView(new JLabel("No conection with server"));
 			}
 			

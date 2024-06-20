@@ -118,9 +118,13 @@ public class TutorialDialog extends ScDialog {
 	
 	private void refreshList(ActionEvent e) {
 		dlm.clear();
-		System.out.println("Loading");
 		new Thread(() -> {
 			Iterator<ObjectDescriptor> iter = ClientController.INSTANCE.getTutorialList(Query.newBuilder().setQuery("name LIKE '%" + textField.getText().replace("'", "''") + "%'").build());
+			if(iter == null) {
+				JOptionPane.showMessageDialog(null, "Unable to connect to server", "Conection error", JOptionPane.ERROR_MESSAGE);
+				dispose();
+				return;
+			}
 			while(iter.hasNext()) {
 				ObjectDescriptor th = iter.next();
 				dlm.addElement(new IdObject(th.getId(), th.getName()));
@@ -156,13 +160,22 @@ public class TutorialDialog extends ScDialog {
 	}
 	
 	private void upload(ActionEvent e) {
+		
 		if(AppCache.getInstance().user == null) {
 			JOptionPane.showMessageDialog(null, "Connect to your account to use this feature");
 			return;
 		}
+		
+		List<IdObject> tutorials = ClientController.INSTANCE.getUserTutorials();
+		if(tutorials == null) {
+			JOptionPane.showMessageDialog(null, "Unable to connect to server", "Conection error", JOptionPane.ERROR_MESSAGE);
+			dispose();
+			return;
+		} 		
+		
 		JFileChooser fileChooser = new JFileChooser();
-		 fileChooser.setAcceptAllFileFilterUsed(false);
-		 fileChooser.addChoosableFileFilter(new FileFilter() {
+		fileChooser.setAcceptAllFileFilterUsed(false);
+		fileChooser.addChoosableFileFilter(new FileFilter() {
 
 			@Override
 			public boolean accept(File f) {
@@ -182,8 +195,7 @@ public class TutorialDialog extends ScDialog {
 				content = new String(fis.readAllBytes(), StandardCharsets.UTF_8);
 			} catch (IOException _e) {
 				_e.printStackTrace();
-			}
-			List<IdObject> tutorials = ClientController.INSTANCE.getUserTutorials();
+			}	
 			tutorials.add(0, new IdObject(-1, "-- New --"));
 	        JComboBox<IdObject> comboBox = new JComboBox<>();
 	        tutorials.forEach(comboBox::addItem);

@@ -90,12 +90,16 @@ public class LoginDialog extends ScDialog {
 						JOptionPane.showMessageDialog(null, "Must fill user and password");
 					else 
 						try {
-							ClientController.INSTANCE.login(textField.getText(), String.copyValueOf(passwordField.getPassword()));
+							if(ClientController.INSTANCE.login(textField.getText(), String.copyValueOf(passwordField.getPassword())) == null) {
+								JOptionPane.showMessageDialog(null, "Unable to connect to server", "Conection error", JOptionPane.ERROR_MESSAGE);
+								return;
+							}
 							UserPanel.INSTANCE.regenerate();
 							OnlineProjectsScrollPane.INSTANCE.regenerate();
 							dispose();
 						} catch(StatusRuntimeException _e) {
-							JOptionPane.showMessageDialog(null, "Error logging in:" + _e.getMessage().substring(_e.getMessage().indexOf(":") + 1));
+							_e.printStackTrace();
+							JOptionPane.showMessageDialog(null, "Error logging in:" + _e.getMessage().substring(_e.getMessage().indexOf(":") + 1), "Unexpected error", JOptionPane.ERROR_MESSAGE);
 						}
 				});
 				buttonPane.add(loginButton);
@@ -110,7 +114,10 @@ public class LoginDialog extends ScDialog {
 						JOptionPane.showMessageDialog(null, "Password must be between 8 and 256 characters long");
 					else 
 						try {
-							ClientController.INSTANCE.register(textField.getText(), String.copyValueOf(passwordField.getPassword()));
+							if(ClientController.INSTANCE.register(textField.getText(), String.copyValueOf(passwordField.getPassword())) == null) {
+								JOptionPane.showMessageDialog(null, "Unable to connect to server", "Conection error", JOptionPane.ERROR_MESSAGE);
+								return;
+							}
 							UserPanel.INSTANCE.regenerate();
 							OnlineProjectsScrollPane.INSTANCE.regenerate();
 							dispose();

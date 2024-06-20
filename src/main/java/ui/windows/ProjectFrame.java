@@ -220,7 +220,10 @@ public class ProjectFrame extends JFrame implements WindowFocusListener {
     			if(!LoginDialog.isAlreadyOpen())
     				new LoginDialog().setVisible(true);
     		} else {
-    			ClientController.INSTANCE.saveProject(Project.getActiveProject());
+    			if(ClientController.INSTANCE.saveProject(Project.getActiveProject()))
+    				JOptionPane.showMessageDialog(null, "Poject succesfully uploaded");
+    			else
+    				JOptionPane.showMessageDialog(null, "Unable to connect to server", "Conection error", JOptionPane.ERROR_MESSAGE);
     		}
     	});
     	resourcesMenu.addActionListener((e) -> {
