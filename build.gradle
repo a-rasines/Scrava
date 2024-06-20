@@ -80,9 +80,20 @@ protobuf {
 java {
     sourceCompatibility = '21'
 	targetCompatibility = '21'
-	
+		
 	tasks.withType(JavaCompile) {
 	    options.encoding = 'UTF-8'
 	    options.release = 21
 	}
+}
+
+jar {
+	duplicatesStrategy = 'exclude'
+	
+    manifest {
+        attributes 'Main-Class': 'main.MainClass'
+    }
+    from {
+        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+    }
 }

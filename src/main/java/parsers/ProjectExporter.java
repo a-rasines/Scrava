@@ -46,6 +46,15 @@ public class ProjectExporter {
 			String project = new String(is.readAllBytes(), StandardCharsets.UTF_8);
 			fos.write(project.replace("{{ProjectName}}", Project.getActiveProject().name).getBytes());
 		}
+		copyRes("generate/root/manifest.txt", folder.getAbsolutePath() + "/MANIFEST.MF");
+		try(InputStream is = ClassLoader.getSystemClassLoader().getResourceAsStream("generate/root/compile.btch");
+				FileOutputStream win_fos = new FileOutputStream(folder.getAbsolutePath() + "/compile.bat");
+				FileOutputStream linux_fos = new FileOutputStream(folder.getAbsolutePath() + "/compile.sh");) {
+				String project = new String(is.readAllBytes(), StandardCharsets.UTF_8).replace("{{ProjectName}}", Project.getActiveProject().name);
+				win_fos.write(project.getBytes());
+				linux_fos.write(project.getBytes());
+			}
+		
 		File srcFolder = new File(folder.getAbsolutePath() + "/src");
 		srcFolder.mkdir();
 		
@@ -91,7 +100,11 @@ public class ProjectExporter {
 				globalVariables = globalVariables.replace("{{Imports}}", inport + "\n{{Imports}}");
 			globalVariables = globalVariables.replace("{{Imports}}", "");
 		}
-		
+		System.out.println(folder.getAbsolutePath()+"\\compile.bat");
+		if(System.getProperty("os.name").indexOf("win") > -1)
+			Runtime.getRuntime().exec(new String[] {"cmd", "/c", folder.getAbsolutePath() + "\\compile.bat"});
+		else
+			Runtime.getRuntime().exec(new String[] {folder.getAbsolutePath() + "\\compile.sh"});
 	}
 	private static void prepareSprite(TextureManager tm, Sprite s, File srcFolder, File resourcesFolder, String sprite) throws IOException {
 		if(s == null) return;
@@ -111,7 +124,7 @@ public class ProjectExporter {
 				ImageIO.write(bi, "png", f);
 				im.file = f;
 			}
-			sprite = sprite.replace("{{Textures}}", "importTexture(\"" + im.file.getPath().replace(resourcesFolder.getAbsolutePath(), "")+ "\"),\n					  {{Textures}}");
+			sprite = sprite.replace("{{Textures}}", "importTexture(\"" + im.file.getPath().replace(resourcesFolder.getAbsolutePath() + "\\", "").replace(resourcesFolder.getAbsolutePath(), "")+ "\"),\n					  {{Textures}}");
 		}
 		sprite = sprite.replace(",\n					  {{Textures}}", "");
 		

@@ -141,7 +141,7 @@ public class Project implements Serializable {
             int result = fileChooser.showOpenDialog(null);
             if (result == JFileChooser.APPROVE_OPTION) {
             	String res = JOptionPane.showInputDialog("Set file name:");
-            	if(res.length() > 0) {
+            	if(res != null && res.length() > 0) {
             		file = new File(fileChooser.getSelectedFile().getAbsolutePath() + "/" + res + ".scrv");
             		AppCache.getInstance().importedProjects.add(new ProjectData(name, file));
             		AppCache.save();
