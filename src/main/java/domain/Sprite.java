@@ -60,7 +60,6 @@ public class Sprite implements Serializable{
 		xPos = StaticVariable.createVariable(this, "x", 0l, true);
 		yPos = StaticVariable.createVariable(this, "y", 0l, true);
 		rotation = StaticVariable.createVariable(this, "rotation", 0., true);
-		System.out.println("constructor end");
 	}
 	//																													EVENTS
 	
@@ -111,18 +110,18 @@ public class Sprite implements Serializable{
 	//																											TEXTURE
 	private Image resized = null;
 	private double res_sc = 0;
+	private int ap_w = 0;
 	public Image getRendered() {
-		if(scale.value() == 1)
-			return textures.get(selectedTexture);
-		else if(resized != null && res_sc == scale.value())
+		if(resized != null && res_sc == scale.value() && ActionPanel.INSTANCE.getWidth() == ap_w)
 			return resized;
 		else {
 			res_sc = scale.value();
+			ap_w = ActionPanel.INSTANCE.getWidth();
 			BufferedImage fullSize = textures.get(selectedTexture);
-			
+			if(ap_w == 0) return fullSize;
 			return (resized = fullSize.getScaledInstance(
-					(int)(fullSize.getWidth() * scale.value() * ActionPanel.INSTANCE.getWidth() / 1000), 
-					(int)(fullSize.getHeight() * scale.value() * ActionPanel.INSTANCE.getWidth() / 1000), 
+					(int)(fullSize.getWidth() * scale.value() * ap_w / 1000), 
+					(int)(fullSize.getHeight() * scale.value() * ap_w / 1000), 
 					BufferedImage.SCALE_FAST));
 		}
 	}
