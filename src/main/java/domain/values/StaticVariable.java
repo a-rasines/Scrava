@@ -33,6 +33,11 @@ public class StaticVariable<T> extends AbstractLiteral<T> implements IVariable<T
 		
 		
 	}
+	
+	@Override
+	public void reset() {
+		this.value.value = this.value.initialValue;
+	}
 
 	private static final long serialVersionUID = 6146036704484981438L;
 	

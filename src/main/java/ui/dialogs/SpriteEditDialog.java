@@ -211,7 +211,7 @@ public class SpriteEditDialog extends ScDialog implements ListCellRenderer<Buffe
 					}
 					
 					for(Sprite _s : SpritePanel.getSprites())
-						if(_s.getName().equals(textField.getText())) {
+						if(_s.getName().equals(textField.getText()) && _s != s) {
 							JOptionPane.showMessageDialog(null, "There's already an sprite with that name");
 							return;
 						}

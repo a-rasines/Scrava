@@ -47,6 +47,7 @@ public class ProjectExporter {
 			fos.write(project.replace("{{ProjectName}}", Project.getActiveProject().name).getBytes());
 		}
 		copyRes("generate/root/manifest.txt", folder.getAbsolutePath() + "/MANIFEST.MF");
+		copyRes("generate/root/README.md", folder.getAbsolutePath() + "/README.md");
 		try(InputStream is = ClassLoader.getSystemClassLoader().getResourceAsStream("generate/root/compile.btch");
 				FileOutputStream win_fos = new FileOutputStream(folder.getAbsolutePath() + "/compile.bat");
 				FileOutputStream linux_fos = new FileOutputStream(folder.getAbsolutePath() + "/compile.sh");) {
