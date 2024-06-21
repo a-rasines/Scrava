@@ -66,6 +66,7 @@ public class Project implements Serializable {
 		active = p;
 		SpritePanel.clearSprites();
 		System.out.println("Sprite count:" + (p.getSprites().size() - 1));
+		ProjectFrame.INSTANCE.setTitle(p.name + " - Scrava");
 		for(Sprite s : p.getSprites())
 			if(s != null)
 				SpritePanel.addSprite(s);
@@ -76,6 +77,7 @@ public class Project implements Serializable {
 	public static void newProject(String name) {
 		SpritePanel.clearSprites();
 		active = new Project(name);
+		ProjectFrame.INSTANCE.setTitle(name + " - Scrava");
 		System.out.println("Sprite count:" + (active.getSprites().size() - 1));
 		ActionPanel.INSTANCE.repaint();
 	}

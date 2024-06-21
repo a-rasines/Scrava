@@ -69,6 +69,7 @@ public class ProjectFrame extends JFrame implements WindowFocusListener {
 		JButton endButton = new JButton("End");
 		setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 		setLayout(new EmptyLayout());
+		setIconImage(ProjectSelectorFrame.ICON);
 		add(BlockPanel.INSTANCE);
 		add(ActionPanel.INSTANCE);
 		add(SpritePanel.INSTANCE);

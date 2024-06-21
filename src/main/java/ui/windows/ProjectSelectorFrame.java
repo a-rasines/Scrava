@@ -2,6 +2,7 @@ package ui.windows;
 
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
+import java.awt.Image;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowFocusListener;
 import java.io.FileNotFoundException;
@@ -23,11 +24,14 @@ import domain.Project;
 import remote.ClientController;
 import ui.components.OnlineProjectsScrollPane;
 import ui.components.UserPanel;
+import ui.renderers.IRenderer;
 
 public class ProjectSelectorFrame extends JFrame implements WindowFocusListener {
 
 	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
+	
+	public static final Image ICON = IRenderer.getRes("textures/icon.svg");
 	
 	public static final ProjectSelectorFrame INSTANCE = new ProjectSelectorFrame();
 
@@ -52,6 +56,8 @@ public class ProjectSelectorFrame extends JFrame implements WindowFocusListener 
 	 */
 	private ProjectSelectorFrame() {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setTitle("Project selector - Scrava");
+		setIconImage(ICON);
 		setBounds(100, 100, 450, 300);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
