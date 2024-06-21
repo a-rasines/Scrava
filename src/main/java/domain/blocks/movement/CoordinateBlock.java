@@ -8,7 +8,7 @@ import domain.models.types.FunctionBlock;
 import domain.values.AbstractLiteral;
 import ui.renderers.LiteralRenderer.LiteralRenderable;
 
-public abstract class CoordinateBlock extends FunctionBlock{
+public abstract class CoordinateBlock extends FunctionBlock {
 
 	private static final long serialVersionUID = 3637013013393291141L;
 	

@@ -131,6 +131,7 @@ public class Project implements Serializable {
 		return variables.get(s).get(name);
 	}
 	public Map<String, IVariable<?>> getVariablesOf(Sprite s) {
+		variables.putIfAbsent(s, new HashMap<>());
 		return variables.get(s);
 	}
 	

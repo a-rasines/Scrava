@@ -26,6 +26,10 @@ public class InvocableBlockRenderer implements DragableRenderer {
 	
 	public static interface InvocableBlockRenderable extends Translatable, IRenderable, VariableHolder, InvocableBlock{
 
+		/**
+		 * Returns the visual title of the block
+		 * @return
+		 */
 		public String getTitle();
 		
 		/**

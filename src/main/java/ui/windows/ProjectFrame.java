@@ -104,7 +104,7 @@ public class ProjectFrame extends JFrame implements WindowFocusListener {
 							break;
 							
 						case KeyEvent.KEY_PRESSED:
-							System.out.println("Pressed");
+							System.out.println("Pressed " + e.getKeyChar());
 							for(Sprite s : SpritePanel.getSprites())
 								s.runKeyEvent(OnKeyPressEventBlock.class, e.getKeyCode());
 							repaint();

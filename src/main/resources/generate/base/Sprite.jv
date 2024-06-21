@@ -114,6 +114,8 @@ public abstract class Sprite {
 	
 	private int x;
 	private int y;
+	private double rotation;
+	
 	private List<BufferedImage> textures; //Here are stored all the textures of the sprite
 	private int activeTexture; //From the list, the texture in this position is considered the active one
 	private Image renderedTexture; //This is the selected texture with all modifications applied
@@ -219,6 +221,14 @@ public abstract class Sprite {
 	}
 	
 	/**
+	 * Returns the rotation of this block in degrees
+	 * @return
+	 */
+	public final double getRotation() {
+		return this.rotation;
+	}
+	
+	/**
 	 * Returns the x position of the sprite in screen
 	 * @return
 	 */
@@ -250,6 +260,38 @@ public abstract class Sprite {
 	
 	public void setY(int y) {
 		this.y = y;
+	}
+	
+	/**
+	 * Rotates the sprite the amount in degrees
+	 * @param amount
+	 */
+	public void rotateDeg(double amount) {
+		this.rotation = (this.rotation + Math.toRadians(amount)) % (2 * Math.PI); //Adds the rotation but removes extra loops (to prevent number overflow)
+	}
+	
+	/**
+	 * Rotates the sprite the amount in radians
+	 * @param amount
+	 */
+	public void rotateRad(double amount) {
+		this.rotation = (this.rotation + amount) % (2 * Math.PI); //Adds the rotation but removes extra loops (to prevent number overflow)
+	}
+	
+	/**
+	 * Replaces the current rotation with the desired rotation in degrees
+	 * @param newRotation
+	 */
+	public void setRotationDeg(double newRotation) {
+		this.rotation = Math.toRadians(newRotation % 360); //Sets the rotation without the extra loops
+	}
+	
+	/**
+	 * Replaces the current rotation with the desired rotation in radians
+	 * @param newRotation
+	 */
+	public void setRotationRad(double newRotation) {
+		this.rotation = newRotation % (2 * Math.PI);//Sets the rotation without the extra loops
 	}
 	
 	/**

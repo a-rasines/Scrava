@@ -59,7 +59,12 @@ public class GraphicsPanel extends JPanel{
 		g.setColor(Color.white);
 		g.fillRect(0, 0, getWidth(), getHeight()); //Background
 		for(Sprite s : sprites)
-			g.drawImage(s.getTexture(), s.getPosition().x, s.getPosition().y, null);
+			g.drawImage(
+				s.getTexture(), 										// Texture
+				s.getPosition().x - s.getTexture().getWidth(null) / 2,  // X position (pivot set on center of image
+				s.getPosition().y - s.getTexture().getHeight(null) / 2, // Y position (pivot set on center of image
+				null													// N/A
+			);
 	}
 	
 	public static void main(String[] args) {

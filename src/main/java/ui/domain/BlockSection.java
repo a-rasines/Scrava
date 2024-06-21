@@ -22,6 +22,7 @@ import domain.blocks.movement.MoveXBlock;
 import domain.blocks.movement.MoveXToBlock;
 import domain.blocks.movement.MoveYBlock;
 import domain.blocks.movement.MoveYToBlock;
+import domain.blocks.movement.RotateBlock;
 import domain.blocks.operators.AddOperator;
 import domain.blocks.operators.AppendOperator;
 import domain.blocks.operators.DivideOperator;
@@ -46,6 +47,8 @@ public enum BlockSection {
 		new MoveToBlock(null).getRenderer(),
 		new MoveXToBlock(null).getRenderer(),
 		new MoveYToBlock(null).getRenderer(),
+		
+		new RotateBlock(null).getRenderer(),
 			
 	}),
 	CONTROL(0xffffda22, new IRenderer[] {

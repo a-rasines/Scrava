@@ -20,6 +20,7 @@ import domain.blocks.event.KeyEventBlock;
 import domain.blocks.event.OnStartEventBlock;
 import domain.models.types.EventBlock;
 import domain.values.StaticVariable;
+import ui.components.ActionPanel;
 import ui.components.SpritePanel;
 import ui.renderers.IRenderer;
 import ui.renderers.IRenderer.DragableRenderer;
@@ -35,6 +36,7 @@ public class Sprite implements Serializable{
 	private StaticVariable<Long> xPos;
 	private StaticVariable<Long> yPos;
 	private StaticVariable<Double> scale;
+	private StaticVariable<Double> rotation;
 	private final List<DragableRenderer> blocks = new LinkedList<>();
 	private transient Map<Class<? extends EventBlock>, List<EventBlock>> eventMap = null;
 	public static final BufferedImage DEFAULT_TEXTURE = IRenderer.getRes("textures/sprite/def.svg");
@@ -57,6 +59,7 @@ public class Sprite implements Serializable{
 		scale = StaticVariable.createVariable(this, "scale", 1., true);
 		xPos = StaticVariable.createVariable(this, "x", 0l, true);
 		yPos = StaticVariable.createVariable(this, "y", 0l, true);
+		rotation = StaticVariable.createVariable(this, "rotation", 0., true);
 		System.out.println("constructor end");
 	}
 	//																													EVENTS
@@ -106,10 +109,22 @@ public class Sprite implements Serializable{
 	}
 	
 	//																											TEXTURE
-	
+	private Image resized = null;
+	private double res_sc = 0;
 	public Image getRendered() {
-		BufferedImage fullSize = textures.get(selectedTexture);
-		return fullSize.getScaledInstance((int)(fullSize.getWidth() * scale.value()), (int)(fullSize.getHeight() * scale.value()), BufferedImage.SCALE_FAST);
+		if(scale.value() == 1)
+			return textures.get(selectedTexture);
+		else if(resized != null && res_sc == scale.value())
+			return resized;
+		else {
+			res_sc = scale.value();
+			BufferedImage fullSize = textures.get(selectedTexture);
+			
+			return (resized = fullSize.getScaledInstance(
+					(int)(fullSize.getWidth() * scale.value() * ActionPanel.INSTANCE.getWidth() / 1000), 
+					(int)(fullSize.getHeight() * scale.value() * ActionPanel.INSTANCE.getWidth() / 1000), 
+					BufferedImage.SCALE_FAST));
+		}
 	}
 	
 	//																											GETTERS / SETTERS
@@ -168,6 +183,10 @@ public class Sprite implements Serializable{
 	
 	public List<DragableRenderer> getBlocks() {
 		return blocks;
+	}
+	
+	public StaticVariable<Double> getRotation() {
+		return rotation;
 	}
 	
 	private void writeObject(ObjectOutputStream oos) throws IOException {
