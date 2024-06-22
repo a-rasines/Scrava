@@ -42,7 +42,7 @@ public class LiteralClickable implements Clickable{
 		}
 		
 		public boolean woDec(char c) {
-			return (c >= '0' && c <= '9') || c == '-' && (container.getText().length() == 0 || container.getSelectedText().equals(container.getText()));
+			return (c >= '0' && c <= '9') || c == '-' && (container.getText().length() == 0 || container.getSelectedText() != null && container.getSelectedText().equals(container.getText()) || container.getCaret().getDot() == 0 && !container.getText().contains("-"));
 		}
 		
 		private boolean wDec(char c) {

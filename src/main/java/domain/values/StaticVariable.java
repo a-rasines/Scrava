@@ -157,7 +157,6 @@ public class StaticVariable<T> extends AbstractLiteral<T> implements IVariable<T
 	
 	@Override
 	public T initialValue() {
-		System.out.println("b");
 		return value.initialValue;
 	}
 	@Override

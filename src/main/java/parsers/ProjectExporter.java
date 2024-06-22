@@ -101,8 +101,7 @@ public class ProjectExporter {
 				globalVariables = globalVariables.replace("{{Imports}}", inport + "\n{{Imports}}");
 			globalVariables = globalVariables.replace("{{Imports}}", "");
 		}
-		System.out.println(folder.getAbsolutePath()+"\\compile.bat");
-		if(System.getProperty("os.name").indexOf("win") > -1)
+		if(System.getProperty("os.name").toLowerCase().indexOf("win") > -1)
 			Runtime.getRuntime().exec(new String[] {"cmd", "/c", folder.getAbsolutePath() + "\\compile.bat"});
 		else
 			Runtime.getRuntime().exec(new String[] {folder.getAbsolutePath() + "\\compile.sh"});
