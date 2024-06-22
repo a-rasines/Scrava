@@ -108,9 +108,9 @@ public class Sprite implements Serializable{
 	}
 	
 	//																											TEXTURE
-	private Image resized = null;
-	private double res_sc = 0;
-	private int ap_w = 0;
+	private transient Image resized = null;
+	private transient double res_sc = 0;
+	private transient int ap_w = 0;
 	public Image getRendered() {
 		if(resized != null && res_sc == scale.value() && ActionPanel.INSTANCE.getWidth() == ap_w)
 			return resized;

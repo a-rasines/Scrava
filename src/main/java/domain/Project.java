@@ -20,6 +20,7 @@ import java.util.Set;
 
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
+import javax.swing.filechooser.FileFilter;
 
 import domain.AppCache.ProjectData;
 import domain.values.DinamicVariable;
@@ -34,6 +35,7 @@ import ui.components.BlockPanel;
 import ui.components.SpritePanel;
 import ui.renderers.IRenderer.IRenderable;
 import ui.windows.ProjectFrame;
+import ui.windows.ProjectSelectorFrame;
 
 public class Project implements Serializable {
 	
@@ -140,18 +142,34 @@ public class Project implements Serializable {
 	public void save() {
 		if(file == null && id == -1) {
 			JFileChooser fileChooser = new JFileChooser();
-    		fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-            int result = fileChooser.showOpenDialog(null);
+    		fileChooser.setFileFilter(new FileFilter() {
+
+				@Override
+				public boolean accept(File pathname) {
+					return pathname.getAbsolutePath().endsWith(".scrv") || pathname.isDirectory();
+				}
+
+				@Override
+				public String getDescription() {
+					return null;
+				}
+    			
+    		});
+            int result = fileChooser.showSaveDialog(null);
             if (result == JFileChooser.APPROVE_OPTION) {
-            	String res = JOptionPane.showInputDialog("Set file name:");
-            	if(res != null && res.length() > 0) {
-            		file = new File(fileChooser.getSelectedFile().getAbsolutePath() + "/" + res + ".scrv");
-            		AppCache.getInstance().importedProjects.add(new ProjectData(name, file));
-            		AppCache.save();
-            	}
-            } else return;
-		}
-		save(file);
+            	if(fileChooser.getSelectedFile().getAbsolutePath().endsWith(".scrv"))
+            		save(new File(fileChooser.getSelectedFile().getAbsolutePath()));
+            	else
+            		save(new File(fileChooser.getSelectedFile().getAbsolutePath() + ".scrv"));
+            	ProjectData thls = new ProjectData(name, file);
+            	ProjectSelectorFrame.INSTANCE.plm.addElement(thls);
+            	AppCache.getInstance().importedProjects.add(thls);
+            	AppCache.save();
+            }
+		}else if (file != null)
+			save(file);
+		else
+			ClientController.INSTANCE.saveProject(this);
 	}
 	
 	private void writeObject(ObjectOutputStream oos) throws IOException {
@@ -176,7 +194,7 @@ public class Project implements Serializable {
 	public void save(File f) {
 		if(id != -1)
 			ClientController.INSTANCE.saveProject(this);
-		try {
+		try {				
 			file = f;
 			System.out.println(variables.keySet().size());
 			ProjectFrame.INSTANCE.reset();

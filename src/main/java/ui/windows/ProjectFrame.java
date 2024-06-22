@@ -23,10 +23,12 @@ import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
+import javax.swing.filechooser.FileFilter;
 
 import domain.AppCache;
 import domain.Project;
 import domain.Sprite;
+import domain.AppCache.ProjectData;
 import domain.blocks.event.OnKeyPressEventBlock;
 import domain.blocks.event.OnStartEventBlock;
 import domain.models.types.EventBlock;
@@ -206,12 +208,29 @@ public class ProjectFrame extends JFrame implements WindowFocusListener {
     	toFileMenuItem.addActionListener((e) -> {
     		reset();
     		JFileChooser fileChooser = new JFileChooser();
-    		fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-            int result = fileChooser.showOpenDialog(ProjectFrame.this);
+    		fileChooser.setFileFilter(new FileFilter() {
+
+				@Override
+				public boolean accept(File pathname) {
+					return pathname.getAbsolutePath().endsWith(".scrv") || pathname.isDirectory();
+				}
+
+				@Override
+				public String getDescription() {
+					return null;
+				}
+    			
+    		});
+            int result = fileChooser.showSaveDialog(null);
             if (result == JFileChooser.APPROVE_OPTION) {
-            	String res = JOptionPane.showInputDialog("Set file name:");
-            	if(res.length() > 0)
-            		Project.getActiveProject().save(new File(fileChooser.getSelectedFile().getAbsolutePath() + "/" + res + ".scrv"));
+            	if(fileChooser.getSelectedFile().getAbsolutePath().endsWith(".scrv"))
+            		Project.getActiveProject().save(new File(fileChooser.getSelectedFile().getAbsolutePath()));
+            	else
+            		Project.getActiveProject().save(new File(fileChooser.getSelectedFile().getAbsolutePath() + ".scrv"));
+            	ProjectData thls = new ProjectData(Project.getActiveProject().name, Project.getActiveProject().file);
+            	ProjectSelectorFrame.INSTANCE.plm.addElement(thls);
+            	AppCache.getInstance().importedProjects.add(thls);
+            	AppCache.save();
             }
     	});
     	

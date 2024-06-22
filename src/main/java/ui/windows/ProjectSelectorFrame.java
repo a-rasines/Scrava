@@ -1,7 +1,12 @@
 package ui.windows;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.Font;
+import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowFocusListener;
@@ -11,11 +16,13 @@ import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
+import javax.swing.ListCellRenderer;
 import javax.swing.border.EmptyBorder;
 
 import domain.AppCache;
@@ -26,7 +33,7 @@ import ui.components.OnlineProjectsScrollPane;
 import ui.components.UserPanel;
 import ui.renderers.IRenderer;
 
-public class ProjectSelectorFrame extends JFrame implements WindowFocusListener {
+public class ProjectSelectorFrame extends JFrame implements WindowFocusListener, ListCellRenderer<ProjectData> {
 
 	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
@@ -51,6 +58,8 @@ public class ProjectSelectorFrame extends JFrame implements WindowFocusListener 
 //		});
 //	}
 
+	public DefaultListModel<ProjectData> plm = new DefaultListModel<>();
+	
 	/**
 	 * Create the frame.
 	 */
@@ -72,10 +81,11 @@ public class ProjectSelectorFrame extends JFrame implements WindowFocusListener 
 		JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
 		contentPane.add(tabbedPane, BorderLayout.CENTER);
 		
-		DefaultListModel<ProjectData> plm = new DefaultListModel<>();
 		for(ProjectData pd : AppCache.getInstance().importedProjects)
 			plm.addElement(pd);
 		JList<ProjectData> projectList = new JList<>(plm);
+		projectList.setFixedCellHeight(50);
+		projectList.setCellRenderer(this);
 		JScrollPane scrollPane = new JScrollPane(projectList);
 		tabbedPane.addTab("Local Projects", null, scrollPane, null);
 		
@@ -186,6 +196,42 @@ public class ProjectSelectorFrame extends JFrame implements WindowFocusListener 
 	@Override
 	public void windowLostFocus(WindowEvent e) {
 		isFocused = false;
+	}
+
+	@Override
+	public Component getListCellRendererComponent(JList<? extends ProjectData> list, ProjectData value, int index,
+			boolean isSelected, boolean cellHasFocus) {
+		JPanel output = new JPanel(new BorderLayout());
+		if(isSelected)
+			output.setBackground(list.getSelectionBackground());
+		else
+			output.setBackground(Color.white);
+		JLabel titleLabel = new JLabel(value.name());
+        titleLabel.setFont(new Font("Dialog", Font.BOLD, 14));
+        output.add(titleLabel, BorderLayout.NORTH);
+        
+        JLabel subtitleLabel = new JLabel(value.file().getAbsolutePath());
+        subtitleLabel.setFont(new Font("Dialog", Font.ITALIC, 10));
+        output.add(subtitleLabel, BorderLayout.CENTER);
+        
+        JPanel linePanel = new JPanel() {
+			private static final long serialVersionUID = 5654765985053899746L;
+
+			@Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                g.setColor(Color.BLACK);
+                g.drawLine(0, 0, getWidth(), 0);
+            }
+        };
+        if(isSelected)
+        	linePanel.setBackground(list.getSelectionBackground());
+		else
+			linePanel.setBackground(Color.white);
+        linePanel.setPreferredSize(new Dimension(1, 1));
+        output.add(linePanel, BorderLayout.SOUTH);
+		
+		return output;
 	}
 
 }
