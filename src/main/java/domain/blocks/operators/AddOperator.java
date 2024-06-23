@@ -73,7 +73,7 @@ public class AddOperator extends OperatorBlock<Number, Number>{
 
 	@Override
 	public String getCode(Valuable<? extends Number> left, Valuable<? extends Number> right) {
-		return left.getCode() + " + " + right.getCode();
+		return "(" + left.getCode() + " + " + right.getCode() + ")";
 	}
 	
 	@Override

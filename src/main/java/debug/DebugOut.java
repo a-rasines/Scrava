@@ -16,6 +16,7 @@ public class DebugOut extends PrintStream{
 			"setPosition",
 			
 			//event
+			"dispatchKeyEvent",
 			"mouseDragged",
 			"mousePressed",
 			"onClick",

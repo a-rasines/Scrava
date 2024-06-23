@@ -4,6 +4,7 @@ import java.awt.Dimension;
 import java.awt.KeyEventDispatcher;
 import java.awt.KeyboardFocusManager;
 import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.KeyEvent;
@@ -16,6 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
 
+import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
@@ -23,12 +25,13 @@ import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import javax.swing.filechooser.FileFilter;
 
 import domain.AppCache;
+import domain.AppCache.ProjectData;
 import domain.Project;
 import domain.Sprite;
-import domain.AppCache.ProjectData;
 import domain.blocks.event.OnKeyPressEventBlock;
 import domain.blocks.event.OnStartEventBlock;
 import domain.models.types.EventBlock;
@@ -69,6 +72,14 @@ public class ProjectFrame extends JFrame implements WindowFocusListener {
 		JButton startButton = new JButton("Start");
 		JButton tickButton = new JButton("Tick");
 		JButton endButton = new JButton("End");
+		
+		JPanel layerPanel = new JPanel();
+		layerPanel.setBorder(BorderFactory.createTitledBorder("Sprite Layer"));
+		JButton upButton = new JButton("Up");
+		JButton downButton = new JButton("Down");
+		layerPanel.add(upButton);
+		layerPanel.add(downButton);
+		
 		setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 		setLayout(new EmptyLayout());
 		setIconImage(ProjectSelectorFrame.ICON);
@@ -126,37 +137,49 @@ public class ProjectFrame extends JFrame implements WindowFocusListener {
         	}
         });
 		
-		startButton.addActionListener((e) -> {
-			isTick = false;
-			activeTicks.clear();
-			List<Sprite> l = SpritePanel.getSprites();
-			if(isStarted)
-				for(Sprite s : l)
-					s.reset();
-			for(Sprite s : l)
-				s.runEvent(OnStartEventBlock.class);
-			ActionPanel.INSTANCE.repaint();
-			isStarted = true;
+		startButton.addActionListener(this::start);
+		tickButton.addActionListener(this::tick);
+		endButton.addActionListener(this::reset);
+		
+		upButton.addActionListener((e) -> {
+			
 		});
-		tickButton.addActionListener((e) -> {
-			isTick = true;
-			if(isStarted == false) {
-				System.out.println("Collecting ticks");
-				for(Sprite s : SpritePanel.getSprites())
-					for(EventBlock eb : s.getEvents(OnStartEventBlock.class))
-						activeTicks.add(eb.getTick());
-				isStarted = true;
-			}
-			System.out.println("Running ticks");
-			for(Supplier<Boolean> s : new ArrayList<>(activeTicks))
-				if(s.get())
-					activeTicks.remove(s);
-			ActionPanel.INSTANCE.repaint();
-		});
-		endButton.addActionListener((e) -> {
-			reset();
-		});
+		
 		generateJMenu();
+	}
+	
+	private void start(ActionEvent e) {
+		isTick = false;
+		activeTicks.clear();
+		List<Sprite> l = SpritePanel.getSprites();
+		if(isStarted)
+			for(Sprite s : l)
+				s.reset();
+		for(Sprite s : l)
+			s.runEvent(OnStartEventBlock.class);
+		System.out.println("start");
+		ActionPanel.INSTANCE.repaint();
+		isStarted = true;
+	}
+	
+	private void tick(ActionEvent e) {
+		isTick = true;
+		if(isStarted == false) {
+			System.out.println("Collecting ticks");
+			for(Sprite s : SpritePanel.getSprites())
+				for(EventBlock eb : s.getEvents(OnStartEventBlock.class))
+					activeTicks.add(eb.getTick());
+			isStarted = true;
+		}
+		System.out.println("Running ticks");
+		for(Supplier<Boolean> s : new ArrayList<>(activeTicks))
+			if(s.get())
+				activeTicks.remove(s);
+		ActionPanel.INSTANCE.repaint();
+	}
+	
+	private void reset(ActionEvent e) {
+		reset();
 	}
 	
 	public void reset() {

@@ -42,6 +42,6 @@ public abstract class DinamicVariable<T> implements IVariable<T>{
 	
 	@Override
 	public boolean isGlobal() {
-		return Project.getActiveProject().getVariable(null, name) != null;
+		return Project.getActiveProject().getGlobalVariables().get(name) == this;
 	}
 }

@@ -29,17 +29,9 @@ public interface IVariable<T> extends SimpleRenderable<T>, Valuable<T> {
 		};
 	}
 	
-	public static IVariable<?> getGlobalVariable(String name) {
-		return getVariable(null, name);
-	}
-	
-	public static IVariable<?> getVariable(Sprite s, String name) {
-		return Project.getActiveProject().getVariable(s, name);
-	}
-	
 	public static List<IVariable<?>> getVisibleVariables() {
-		List<IVariable<?>> output = new ArrayList<>(Project.getActiveProject().getVariablesOf(null).values());
-		output.addAll(Project.getActiveProject().getVariablesOf(SpritePanel.getSprite()).values());
+		List<IVariable<?>> output = new ArrayList<>(Project.getActiveProject().getGlobalVariables().values());
+		output.addAll(SpritePanel.getSprite().getVariables().values());
 		return output;
 	}
 	

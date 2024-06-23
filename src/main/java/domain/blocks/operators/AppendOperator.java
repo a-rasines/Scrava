@@ -25,7 +25,7 @@ public class AppendOperator extends OperatorBlock<Object, String>{
 
 	@Override
 	public String getCode(Valuable<? extends Object> left, Valuable<? extends Object> right) {
-		return "\"\" + " + left.getCode() + " + " + right.getCode();
+		return "(\"\" + " + left.getCode() + " + " + right.getCode() + ")";
 	}
 	
 	@Override

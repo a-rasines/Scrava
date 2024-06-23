@@ -2,8 +2,9 @@ package domain.blocks.invocable.movement;
 
 import domain.Sprite;
 import domain.models.interfaces.Valuable;
+import domain.values.NumberHelper;
 
-public class MoveYToBlock extends MoveToBlock{
+public class MoveYToBlock extends CoordinateBlock{
 	private static final long serialVersionUID = -2626208983124778899L;
 
 	@Override
@@ -27,6 +28,16 @@ public class MoveYToBlock extends MoveToBlock{
 	@Override
 	public Valuable<?>[] getAllVariables() {
 		return new Valuable[] {super.getAllVariables()[1]};
+	}
+
+	@Override
+	public void invoke() {
+		this.getSprite().getY().setValue(NumberHelper.castTo(getY().value(), Long.class));
+	}
+
+	@Override
+	public String getCode() {
+		return "this.moveTo(this.getX(), " + (getY().value() instanceof Integer?getY().getCode():"(int)"+getY().getCode())+");";
 	}
 
 }

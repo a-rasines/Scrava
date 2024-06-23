@@ -7,7 +7,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -28,7 +27,7 @@ import ui.renderers.IRenderer.DragableRenderer;
 /**
  * This class represents the Sprite types inside the simulation
  */
-public class Sprite implements Serializable{
+public class Sprite extends AbstractSprite {
 	private static final long serialVersionUID = 2195406778691654466L;
 	
 	private String name;
@@ -62,11 +61,12 @@ public class Sprite implements Serializable{
 		rotation = StaticVariable.createVariable(this, "rotation", 0., true);
 	}
 	//																													EVENTS
-	
+
 	public void registerEvent(EventBlock event) {
 		eventMap.putIfAbsent(event.getClass(), new LinkedList<>());
 		eventMap.get(event.getClass()).add(event);
 	}
+	
 	public void deleteEvent(EventBlock event) {
 		event.getRenderer().delete();
 	}
@@ -78,7 +78,7 @@ public class Sprite implements Serializable{
 	public void runEvent(Class<? extends EventBlock> type) {
 		if(eventMap.containsKey(type))
 			for(EventBlock eb : eventMap.get(type))
-				eb.invoke();
+				new Thread(eb::invoke).start();
 	}
 	
 	public List<EventBlock> getEvents(Class<? extends EventBlock> type) {
@@ -131,11 +131,15 @@ public class Sprite implements Serializable{
 	public Project getProject() {
 		return p;
 	}
-	
+
 	public void setSelectedTexture(int st) {
-		if(st >= 0 && st < textures.size())
+		if(st >= 0 && st < textures.size()) {
 			this.selectedTexture = st;
+			this.resized = null;
+			ActionPanel.INSTANCE.repaint();
+		}
 	}
+	
 	
 	public int getSelectedTexture() {
 		return selectedTexture;
@@ -143,6 +147,7 @@ public class Sprite implements Serializable{
 	
 	public void setSelectedTexture(BufferedImage bi) {
 		this.selectedTexture = getTextures().indexOf(bi);
+		ActionPanel.INSTANCE.repaint();
 	}
 	
 	public List<BufferedImage> getTextures() {

@@ -252,14 +252,17 @@ public abstract class Sprite {
 	public void moveTo(int x, int y) {
 		this.x = x;
 		this.y = y;
+		base.GraphicsPanel.INSTANCE.repaint();
 	}
 	
 	public void setX(int x) {
 		this.x = x;
+		base.GraphicsPanel.INSTANCE.repaint();
 	}
 	
 	public void setY(int y) {
 		this.y = y;
+		base.GraphicsPanel.INSTANCE.repaint();
 	}
 	
 	/**
@@ -268,6 +271,7 @@ public abstract class Sprite {
 	 */
 	public void rotateDeg(double amount) {
 		this.rotation = (this.rotation + Math.toRadians(amount)) % (2 * Math.PI); //Adds the rotation but removes extra loops (to prevent number overflow)
+		base.GraphicsPanel.INSTANCE.repaint();
 	}
 	
 	/**
@@ -276,6 +280,7 @@ public abstract class Sprite {
 	 */
 	public void rotateRad(double amount) {
 		this.rotation = (this.rotation + amount) % (2 * Math.PI); //Adds the rotation but removes extra loops (to prevent number overflow)
+		base.GraphicsPanel.INSTANCE.repaint();
 	}
 	
 	/**
@@ -284,6 +289,7 @@ public abstract class Sprite {
 	 */
 	public void setRotationDeg(double newRotation) {
 		this.rotation = Math.toRadians(newRotation % 360); //Sets the rotation without the extra loops
+		base.GraphicsPanel.INSTANCE.repaint();
 	}
 	
 	/**
@@ -292,7 +298,19 @@ public abstract class Sprite {
 	 */
 	public void setRotationRad(double newRotation) {
 		this.rotation = newRotation % (2 * Math.PI);//Sets the rotation without the extra loops
+		base.GraphicsPanel.INSTANCE.repaint();
 	}
+	
+	/**
+	 * Replaces the current rotation with the desired rotation in degrees <br>
+	 * Please, use setRotationDeg instead of this
+	 * @param newRotation
+	 */
+	@Deprecated
+	public void setRotation(double newRotation) {
+		setRotationDeg(newRotation);
+	}
+	
 	
 	/**
 	 * Set's the event handle detection system

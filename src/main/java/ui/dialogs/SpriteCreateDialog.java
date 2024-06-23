@@ -19,6 +19,7 @@ import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.EtchedBorder;
 
+import domain.Project;
 import domain.Sprite;
 import ui.ImageFilter;
 import ui.components.SpritePanel;
@@ -140,6 +141,7 @@ public class SpriteCreateDialog extends ScDialog {
 				}
 			Sprite s = new Sprite(textField.getText(), img);
 			s.getScale().setValue(Double.parseDouble(zoomField.getText()), true);
+			Project.getActiveProject().registerSprite(s);
 			dispose();
 		});
 		buttonPane.add(okButton);

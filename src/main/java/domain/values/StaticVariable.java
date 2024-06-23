@@ -5,6 +5,7 @@ import java.util.Set;
 
 import domain.Project;
 import domain.Sprite;
+import ui.components.ActionPanel;
 import ui.renderers.SimpleBlockRenderer;
 
 /**
@@ -75,9 +76,9 @@ public class StaticVariable<T> extends AbstractLiteral<T> implements IVariable<T
 	public static <T> StaticVariable<T> createVariable(Sprite s, String name, T value, boolean nat) {
 		StaticVariable<T> var = new StaticVariable<T>(name, value, s, nat);
 		if(s != null)
-			s.getProject().registerVariable(s, name, var);
+			s.registerVariable(name, var);
 		else
-		Project.getActiveProject().registerVariable(s, name, var);
+		Project.getActiveProject().registerGlobalVariable(name, var);
 		return var;
 	}
 	
@@ -125,11 +126,13 @@ public class StaticVariable<T> extends AbstractLiteral<T> implements IVariable<T
 	}
 	
 	public boolean isGlobal() {
-		return Project.getActiveProject().getVariable(null, this.name) != null;
+		return Project.getActiveProject().getGlobalVariables().get(this.name) != null;
 	}
 	
 	public StaticVariable<?> setValue(T value) {
 		this.value.value = value;
+		if(isNative())
+			ActionPanel.INSTANCE.repaint();
 		return this;
 	}
 	
@@ -152,6 +155,8 @@ public class StaticVariable<T> extends AbstractLiteral<T> implements IVariable<T
 		this.value.value = (T)object;
 		if(update)
 			this.value.initialValue = (T)object;
+		if(isNative() && !update)
+			ActionPanel.INSTANCE.repaint();
 		super.setValue(object, update);
 	}
 	

@@ -68,8 +68,7 @@ public class ProjectExporter {
 			String graphicsPanel = new String(is.readAllBytes(), StandardCharsets.UTF_8);
 			is.close();
 			for (Sprite s : Project.getActiveProject().getSprites())
-				if(s != null)
-					graphicsPanel = graphicsPanel.replace("{{SpriteConstructors}}", "new generated."+ s.getName() + "();\n\t\t\t{{SpriteConstructors}}");
+				graphicsPanel = graphicsPanel.replace("{{SpriteConstructors}}", "new generated."+ s.getName() + "();\n\t\t\t{{SpriteConstructors}}");
 			graphicsPanel = graphicsPanel.replace("\n\t\t\t{{SpriteConstructors}}", "");
 			fos.write(graphicsPanel.getBytes());
 		}
@@ -91,7 +90,7 @@ public class ProjectExporter {
 			String globalVariables = new String(is.readAllBytes(), StandardCharsets.UTF_8);
 			is.close();
 			Set<String> imports = new HashSet<>();
-			for (IVariable<?> v : Project.getActiveProject().getVariablesOf(null).values()) {
+			for (IVariable<?> v : Project.getActiveProject().getGlobalVariables().values()) {
 				v.getImports(imports);
 				if(v instanceof StaticVariable<?> sv)
 					globalVariables.replace("{{Variables}}", sv.getInitialization() + "\n\t{{Variables}}");
@@ -110,7 +109,7 @@ public class ProjectExporter {
 		if(s == null) return;
 		sprite = sprite.replaceAll("\\{\\{SpriteName}}", s.getName());
 		
-		for(IVariable<?> v : Project.getActiveProject().getVariablesOf(s).values()) {
+		for(IVariable<?> v : s.getVariables().values()) {
 			if(v.getName().equals("scale") && v instanceof StaticVariable<?> sv)
 				sprite = sprite.replaceAll("\\{\\{Scale}}", ""+sv.initialValue());
 			else if(!v.getName().equals("x") && !v.getName().equals("y")  && v instanceof StaticVariable<?> sv)

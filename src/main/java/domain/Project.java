@@ -9,14 +9,11 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
 
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
@@ -43,7 +40,7 @@ public class Project implements Serializable {
 	 * Here the variables get their dinamic and other transient variables
 	 * @param s
 	 */
-	public void insertVariables(Sprite s) {
+	public static void insertVariables(Sprite s) {
 		
 	}
 	
@@ -51,7 +48,7 @@ public class Project implements Serializable {
 	 * Here the dinamic and other transient global variables are inserted
 	 */
 	public void insertGlobalVariables() {
-		registerVariable(null, "epoch time (ms)", new SystemTimeMillisVariable());
+		GLOBAL_VARIABLES.registerVariable("epoch time (ms)", new SystemTimeMillisVariable());
 	}
 	
 	private static final long serialVersionUID = -7008939450955709656L;
@@ -70,8 +67,7 @@ public class Project implements Serializable {
 		System.out.println("Sprite count:" + (p.getSprites().size() - 1));
 		ProjectFrame.INSTANCE.setTitle(p.name + " - Scrava");
 		for(Sprite s : p.getSprites())
-			if(s != null)
-				SpritePanel.addSprite(s);
+			SpritePanel.addSprite(s);
 		BlockPanel.INSTANCE.changeSprite();
 		ActionPanel.INSTANCE.repaint();
 	}
@@ -87,10 +83,41 @@ public class Project implements Serializable {
 	public Project(String name) {
 		if(active == null)
 			active = this;
+		initGlobalVariables();
+		registerSprite(new Sprite());
 		this.name = name;
-		registerSprite(null);
+	}
+	
+	private void readObject(ObjectInputStream ois) throws IOException, ClassNotFoundException {
+        ois.defaultReadObject();
+		initGlobalVariables();
+	}
+	
+	
+	private transient AbstractSprite GLOBAL_VARIABLES;
+		
+	private void initGlobalVariables() {
+		GLOBAL_VARIABLES = new AbstractSprite() {
+
+			private static final long serialVersionUID = -3347644636942226062L;
+			{
+				setPosition(-1);
+			}
+			
+		};
 		insertGlobalVariables();
-		new Sprite();
+	}
+	
+	public Map<String, IVariable<?>> getGlobalVariables() {
+		if(GLOBAL_VARIABLES == null)
+			initGlobalVariables();
+		return GLOBAL_VARIABLES.getVariables();
+	}
+	
+	public void registerGlobalVariable(String name, IVariable<?> value) {
+		if(GLOBAL_VARIABLES == null)
+			initGlobalVariables();
+		GLOBAL_VARIABLES.registerVariable(name, value);
 	}
 	
 	/**
@@ -98,45 +125,24 @@ public class Project implements Serializable {
 	 * 
 	 * null Sprite = global variable
 	 */
-	private HashMap<Sprite, HashMap<String, IVariable<?>>> variables = new HashMap<>();
-	
-	{
-		variables.put(null, new HashMap<>());
-	}
+	private List<Sprite> sprites = new ArrayList<>();
 	
 	public synchronized void registerSprite(Sprite s) {
-		if(variables.putIfAbsent(s, new HashMap<>()) == null && s != null) {
+		if(sprites.contains(s))return;
+		s.setPosition(sprites.size());
+		if(sprites.add(s)) {
 			if(active == this)
 				SpritePanel.addSprite(s);
 			insertVariables(s);
 		}
-		
 	}
 	
 	public void deleteSprite(Sprite s) {
-		variables.remove(s);
+		sprites.remove(s);
 	}
 	
-	public Set<Sprite> getSprites() {
-		return variables.keySet();
-	}
-	
-	public void registerVariable(Sprite s, String name, IVariable<?> v) {
-		if(variables.get(s) == null)
-			registerSprite(s);
-		variables.get(s).putIfAbsent(name, v);
-	}
-	
-	public void removeVariable(Sprite s, String name) {
-		variables.get(s).remove(name);
-	}
-	
-	public IVariable<?> getVariable(Sprite s, String name) {
-		return variables.get(s).get(name);
-	}
-	public Map<String, IVariable<?>> getVariablesOf(Sprite s) {
-		variables.putIfAbsent(s, new HashMap<>());
-		return variables.get(s);
+	public List<Sprite> getSprites() {
+		return new ArrayList<>(sprites);
 	}
 	
 	public void save() {
@@ -172,31 +178,11 @@ public class Project implements Serializable {
 			ClientController.INSTANCE.saveProject(this);
 	}
 	
-	private void writeObject(ObjectOutputStream oos) throws IOException {
-		for(Map<String, IVariable<?>> s : variables.values())
-			for(IVariable<?> v : new ArrayList<>(s.values()))
-				if(v instanceof DinamicVariable<?> dv)
-					variables.get(dv.getSprite()).remove(dv.getName());
-			
-        oos.defaultWriteObject();
-    }
-	
-	private void readObject(ObjectInputStream ois)  throws IOException, ClassNotFoundException  {
-		ois.defaultReadObject();
-		for (Sprite s : variables.keySet()) {
-			if(s != null)
-				insertVariables(s);
-		}
-		insertGlobalVariables();
-			
-    }
-	
 	public void save(File f) {
 		if(id != -1)
 			ClientController.INSTANCE.saveProject(this);
 		try {				
 			file = f;
-			System.out.println(variables.keySet().size());
 			ProjectFrame.INSTANCE.reset();
 			FileOutputStream fileOut = new FileOutputStream(f);
 			ObjectOutputStream out = new ObjectOutputStream(fileOut);
@@ -227,9 +213,9 @@ public class Project implements Serializable {
 		@SuppressWarnings("unchecked")
 		@Override
 		public T valueof(String value) {
-			T v = (T)variables.get(null).get(value);
+			T v = (T)GLOBAL_VARIABLES.getVariable(value);
 			if(v == null)
-				v = (T)variables.get(SpritePanel.getSprite()).get(value);
+				v = (T)SpritePanel.getSprite().getVariable(value);
 			return v;
 		}
 
@@ -237,17 +223,13 @@ public class Project implements Serializable {
 		@Override
 		public List<T> getValues() {
 			List<T> var = new LinkedList<>();
-			Iterator<IVariable<?>> it = variables.get(null).values().iterator();
-			for(int i = 0; i < variables.get(null).size(); i++) {
-				IVariable<?> next = it.next();
-				if(clazz.isInstance(next))
-					var.add((T)next);
+			for(IVariable<?> v : GLOBAL_VARIABLES.getVariables().values()) {
+				if(clazz.isInstance(v))
+					var.add((T)v);
 			}
-			it = variables.get(SpritePanel.getSprite()).values().iterator();
-			for(int i = variables.get(null).size(); i < variables.get(null).size() + variables.get(SpritePanel.getSprite()).size(); i++) {
-				IVariable<?> next = it.next();
-				if(clazz.isInstance(next))
-					var.add((T)next);
+			for(IVariable<?> v : SpritePanel.getSprite().getVariables().values()) {
+				if(clazz.isInstance(v))
+					var.add((T)v);
 			}
 			return var;
 		}
@@ -255,10 +237,10 @@ public class Project implements Serializable {
 		@Override
 		public String[] names() {
 			HashSet<String> s = new HashSet<>();
-			for(Entry<String, IVariable<?>> e : variables.get(null).entrySet())
+			for(Entry<String, IVariable<?>> e : SpritePanel.getSprite().getVariables().entrySet())
 				if(clazz.isInstance(e.getValue()))
 					s.add(e.getKey());
-			for(Entry<String, IVariable<?>> e : variables.get(SpritePanel.getSprite()).entrySet())
+			for(Entry<String, IVariable<?>> e : SpritePanel.getSprite().getVariables().entrySet())
 				if(clazz.isInstance(e.getValue()))
 					s.add(e.getKey());
 			return s.toArray(new String[s.size()]);

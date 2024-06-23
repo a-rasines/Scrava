@@ -1,2 +1,2 @@
 javac -d bin -target 11 -source 11 -sourcepath src src/base/*.java src/generated/*.java
-jar cfm dist/{{ProjectName}}.jar MANIFEST.MF -C bin . -C resources .
+jar cfm dist/"{{ProjectName}}.jar" MANIFEST.MF -C bin . -C resources .
