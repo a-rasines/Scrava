@@ -40,7 +40,7 @@ public class WhileBlock extends CapsuleBlock{
 
 	@Override
 	public void invoke() {
-		while(condition.value())
+		while(condition.value() && !Thread.currentThread().isInterrupted())
 			super.invoke();
 		
 	}

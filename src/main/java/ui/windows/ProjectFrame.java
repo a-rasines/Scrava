@@ -32,6 +32,7 @@ import domain.AppCache;
 import domain.AppCache.ProjectData;
 import domain.Project;
 import domain.Sprite;
+import domain.blocks.event.EventThread;
 import domain.blocks.event.OnKeyPressEventBlock;
 import domain.blocks.event.OnStartEventBlock;
 import domain.models.types.EventBlock;
@@ -152,6 +153,7 @@ public class ProjectFrame extends JFrame implements WindowFocusListener {
 		isTick = false;
 		activeTicks.clear();
 		List<Sprite> l = SpritePanel.getSprites();
+		EventThread.killThreads();
 		if(isStarted)
 			for(Sprite s : l)
 				s.reset();
@@ -163,6 +165,7 @@ public class ProjectFrame extends JFrame implements WindowFocusListener {
 	}
 	
 	private void tick(ActionEvent e) {
+		EventThread.killThreads();
 		isTick = true;
 		if(isStarted == false) {
 			System.out.println("Collecting ticks");
@@ -183,6 +186,7 @@ public class ProjectFrame extends JFrame implements WindowFocusListener {
 	}
 	
 	public void reset() {
+		EventThread.killThreads();
 		activeTicks.clear();
 		for(Sprite s : SpritePanel.getSprites())
 			s.reset();

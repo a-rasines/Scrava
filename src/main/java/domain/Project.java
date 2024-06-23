@@ -83,40 +83,38 @@ public class Project implements Serializable {
 	public Project(String name) {
 		if(active == null)
 			active = this;
-		initGlobalVariables();
+		insertGlobalVariables();
 		registerSprite(new Sprite());
 		this.name = name;
 	}
 	
 	private void readObject(ObjectInputStream ois) throws IOException, ClassNotFoundException {
         ois.defaultReadObject();
-		initGlobalVariables();
+        insertGlobalVariables();
 	}
 	
-	
-	private transient AbstractSprite GLOBAL_VARIABLES;
-		
-	private void initGlobalVariables() {
-		GLOBAL_VARIABLES = new AbstractSprite() {
-
-			private static final long serialVersionUID = -3347644636942226062L;
-			{
-				setPosition(-1);
+	private void writeObject(ObjectOutputStream ois) throws IOException, ClassNotFoundException {
+		for(Entry<String, IVariable<?>> v : GLOBAL_VARIABLES.getVariables().entrySet()) {
+			if(v.getValue() instanceof DinamicVariable<?>) {
+				GLOBAL_VARIABLES.removeVariable(v.getKey());
 			}
-			
-		};
-		insertGlobalVariables();
+		}
+        ois.defaultWriteObject();
 	}
+	
+	
+	private class GlobalVariables extends AbstractSprite {
+		private static final long serialVersionUID = -5163257882372575797L;
+		
+	}
+
+	private final GlobalVariables GLOBAL_VARIABLES = new GlobalVariables();
 	
 	public Map<String, IVariable<?>> getGlobalVariables() {
-		if(GLOBAL_VARIABLES == null)
-			initGlobalVariables();
 		return GLOBAL_VARIABLES.getVariables();
 	}
 	
 	public void registerGlobalVariable(String name, IVariable<?> value) {
-		if(GLOBAL_VARIABLES == null)
-			initGlobalVariables();
 		GLOBAL_VARIABLES.registerVariable(name, value);
 	}
 	

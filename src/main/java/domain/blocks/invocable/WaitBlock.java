@@ -94,7 +94,7 @@ public class WaitBlock extends FunctionBlock{
 
 	@Override
 	public void invoke() {
-		try { Thread.sleep(value.value().longValue()); } catch (InterruptedException e) {e.printStackTrace();}
+		try { Thread.sleep(value.value().longValue()); } catch (InterruptedException e) {}
 	}
 
 }

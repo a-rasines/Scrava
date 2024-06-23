@@ -21,6 +21,12 @@ public class RepeatBlock extends CapsuleBlock{
 	public Translatable create(Sprite s) {
 		return new RepeatBlock();
 	}
+	
+	@Override
+	public void invoke() {
+		for(long i = 0; i < variable.value().longValue() && !Thread.currentThread().isInterrupted(); i++)
+			super.invoke();
+	}
 
 	@Override
 	public Valuable<?> getVariableAt(int i) {

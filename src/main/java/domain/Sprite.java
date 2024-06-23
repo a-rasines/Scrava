@@ -15,6 +15,7 @@ import java.util.Map;
 
 import javax.imageio.ImageIO;
 
+import domain.blocks.event.EventThread;
 import domain.blocks.event.KeyEventBlock;
 import domain.blocks.event.OnStartEventBlock;
 import domain.models.types.EventBlock;
@@ -78,7 +79,7 @@ public class Sprite extends AbstractSprite {
 	public void runEvent(Class<? extends EventBlock> type) {
 		if(eventMap.containsKey(type))
 			for(EventBlock eb : eventMap.get(type))
-				new Thread(eb::invoke).start();
+				new EventThread(eb::invoke).start();
 	}
 	
 	public List<EventBlock> getEvents(Class<? extends EventBlock> type) {
@@ -88,7 +89,7 @@ public class Sprite extends AbstractSprite {
 	
 	public void onStart() {
 		for(EventBlock eb : eventMap.get(OnStartEventBlock.class)) {
-			new Thread(() -> eb.invoke()).start();
+			new EventThread(() -> eb.invoke()).start();
 		}
 	}
 	
