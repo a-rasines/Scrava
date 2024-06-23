@@ -285,7 +285,7 @@ public class BlockPanel extends JLayeredPane {
 	private class MouseController extends MouseAdapter {
 		@Override
 		public void mousePressed(MouseEvent e) {
-			if(!ProjectFrame.isFocus())return;
+			if(!ProjectFrame.isFocus() || ProjectFrame.isStarted)return;
 			if(e.getPoint().x > 2 * getWidth() / 3 - 10) // List / section selected
 				return;
 			clickPosition = e.getPoint().getLocation();
@@ -330,7 +330,7 @@ public class BlockPanel extends JLayeredPane {
 	private class MouseMotionController extends MouseMotionAdapter {
 		@Override
 		public void mouseDragged(MouseEvent e) {
-			if(!ProjectFrame.isFocus()) {
+			if(!ProjectFrame.isFocus() || ProjectFrame.isStarted) {
 				if(clicked != null) {
 					clicked.onClickEnd();
 					clicked = null;

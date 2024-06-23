@@ -1,6 +1,7 @@
 package domain.models.types;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Supplier;
@@ -10,6 +11,7 @@ import domain.models.interfaces.InvocableBlock;
 import domain.models.interfaces.Valuable;
 import domain.models.interfaces.VariableHolder;
 import ui.renderers.IRenderer.IRenderable;
+import ui.renderers.LiteralRenderer.LiteralRenderable;
 import ui.renderers.MultipleChoiceRenderer;
 
 public abstract class MultipleOptionCapsuleBlock extends ArrayList<OptionCapsuleBlock> implements IRenderable, InvocableBlock, VariableHolder {
@@ -30,7 +32,10 @@ public abstract class MultipleOptionCapsuleBlock extends ArrayList<OptionCapsule
 	
 	@Override
 	public Valuable<?>[] getAllVariables() {
-		throw new IllegalAccessError();
+		List<Valuable<?>> variables = new LinkedList<>();
+		for(OptionCapsuleBlock ocb : this)
+			variables.addAll(List.of(ocb.getAllVariables()));
+		return variables.toArray(new Valuable<?>[variables.size()]);
 	}
 
 	@Override
@@ -53,6 +58,39 @@ public abstract class MultipleOptionCapsuleBlock extends ArrayList<OptionCapsule
 		if(o == null || o < 0) return;
 		get(o).invoke();
 	}	
+	
+	@Override
+	public void replaceVariable(Valuable<?> old, Valuable<?> newValue) {
+		for(OptionCapsuleBlock ocb : this)
+			ocb.replaceVariable(old, newValue);
+	}
+	
+	@Override
+	public LiteralRenderable<?> removeVariable(Valuable<?> v) {
+		LiteralRenderable<?> out;
+		for(OptionCapsuleBlock ocb : this) {
+			out = ocb.removeVariable(v);
+			if(out != null)
+				return out;
+		}
+		return null;
+	}
+	
+	@Override
+	public void removeVariableAt(int i) {
+		removeVariable(getAllVariables()[i]);
+	}
+	
+	@Override
+	public void setVariableAt(int i, Valuable<?> v) {
+		replaceVariable(getAllVariables()[i], v);
+	}
+	
+	@Override
+	public Valuable<?> getVariableAt(int i) {
+		return getAllVariables()[i];
+	}
+	
 	
 	@Override
 	public Supplier<Boolean> getTick() {

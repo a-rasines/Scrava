@@ -71,7 +71,8 @@ public class OptionCapsuleBlock extends CapsuleBlock {
 
 	@Override
 	public void replaceVariable(Valuable<?> old, Valuable<?> newValue) {
-		variables.set(variables.indexOf(old), newValue);
+		if(variables.contains(old))
+			variables.set(variables.indexOf(old), newValue);
 		
 	}
 

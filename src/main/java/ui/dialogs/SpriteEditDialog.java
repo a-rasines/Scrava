@@ -166,8 +166,6 @@ public class SpriteEditDialog extends ScDialog implements ListCellRenderer<Buffe
 							if(dlm.size() > 1 && list.getSelectedIndex() != -1) {
 								BufferedImage bi = list.getSelectedValue();
 								dlm.remove(list.getSelectedIndex());
-								s.setSelectedTexture(0);
-								s.getTextures().remove(bi);
 							}
 						});
 						panel_2.add(btnRemoveTexture);

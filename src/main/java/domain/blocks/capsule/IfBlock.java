@@ -92,7 +92,6 @@ public class IfBlock extends CapsuleBlock {
 
 	@Override
 	public LiteralRenderable<?> removeVariable(Valuable<?> v) {
-		System.out.println("a");
 		condition = defVal;
 		return (LiteralRenderable<?>) condition;
 	}

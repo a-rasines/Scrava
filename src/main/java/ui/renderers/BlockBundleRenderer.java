@@ -24,7 +24,7 @@ public class BlockBundleRenderer implements CapsuleRenderer{
 	private int x;
 	private int y;
 	
-	private transient final BufferedImage ARM_BLOCK        = IRenderer.getRes("textures/capsule/arm_block.svg"); //left of block
+	private transient static final BufferedImage ARM_BLOCK        = IRenderer.getRes("textures/capsule/arm_block.svg"); //left of block
 	private transient static final BufferedImage ARM_END          = IRenderer.getRes("textures/capsule/arm_end.svg"); //between arm block & body end
 	//private static final BufferedImage BODY_END_CONN    = IRenderer.getRes("textures/capsule/end_body_conn.svg");//under arm end
 	//private static final BufferedImage BODY_END         = IRenderer.getRes("textures/capsule/end_body.svg");//under arm end
