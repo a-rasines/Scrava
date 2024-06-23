@@ -10,6 +10,7 @@ import domain.models.interfaces.Valuable;
 import domain.models.interfaces.VariableHolder;
 import ui.renderers.CapsuleBlockRenderer;
 import ui.renderers.CapsuleRenderer;
+import ui.windows.ProjectFrame;
 
 /**
  * This class represents an abstract {@link domain.models.interfaces.InvocableBlock InvocableBlock} that can contain other {@link domain.models.interfaces.InvocableBlock InvocableBlock}s inside
@@ -35,7 +36,10 @@ public abstract class CapsuleBlock extends LinkedList<InvocableBlock> implements
 	@Override
 	public void invoke() {
 		for(InvocableBlock ib : this)
-			ib.invoke();
+			if(ProjectFrame.isStarted)
+				ib.invoke();
+			else
+				return;
 	}
 	@Override
 	public Supplier<Boolean> getTick() {

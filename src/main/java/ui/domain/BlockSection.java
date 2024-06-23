@@ -16,13 +16,14 @@ import domain.blocks.conditional.bool.AndBlock;
 import domain.blocks.conditional.bool.OrBlock;
 import domain.blocks.event.OnKeyPressEventBlock;
 import domain.blocks.event.OnStartEventBlock;
-import domain.blocks.movement.MoveBlock;
-import domain.blocks.movement.MoveToBlock;
-import domain.blocks.movement.MoveXBlock;
-import domain.blocks.movement.MoveXToBlock;
-import domain.blocks.movement.MoveYBlock;
-import domain.blocks.movement.MoveYToBlock;
-import domain.blocks.movement.RotateBlock;
+import domain.blocks.invocable.WaitBlock;
+import domain.blocks.invocable.movement.MoveBlock;
+import domain.blocks.invocable.movement.MoveToBlock;
+import domain.blocks.invocable.movement.MoveXBlock;
+import domain.blocks.invocable.movement.MoveXToBlock;
+import domain.blocks.invocable.movement.MoveYBlock;
+import domain.blocks.invocable.movement.MoveYToBlock;
+import domain.blocks.invocable.movement.RotateBlock;
 import domain.blocks.operators.AddOperator;
 import domain.blocks.operators.AppendOperator;
 import domain.blocks.operators.DivideOperator;
@@ -56,6 +57,7 @@ public enum BlockSection {
 		new IfElseBlock().getRenderer(),
 		new WhileBlock().getRenderer(),
 		new RepeatBlock().getRenderer(),
+		new WaitBlock().getRenderer(),
 	}),
 	
 	EVENT(0xffe97d00, new IRenderer[] {

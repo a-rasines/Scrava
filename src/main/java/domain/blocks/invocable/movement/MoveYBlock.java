@@ -1,32 +1,34 @@
-package domain.blocks.movement;
+package domain.blocks.invocable.movement;
 
 import domain.Sprite;
 import domain.models.interfaces.Valuable;
 
-public class MoveYToBlock extends MoveToBlock{
+public class MoveYBlock extends MoveBlock{
 	private static final long serialVersionUID = -2626208983124778899L;
 
 	@Override
-	public MoveYToBlock create(Sprite s) {
-		return new MoveYToBlock(s);
+	public MoveYBlock create(Sprite s) {
+		return new MoveYBlock(s);
 	}
 	
-	public MoveYToBlock(Sprite s, Valuable<? extends Number> y) {
+	public MoveYBlock(Sprite s, Valuable<? extends Number> y) {
 		super(s, null, y);
 	}
 	
-	public MoveYToBlock(Sprite s) {
+	public MoveYBlock(Sprite s) {
 		super(s);
 	}
-	
 	@Override
 	public String getTitle() {
-		return "Move to y: " + VARIABLE_NUM;
+		return "Move y: " + VARIABLE_NUM;
 	}
 	
 	@Override
 	public Valuable<?>[] getAllVariables() {
 		return new Valuable[] {super.getAllVariables()[1]};
 	}
+	
+	
 
 }
+

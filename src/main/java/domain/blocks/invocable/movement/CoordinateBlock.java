@@ -1,4 +1,4 @@
-package domain.blocks.movement;
+package domain.blocks.invocable.movement;
 
 import java.util.Set;
 
