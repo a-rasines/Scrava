@@ -21,13 +21,27 @@ import domain.Project;
 import domain.values.StaticVariable;
 import ui.components.BlockSelectorPanel;
 import ui.components.SpritePanel;
+import ui.listeners.NumberKeyListener;
 
 public class VariableCreator extends ScDialog {
 
 	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
 	private JTextField nameField;
-	private JTextField valueField;
+	private static JTextField valueField = new JTextField();
+	private static JComboBox<VariableType> valueType = new JComboBox<>(VariableType.values());
+	static {
+		valueField.addKeyListener(new KeyAdapter() {
+			
+			@Override
+			public void keyTyped(KeyEvent e) {
+				Function<Character, Boolean> filter = ((VariableType)valueType.getSelectedItem()).keyFilter;
+				if(!filter.apply(e.getKeyChar()))
+					e.consume();
+			}
+			
+		});
+	}
 
 	/**
 	 * Launch the application.
@@ -85,24 +99,12 @@ public class VariableCreator extends ScDialog {
 		JLabel valueTypeLbl = new JLabel("Value type:");
 		panel.add(valueTypeLbl);
 		
-		JComboBox<VariableType> valueType = new JComboBox<>(VariableType.values());
 		valueType.setSelectedIndex(1);
 		panel.add(valueType);
 		
 		JLabel lblNewLabel = new JLabel("Initial value:");
 		panel.add(lblNewLabel);
 		
-		valueField = new JTextField();
-		valueField.addKeyListener(new KeyAdapter() {
-		
-			@Override
-			public void keyTyped(KeyEvent e) {
-				Function<Character, Boolean> filter = ((VariableType)valueType.getSelectedItem()).keyFilter;
-				if(filter != STRING_FILTER && e.getKeyChar() == '.' && valueField.getText().contains(".") || !filter.apply(e.getKeyChar()))
-					e.consume();
-			}
-			
-		});
 		panel.add(valueField);
 		valueField.setColumns(10);
 		
@@ -129,7 +131,7 @@ public class VariableCreator extends ScDialog {
 				for(char c : actualValue)
 					if(!value.keyFilter.apply(c))
 						valueField.setText("");
-				if(value.keyFilter != STRING_FILTER && valueField.getText().split("\\.").length > 2)
+				if(value.keyFilter != Filter.STRING_FILTER.keyFilter && valueField.getText().split("\\.").length > 2)
 					valueField.setText("");
 			}
 		});
@@ -160,13 +162,7 @@ public class VariableCreator extends ScDialog {
 				StaticVariable.createVariable(SpritePanel.getSprite(), nameField.getText(), ((VariableType)valueType.getSelectedItem()).parser.apply(valueField.getText()));
 				BlockSelectorPanel.INSTANCE.update();
 				dispose();
-			}
-			
-			
-				
-			
-			
-			
+			}			
 		});
 		panel_1.add(createButton);
 		
@@ -174,34 +170,48 @@ public class VariableCreator extends ScDialog {
 		cancelButton.addActionListener((v) -> this.dispose());
 		panel_1.add(cancelButton);
 	}
-	private static final Function<Character, Boolean> STRING_FILTER = (v)->true;
-	private static final Function<Character, Boolean> DIVIDER_FILTER = (v)->true;
-	private static final Function<Character, Boolean> INTEGER_FILTER = (v)->v >= '0' && v <= '9';
-	private static final Function<Character, Boolean> DECIMAL_FILTER = (v)->v >= '0' && v <= '9' || v == '.';
 	private static final Function<String, String> EMPTY_PARSER = (v)->v;
+	private static enum Filter {
+		STRING_FILTER((v)->true),
+		DIVIDER_FILTER((v)->true),
+		INTEGER_FILTER(new NumberKeyListener(valueField, false)::check),
+		DECIMAL_FILTER(new NumberKeyListener(valueField, true)::check),		
+		;
+		
+		
+		public final Function<Character, Boolean> keyFilter;
+		
+		Filter(Function<Character, Boolean> keyFilter) {
+			this.keyFilter = keyFilter;
+		}
+	}
+	
 	private static enum VariableType {
+		
 		// TYPE                    VAL RANGE / DESC                           FILTER          PARSER
-		_GENERAL_DIVIDER("GENERAL",                                      DIVIDER_FILTER, EMPTY_PARSER),
+		_GENERAL_DIVIDER("GENERAL",                                      Filter.DIVIDER_FILTER, EMPTY_PARSER),
 		
-		TEXT(            "'' -> Your computer's ram",                    STRING_FILTER,  EMPTY_PARSER),
-		NUMBER(          Long.MIN_VALUE + " -> " + Long.MAX_VALUE,       INTEGER_FILTER, Long::parseLong),
-		DECIMAL_NUMBER(  Double.MIN_VALUE + " -> " + Double.MAX_VALUE,   DECIMAL_FILTER, Double::parseDouble),
+		TEXT(            "'' -> Your computer's ram",                    Filter.STRING_FILTER,  EMPTY_PARSER),
+		NUMBER(          Long.MIN_VALUE + " -> " + Long.MAX_VALUE,       Filter.INTEGER_FILTER, Long::parseLong),
+		DECIMAL_NUMBER(  Double.MIN_VALUE + " -> " + Double.MAX_VALUE,   Filter.DECIMAL_FILTER, Double::parseDouble),
+		BOOLEAN(		 "true or false",								 Filter.STRING_FILTER,  null),
 		
-		_STR_DIVIDER(    "TEXT",                                         DIVIDER_FILTER, EMPTY_PARSER),
+		_STR_DIVIDER(    "TEXT",                                         Filter.DIVIDER_FILTER, EMPTY_PARSER),
 		
-		STRING(          "'' -> Your computer's ram",                    STRING_FILTER,  EMPTY_PARSER),
+		STRING(          "'' -> Your computer's ram",                    Filter.STRING_FILTER,  EMPTY_PARSER),
 		
-		_INT_DIVIDER(    "INTEGERS",                                     DIVIDER_FILTER, EMPTY_PARSER),
+		_INT_DIVIDER(    "INTEGERS",                                     Filter.DIVIDER_FILTER, EMPTY_PARSER),
 		
-		LONG(            Long.MIN_VALUE + " -> " + Long.MAX_VALUE,       INTEGER_FILTER, Long::parseLong),
-		INT(             Integer.MIN_VALUE + " -> " + Integer.MAX_VALUE, INTEGER_FILTER, Integer::parseInt),
-		SHORT(           Short.MIN_VALUE + " -> " + Short.MAX_VALUE,     INTEGER_FILTER, Short::parseShort),
-		BYTE(            Byte.MIN_VALUE + " -> " + Byte.MAX_VALUE,       INTEGER_FILTER, Byte::parseByte),
+		LONG(            Long.MIN_VALUE + " -> " + Long.MAX_VALUE,       Filter.INTEGER_FILTER, Long::parseLong),
+		INT(             Integer.MIN_VALUE + " -> " + Integer.MAX_VALUE, Filter.INTEGER_FILTER, Integer::parseInt),
+		SHORT(           Short.MIN_VALUE + " -> " + Short.MAX_VALUE,     Filter.INTEGER_FILTER, Short::parseShort),
+		BYTE(            Byte.MIN_VALUE + " -> " + Byte.MAX_VALUE,       Filter.INTEGER_FILTER, Byte::parseByte),
 		
-		_DEC_DIVIDER(    "DECIMALS",                                     DIVIDER_FILTER, EMPTY_PARSER),
+		_DEC_DIVIDER(    "DECIMALS",                                     Filter.DIVIDER_FILTER, EMPTY_PARSER),
 		
-		DOUBLE(          Double.MIN_VALUE + " -> " + Double.MAX_VALUE,   DECIMAL_FILTER, Double::parseDouble),
-		FLOAT(           Float.MIN_VALUE + " -> " + Float.MAX_VALUE,     DECIMAL_FILTER, Float::parseFloat);
+		DOUBLE(          Double.MIN_VALUE + " -> " + Double.MAX_VALUE,   Filter.DECIMAL_FILTER, Double::parseDouble),
+		FLOAT(           Float.MIN_VALUE + " -> " + Float.MAX_VALUE,     Filter.DECIMAL_FILTER, Float::parseFloat);
+		
 		
 		/**
 		 * This is a free string to be used with the value.
@@ -222,9 +232,9 @@ public class VariableCreator extends ScDialog {
 		 * @return the input string in the value's format
 		 */
 		public final Function<String, ? extends Object> parser;
-		VariableType(String desc, Function<Character, Boolean> keyFilter, Function<String, ? extends Object> parser){
+		VariableType(String desc, Filter keyFilter, Function<String, ? extends Object> parser){
 			this.desc = desc;
-			this.keyFilter = keyFilter;
+			this.keyFilter = keyFilter.keyFilter;
 			this.parser = parser;
 		}
 		

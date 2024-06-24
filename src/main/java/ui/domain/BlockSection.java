@@ -17,6 +17,7 @@ import domain.blocks.conditional.bool.OrBlock;
 import domain.blocks.event.OnKeyPressEventBlock;
 import domain.blocks.event.OnStartEventBlock;
 import domain.blocks.invocable.WaitBlock;
+import domain.blocks.invocable.looks.SetTextureBlock;
 import domain.blocks.invocable.movement.MoveBlock;
 import domain.blocks.invocable.movement.MoveToBlock;
 import domain.blocks.invocable.movement.MoveXBlock;
@@ -51,6 +52,9 @@ public enum BlockSection {
 		
 		new RotateBlock(null).getRenderer(),
 			
+	}),
+	LOOKS(0xffdf61c5, new IRenderer[] {
+		new SetTextureBlock(null).getRenderer(),
 	}),
 	CONTROL(0xffffda22, new IRenderer[] {
 		new IfBlock().getRenderer(),

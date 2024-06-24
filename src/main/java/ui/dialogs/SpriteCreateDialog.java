@@ -23,8 +23,8 @@ import domain.Project;
 import domain.Sprite;
 import ui.ImageFilter;
 import ui.components.SpritePanel;
-import ui.listeners.DoubleKeyListener;
 import ui.listeners.NameKeyListener;
+import ui.listeners.NumberKeyListener;
 
 public class SpriteCreateDialog extends ScDialog {
 
@@ -83,7 +83,7 @@ public class SpriteCreateDialog extends ScDialog {
 		panel_size.add(new JLabel("Scale:"));
 		JTextField zoomField = new JTextField(10);
 		zoomField.setText("1");
-		zoomField.addKeyListener(new DoubleKeyListener(zoomField));
+		zoomField.addKeyListener(new NumberKeyListener(zoomField, true));
 		panel_size.add(zoomField);
 		
 		JPanel panel_1 = new JPanel();

@@ -43,7 +43,8 @@ public class InvocableBlockRenderer implements DragableRenderer {
 		public enum BlockCategory {
 				MOVEMENT(0xff16cbff),
 				VARIABLE(0xffe97d00),
-				CONTROL(0xffffda22)
+				CONTROL(0xffffda22),
+				LOOKS(0xffdf61c5)
 				;			
 			/**
 			 * Left end of the block

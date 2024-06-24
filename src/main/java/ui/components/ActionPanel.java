@@ -5,7 +5,6 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.geom.AffineTransform;
-import java.awt.image.BufferedImage;
 
 import javax.swing.JPanel;
 
@@ -33,14 +32,6 @@ public class ActionPanel extends JPanel{
 			System.out.println("Translation: x:"+transform.getTranslateX() + " y:" + transform.getTranslateY());
 			transform.rotate(Math.toRadians(s.getRotation().value()), i.getWidth(null) / 2, i.getHeight(null) / 2);
 			((Graphics2D)g).drawImage(i,transform, null);
-//			g.drawImage(
-//					i.getScaledInstance(
-//							i.getWidth(null) * getWidth() / 1000, 
-//							i.getHeight(null) * getWidth() / 1000, 
-//							BufferedImage.SCALE_FAST), 
-//					(int)((s.getX().value() - i.getWidth(null)/2) * getWidth() / 1000), 
-//					(int)((s.getY().value() - i.getHeight(null)/2) * getWidth() / 1000),
-//					null);
 		}
 	}
 }

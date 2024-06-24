@@ -134,8 +134,8 @@ public class Sprite extends AbstractSprite {
 	}
 
 	public void setSelectedTexture(int st) {
-		if(st >= 0 && st < textures.size()) {
-			this.selectedTexture = st;
+		if(st >= 0) {
+			this.selectedTexture = st % textures.size();
 			this.resized = null;
 			ActionPanel.INSTANCE.repaint();
 		}

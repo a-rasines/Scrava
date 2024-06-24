@@ -35,8 +35,8 @@ import domain.Sprite;
 import ui.ImageFilter;
 import ui.components.ActionPanel;
 import ui.components.SpritePanel;
-import ui.listeners.DoubleKeyListener;
 import ui.listeners.NameKeyListener;
+import ui.listeners.NumberKeyListener;
 
 public class SpriteEditDialog extends ScDialog implements ListCellRenderer<BufferedImage> {
 
@@ -121,7 +121,7 @@ public class SpriteEditDialog extends ScDialog implements ListCellRenderer<Buffe
 					{
 						textField_1 = new JTextField();
 						textField_1.setText(s.getScale().value().toString());
-						textField_1.addKeyListener(new DoubleKeyListener(textField_1));
+						textField_1.addKeyListener(new NumberKeyListener(textField_1, true));
 						list.addListSelectionListener((e) -> {
 							BufferedImage temp = list.getSelectedValue();
 							if(temp == null) {

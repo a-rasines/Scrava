@@ -221,11 +221,29 @@ public abstract class Sprite {
 	}
 	
 	/**
-	 * Returns the rotation of this block in degrees
+	 * Returns the rotation of this block in degrees <br>
+	 * Please, use getRotationDeg instead
 	 * @return
 	 */
+	@Deprecated
 	public final double getRotation() {
-		return this.rotation;
+		return getRotationDeg();
+	}
+	
+	/**
+	 * Returns the rotation of this block in degrees <br>
+	 * @return
+	 */
+	public final double getRotationDeg() {
+		return Math.toDegrees(this.rotation);
+	}
+	
+	/**
+	 * Returns the rotation of this block in radians
+	 * @return
+	 */
+	public final double getRotationRad() {
+		return this.rotation
 	}
 	
 	/**
