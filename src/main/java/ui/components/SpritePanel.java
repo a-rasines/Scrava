@@ -125,6 +125,7 @@ public class SpritePanel extends JLayeredPane implements ComponentListener {
 				if(getSelectedIndex() == -1 && sprites.size() > 0) setSelectedIndex(selectedIndex);
 				else if(sprites.size() > 0) {
 					BlockPanel.INSTANCE.changeSprite();
+					BlockSelectorPanel.INSTANCE.update();
 					selectedIndex = getSelectedIndex();
 				}
 			});

@@ -236,9 +236,11 @@ public class InvocableBlockRenderer implements DragableRenderer {
 		background(rend, h, x, w);
 		Graphics2D g = (Graphics2D) rend.getGraphics();
 		g.drawImage(newI, x, y, null);
-		g.setColor(Color.green);
-		g.setStroke(new BasicStroke(2));
-		g.drawRect(x + 1, y + 1, w - 2, h - 2);
+		if(BlockPanel.DEBUG_SHOW_HITBOXES) {
+			g.setColor(Color.green);
+			g.setStroke(new BasicStroke(2));
+			g.drawRect(x + 1, y + 1, w - 2, h - 2);
+		}
 		rendered(rend, true);
 		if(clickable.getParent() != null) {
 			Rect r = clickable.getPosition();

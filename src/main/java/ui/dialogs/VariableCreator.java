@@ -29,6 +29,7 @@ public class VariableCreator extends ScDialog {
 	private JPanel contentPane;
 	private JTextField nameField;
 	private static JTextField valueField = new JTextField();
+	private static JCheckBox booleanBox = new JCheckBox();
 	private static JComboBox<VariableType> valueType = new JComboBox<>(VariableType.values());
 	static {
 		valueField.addKeyListener(new KeyAdapter() {
@@ -108,6 +109,8 @@ public class VariableCreator extends ScDialog {
 		panel.add(valueField);
 		valueField.setColumns(10);
 		
+		panel.add(booleanBox);
+		
 		JPanel panel_2 = new JPanel();
 		contentPane.add(panel_2);
 		
@@ -122,6 +125,8 @@ public class VariableCreator extends ScDialog {
 			@Override
 			public void itemStateChanged(ItemEvent e) {
 				VariableType value = ((VariableType)valueType.getSelectedItem());
+				valueField.setVisible(value != VariableType.BOOLEAN);
+				booleanBox.setVisible(value == VariableType.BOOLEAN);
 				if(value.desc != "" && !value.name().endsWith("DIVIDER"))
 					valuesLbl.setText("Value range: " + value.desc);
 				else
@@ -142,7 +147,10 @@ public class VariableCreator extends ScDialog {
 				JOptionPane.showMessageDialog(null, "Variable needs a name");
 				return;
 			}
-			if(valueField.getText().length() == 0 && valueType.getSelectedItem() != VariableType.STRING && valueType.getSelectedItem() != VariableType.TEXT) {
+			if( valueField.isVisible()								&& 
+				valueField.getText().length() == 0 					&& 
+				valueType.getSelectedItem() != VariableType.STRING 	&& 
+				valueType.getSelectedItem() != VariableType.TEXT) {
 				JOptionPane.showMessageDialog(null, "Variable needs a value");
 				return;
 			}
@@ -159,7 +167,10 @@ public class VariableCreator extends ScDialog {
 				JOptionPane.showMessageDialog(null, "Variable with that name already exists");
 				return;
 			}else {
-				StaticVariable.createVariable(SpritePanel.getSprite(), nameField.getText(), ((VariableType)valueType.getSelectedItem()).parser.apply(valueField.getText()));
+				if(valueField.isVisible())
+					StaticVariable.createVariable(SpritePanel.getSprite(), nameField.getText(), ((VariableType)valueType.getSelectedItem()).parser.apply(valueField.getText()));
+				else
+					StaticVariable.createVariable(SpritePanel.getSprite(), nameField.getText(), booleanBox.isSelected());
 				BlockSelectorPanel.INSTANCE.update();
 				dispose();
 			}			
