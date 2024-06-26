@@ -30,6 +30,7 @@ import remote.ClientController;
 import ui.components.ActionPanel;
 import ui.components.BlockPanel;
 import ui.components.SpritePanel;
+import ui.dialogs.server.LoginDialog;
 import ui.renderers.IRenderer.IRenderable;
 import ui.windows.ProjectFrame;
 import ui.windows.ProjectSelectorFrame;
@@ -177,6 +178,11 @@ public class Project implements Serializable {
 	}
 	
 	public void save(File f) {
+		if(AppCache.getInstance().user == null)
+			if(LoginDialog.isAlreadyOpen())
+				return;
+			else
+				new LoginDialog().setVisible(true);
 		if(id != -1)
 			ClientController.INSTANCE.saveProject(this);
 		try {				

@@ -99,12 +99,17 @@ def save_project(p_id: int, author:int, name:str, content:str) -> bool:
     name, content = to_sql_strings(name, content)
     mycursor = mydb.cursor()
     try:
-        mycursor.execute(f"UPDATE Project SET name= {name}, content={content} WHERE id = {p_id} AND author = {author}")
+        print(f"id={p_id}, author={author}")
+        mycursor.execute(f"SELECT * FROM Project WHERE id = {p_id} AND author = {author}")
         mydb.commit()
-        if mycursor.rowcount == 0:
+        if(mycursor.fetchone() != None):
+            mycursor.execute(f"UPDATE Project SET name= {name}, content={content} WHERE id = {p_id} AND author = {author}")
+            mydb.commit()
+        else:
             mycursor.execute(f"INSERT INTO Project(author, name, content) VALUES ({author}, {name}, {content})")
             mydb.commit()
             output = mycursor.rowcount == 1
+            print(output)
             mycursor.close()
             return output
         return True

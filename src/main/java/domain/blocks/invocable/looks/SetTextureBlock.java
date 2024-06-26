@@ -45,6 +45,7 @@ public class SetTextureBlock extends FunctionBlock {
 
 	@Override
 	public void reset() {
+		getSprite().setSelectedTexture(0);
 		value.reset();
 	}
 

@@ -67,13 +67,18 @@ class Service(grpc.ScravaServicer):
         return pb2.EmptyMessage()
 
     def saveProject(self, request: pb2.AuthoredObject, context) -> pb2.ObjectDescriptor:
+        print("Save project")
         if(database.check_token(request.token, request.uid)):
+            print("Correct token")
             database.save_project(request.obj.id, request.uid, request.obj.name, request.obj.obj)
+            print(database.get_last_id())
             return pb2.ObjectDescriptor(id=database.get_last_id(), name=request.obj.name)
         else:
+            print("Invalid credentials")
             context.set_details("Invalid credentials")
             context.set_code(StatusCode.PERMISSION_DENIED)
             return pb2.ObjectDescriptor()
+        
     def saveTutorial(self, request:pb2.AuthoredObject, context) -> pb2.EmptyMessage:
         if(database.check_token(request.token, request.uid)):
             database.save_tutorial(request.obj.id, request.uid, request.obj.name, request.obj.obj)

@@ -21,7 +21,6 @@ public abstract class KeyEventBlock extends EventBlock {
 	private void writeObject(ObjectOutputStream oos) throws IOException {
 		selected = KEY.name();
 		oos.defaultWriteObject();
-		System.out.println(selected);
 	}
 	
 	private void readObject(ObjectInputStream ois) throws IOException, ClassNotFoundException {
@@ -36,7 +35,6 @@ public abstract class KeyEventBlock extends EventBlock {
 				try {
 					KEY_MAP.put(f.getName().substring(3), f.getInt(null));
 				} catch (IllegalArgumentException | IllegalAccessException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 	}
