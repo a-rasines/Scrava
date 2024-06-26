@@ -86,7 +86,7 @@ public class BlockSelectorPanel implements MouseListener, MouseWheelListener {
 	public void mouseReleased(MouseEvent e) {
 		if(BlockPanel.INSTANCE.getClicked() != null) {
 			Clickable clicked = BlockPanel.INSTANCE.getClicked();
-			if(BlockPanel.INSTANCE.zoom * (clicked.getPosition().x + clicked.getPosition().w / 2) > 2 * BlockPanel.INSTANCE.getWidth() / 3 - 10) { 
+			if(BlockPanel.INSTANCE.zoom * (clicked.getPosition().x + BlockPanel.INSTANCE.getTraslation().x + clicked.getPosition().w / 2) > 2 * BlockPanel.INSTANCE.getWidth() / 3 - 10) { 
 				clicked.delete();
 				BlockPanel.INSTANCE.repaint();
 			}
