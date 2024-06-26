@@ -20,16 +20,19 @@ public class OnlineProjectsScrollPane extends JScrollPane {
 	private OnlineProjectsScrollPane() {
 		regenerate();
 	}
-	
+	private DefaultListModel<Project> lm = new DefaultListModel<>();
 	private JList<Project> list = null;
 	public static record Project(String name, int id) { @Override public final String toString() { return name; }	};
+	
+	public void addElement(Project newElement) {
+		lm.addElement(newElement);
+	}
 	public void regenerate() {
 		ClientData user = AppCache.getInstance().user;
 		if(user == null)
 			setViewportView(new JLabel("You need to log in / sign up to upload and download projects from the cloud"));
 		else {
 			try {
-				DefaultListModel<Project> lm = new DefaultListModel<>();
 				int count;
 				int offset = 0;
 				do {

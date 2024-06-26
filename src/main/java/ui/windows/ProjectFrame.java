@@ -41,6 +41,7 @@ import remote.ClientController;
 import ui.EmptyLayout;
 import ui.components.ActionPanel;
 import ui.components.BlockPanel;
+import ui.components.OnlineProjectsScrollPane;
 import ui.components.SpritePanel;
 import ui.dialogs.server.LoginDialog;
 import ui.dialogs.server.TutorialDialog;
@@ -267,8 +268,10 @@ public class ProjectFrame extends JFrame implements WindowFocusListener {
     			if(!LoginDialog.isAlreadyOpen())
     				new LoginDialog().setVisible(true);
     		} else {
-    			if(ClientController.INSTANCE.saveProject(Project.getActiveProject()))
+    			if(ClientController.INSTANCE.saveProject(Project.getActiveProject())) {
     				JOptionPane.showMessageDialog(null, "Poject succesfully uploaded");
+    				OnlineProjectsScrollPane.INSTANCE.addElement(new OnlineProjectsScrollPane.Project(Project.getActiveProject().name, Project.getActiveProject().id));
+    			}
     			else
     				JOptionPane.showMessageDialog(null, "Unable to connect to server", "Conection error", JOptionPane.ERROR_MESSAGE);
     		}

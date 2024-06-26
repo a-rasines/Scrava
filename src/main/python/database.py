@@ -96,16 +96,20 @@ def create_tutorial(author:int, name:str, content:str) -> bool:
         return False
 
 def save_project(p_id: int, author:int, name:str, content:str) -> bool:
+    print("save project")
     name, content = to_sql_strings(name, content)
-    mycursor = mydb.cursor()
+    mycursor = mydb.cursor(buffered=True)
     try:
         print(f"id={p_id}, author={author}")
         mycursor.execute(f"SELECT * FROM Project WHERE id = {p_id} AND author = {author}")
         mydb.commit()
         if(mycursor.fetchone() != None):
+            mycursor = mydb.cursor()
             mycursor.execute(f"UPDATE Project SET name= {name}, content={content} WHERE id = {p_id} AND author = {author}")
             mydb.commit()
+            mycursor.close()
         else:
+            mycursor = mydb.cursor()
             mycursor.execute(f"INSERT INTO Project(author, name, content) VALUES ({author}, {name}, {content})")
             mydb.commit()
             output = mycursor.rowcount == 1
@@ -117,12 +121,20 @@ def save_project(p_id: int, author:int, name:str, content:str) -> bool:
         mycursor.close()
         return False
 def save_tutorial(p_id: int, author:int, name:str, content:str) -> bool:
+    print("save tutorial")
     name, content = to_sql_strings(name, content)
-    mycursor = mydb.cursor()
+    mycursor = mydb.cursor(buffered=True)
     try:
-        mycursor.execute(f"UPDATE Tutorial SET name= {name}, content={content} WHERE id = {p_id} AND author = {author}")
+        print(f"id={p_id}, author={author}")
+        mycursor.execute(f"SELECT * FROM Tutorial WHERE id = {p_id} AND author = {author}")
         mydb.commit()
-        if mycursor.rowcount == 0:
+        if(mycursor.fetchone() != None):
+            mycursor = mydb.cursor()
+            mycursor.execute(f"UPDATE Tutorial SET name= {name}, content={content} WHERE id = {p_id} AND author = {author}")
+            mydb.commit()
+            mycursor.close()
+        else:
+            mycursor = mydb.cursor()
             mycursor.execute(f"INSERT INTO Tutorial(author, name, content) VALUES ({author}, {name}, {content})")
             mydb.commit()
             output = mycursor.rowcount == 1
@@ -165,8 +177,10 @@ def check_sqlinj(input:str):
     return False
 
 def search_projects(offset:int, query: str) -> list[tuple[int, str]]:
+    print(query)
     mycursor = mydb.cursor()
     if(check_sqlinj(query)):
+        print("SQL injection attack")
         return []
     mycursor.execute(f"SELECT id, name FROM Project WHERE {query} LIMIT 30 OFFSET {offset}")
     output = mycursor.fetchall()
