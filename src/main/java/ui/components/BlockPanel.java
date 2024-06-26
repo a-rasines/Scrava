@@ -30,6 +30,7 @@ import ui.FlashThread;
 import ui.dialogs.VariableCreator;
 import ui.renderers.IRenderer.DragableRenderer;
 import ui.renderers.IRenderer.IRenderable;
+import ui.renderers.InvocableBlockRenderer;
 import ui.windows.ProjectFrame;
 
 public class BlockPanel extends JLayeredPane {
@@ -190,17 +191,19 @@ public class BlockPanel extends JLayeredPane {
 	}
 	
 	private Dimension d = null;
+	private BlockClickable renderedSelectedBlock = null;
 	private static final ImageIcon EMPTY_CLICKED = new ImageIcon(new BufferedImage(1,1, BufferedImage.TYPE_4BYTE_ABGR));
 	@Override
 	protected void paintComponent(Graphics g) {
 		if(d == null || d.getHeight() != getHeight() || d.getWidth() != getWidth()) adjustSizes();
-		if(clicked == null)
+		if(clicked == null) {
 			clickedLabel.setIcon(EMPTY_CLICKED);
-		else {
+			renderedSelectedBlock = null;
+		} else if(renderedSelectedBlock == null || renderedSelectedBlock != clicked) {
 			BufferedImage clk = clicked.getRenderer().getRenderable();
 			if(clicked instanceof InvocableClickable) {
 				InvocableClickable next = (InvocableClickable) clicked;
-				int y = 0;
+				int y = InvocableBlockRenderer.CONNECTOR.getHeight();
 				int w = 0;
 				while(next != null) {
 					y += next.getRenderer().getHeight();
