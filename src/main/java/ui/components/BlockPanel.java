@@ -351,19 +351,12 @@ public class BlockPanel extends JLayeredPane {
 				hpoint = clicked.getPosition();
 				hpoint.x += hpoint.w/2;
 				hpoint.y += 20;
-				for(DragableRenderer dr : blocks) {
-					if(dr.getClickable().equals(clicked)) continue;
-					Rect r = dr.getClickable().getPosition();
-					if(hpoint.x > r.x && hpoint.x < r.x + r.w && hpoint.y > r.y && hpoint.y < r.y + r.h) {
-						if(hovered != null && !hovered.equals(dr.getClickable())) {
-							System.out.println("hover changed " + hovered.getBlock().toString().replaceAll(".*\\.", "") + " -> "+ dr.getBlock().toString().replaceAll(".*\\.", ""));
-							hovered.onHoverEnd(false, clicked);
-						}
-						hovered = dr.getClickable();
-						hovered.onHover(hpoint.x - hovered.getPosition().x, hpoint.y - hovered.getPosition().y, clicked);
+				if(hoverPoint())
+					return;
+				else {
+					hpoint.x -= hpoint.w/2;
+					if(hoverPoint())
 						return;
-					}
-					
 				}
 			} else {
 				x = (int) ((mouse.x / zoom - cx));
@@ -377,5 +370,23 @@ public class BlockPanel extends JLayeredPane {
 			}
 			
 		}
+	}
+	
+	private boolean hoverPoint() {
+		for(DragableRenderer dr : blocks) {
+			if(dr.getClickable().equals(clicked)) continue;
+			Rect r = dr.getClickable().getPosition();
+			if(hpoint.x > r.x && hpoint.x < r.x + r.w && hpoint.y > r.y && hpoint.y < r.y + r.h) {
+				if(hovered != null && !hovered.equals(dr.getClickable())) {
+					System.out.println("hover changed " + hovered.getBlock().toString().replaceAll(".*\\.", "") + " -> "+ dr.getBlock().toString().replaceAll(".*\\.", ""));
+					hovered.onHoverEnd(false, clicked);
+				}
+				hovered = dr.getClickable();
+				hovered.onHover(hpoint.x - hovered.getPosition().x, hpoint.y - hovered.getPosition().y, clicked);
+				return true;
+			}
+			
+		}
+		return false;
 	}
 }
