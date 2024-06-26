@@ -48,12 +48,14 @@ public class ProjectExporter {
 		}
 		copyRes("generate/root/manifest.txt", folder.getAbsolutePath() + "/MANIFEST.MF");
 		copyRes("generate/root/README.md", folder.getAbsolutePath() + "/README.md");
-		try(InputStream is = ClassLoader.getSystemClassLoader().getResourceAsStream("generate/root/compile.btch");
-				FileOutputStream win_fos = new FileOutputStream(folder.getAbsolutePath() + "/compile.bat");
-				FileOutputStream linux_fos = new FileOutputStream(folder.getAbsolutePath() + "/compile.sh");) {
-				String project = new String(is.readAllBytes(), StandardCharsets.UTF_8).replace("{{ProjectName}}", Project.getActiveProject().name);
-				win_fos.write(project.getBytes());
-				linux_fos.write(project.getBytes());
+		try(InputStream win_is = ClassLoader.getSystemClassLoader().getResourceAsStream("generate/root/compile.btch");
+			InputStream linux_is = ClassLoader.getSystemClassLoader().getResourceAsStream("generate/root/compile.bs");
+			FileOutputStream win_fos = new FileOutputStream(folder.getAbsolutePath() + "/compile.bat");
+			FileOutputStream linux_fos = new FileOutputStream(folder.getAbsolutePath() + "/compile.sh");) {
+				String win_project = new String(win_is.readAllBytes(), StandardCharsets.UTF_8).replace("{{ProjectName}}", Project.getActiveProject().name);
+				String linux_project = new String(linux_is.readAllBytes(), StandardCharsets.UTF_8).replace("{{ProjectName}}", Project.getActiveProject().name);
+				win_fos.write(win_project.getBytes());
+				linux_fos.write(linux_project.getBytes());
 			}
 		
 		File srcFolder = new File(folder.getAbsolutePath() + "/src");
@@ -99,10 +101,14 @@ public class ProjectExporter {
 			for(String inport : imports)
 				globalVariables = globalVariables.replace("{{Imports}}", inport + "\n{{Imports}}");
 			globalVariables = globalVariables.replace("{{Imports}}", "");
+			fos.write(globalVariables.getBytes());
 		}
-		if(System.getProperty("os.name").toLowerCase().indexOf("win") > -1)
-			Runtime.getRuntime().exec(new String[] {"cmd", "/c", folder.getAbsolutePath() + "\\compile.bat"});
-		else
+		System.out.println(System.getProperty("os.name"));
+		if(System.getProperty("os.name").toLowerCase().indexOf("win") > -1) {
+			System.out.println(folder.getAbsolutePath() + "\\compile.bat");
+			Process p = Runtime.getRuntime().exec(new String[] {"cmd", "/c", folder.getAbsolutePath() + "\\compile.bat"});
+			System.out.println("end");
+		} else
 			Runtime.getRuntime().exec(new String[] {folder.getAbsolutePath() + "\\compile.sh"});
 	}
 	private static void prepareSprite(TextureManager tm, Sprite s, File srcFolder, File resourcesFolder, String sprite) throws IOException {

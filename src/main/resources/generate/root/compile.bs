@@ -1,3 +1,3 @@
-cd /d "%~dp0"
+cd "$(dirname "$0")"
 javac -d bin -target 11 -source 11 -sourcepath src src/base/*.java src/generated/*.java >> compile.bat
 jar cfm dist/"{{ProjectName}}.jar" MANIFEST.MF -C bin . -C resources . >> compile.bat
