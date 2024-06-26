@@ -149,12 +149,15 @@ public class SpritePanel extends JLayeredPane implements ComponentListener {
 			g.drawString(value.getName().length() > 10 ? value.getName().substring(0, 7) + "..." : value.getName(), 10, 130);
 			return new JLabel(new ImageIcon(out));
 		}
-		
+		private int slIndex = 0;
 		@Override
 		public void mouseClicked(MouseEvent e) {
-			if(locationToIndex(e.getPoint()) == selectedIndex) 
+			int newIndex = locationToIndex(e.getPoint());
+			if(newIndex == slIndex) { 
 				if(!SpriteEditDialog.isAlreadyOpen())
 						new SpriteEditDialog(getSelectedValue()).setVisible(true);
+			} else
+				slIndex = newIndex; 
 		}
 		
 		@Override public void mousePressed(MouseEvent e) {}
