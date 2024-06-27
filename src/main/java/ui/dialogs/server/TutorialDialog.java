@@ -119,7 +119,7 @@ public class TutorialDialog extends ScDialog {
 	private void refreshList(ActionEvent e) {
 		dlm.clear();
 		new Thread(() -> {
-			Iterator<ObjectDescriptor> iter = ClientController.INSTANCE.getTutorialList(Query.newBuilder().setQuery("name LIKE '%" + textField.getText().replace("'", "''") + "%'").build());
+			Iterator<ObjectDescriptor> iter = ClientController.INSTANCE.getTutorialList(Query.newBuilder().setQuery("name LIKE '%" + textField.getText().replace("'", "''") + "%' OR content like '%" + textField.getText().replace("'", "''") + "%'").build());
 			if(iter == null) {
 				JOptionPane.showMessageDialog(null, "Unable to connect to server", "Conection error", JOptionPane.ERROR_MESSAGE);
 				dispose();
