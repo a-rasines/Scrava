@@ -65,14 +65,14 @@ public class GraphicsPanel extends JPanel{
 			double w = s.getTexture().getWidth(null) / 2;
 			double h = s.getTexture().getHeight(null) / 2;
 			transform.translate(s.getPosition().x - w, s.getPosition().y - h);
-			transform.rotate(s.getRotation(), w, h);
+			transform.rotate(s.getRotationRad(), w, h);
 			((Graphics2D)g).drawImage(s.getTexture(), transform, null);
 		}
 	}
 	
 	public static void main(String[] args) {
 		JFrame frame = new JFrame(); //Creates the window
-		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE); //Terminate the program after closing
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); //Terminate the program after closing
 		frame.setSize(new Dimension(1000, 667)); //The size is set to keep the proportion shown in the editor
 		frame.setResizable(false); //Remove this line if you want your user to be able to adjust the size of the game
 		frame.add(GraphicsPanel.INSTANCE, BorderLayout.CENTER); //Adds the graphic component
