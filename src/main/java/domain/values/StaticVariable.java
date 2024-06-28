@@ -70,7 +70,7 @@ public class StaticVariable<T> extends AbstractLiteral<T> implements IVariable<T
 	 * @param s Sprite where the variable is stored
 	 * @param name name of the variable
 	 * @param value initial value of the variable
-	 * @param whether it must be inmune to variable deleting
+	 * @param nat whether it must be inmune to variable deleting
 	 * @return
 	 */
 	public static <T> StaticVariable<T> createVariable(Sprite s, String name, T value, boolean nat) {

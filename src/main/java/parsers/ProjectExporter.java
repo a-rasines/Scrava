@@ -106,7 +106,7 @@ public class ProjectExporter {
 		System.out.println(System.getProperty("os.name"));
 		if(System.getProperty("os.name").toLowerCase().indexOf("win") > -1) {
 			System.out.println(folder.getAbsolutePath() + "\\compile.bat");
-			Process p = Runtime.getRuntime().exec(new String[] {"cmd", "/c", folder.getAbsolutePath() + "\\compile.bat"});
+			Runtime.getRuntime().exec(new String[] {"cmd", "/c", folder.getAbsolutePath() + "\\compile.bat"});
 			System.out.println("end");
 		} else
 			Runtime.getRuntime().exec(new String[] {folder.getAbsolutePath() + "\\compile.sh"});
@@ -118,7 +118,7 @@ public class ProjectExporter {
 		for(IVariable<?> v : s.getVariables().values()) {
 			if(v.getName().equals("scale") && v instanceof StaticVariable<?> sv)
 				sprite = sprite.replaceAll("\\{\\{Scale}}", ""+sv.initialValue());
-			else if(!v.getName().equals("x") && !v.getName().equals("y")  && v instanceof StaticVariable<?> sv)
+			else if(v instanceof StaticVariable<?> sv && !v.isNative())
 				sprite = sprite.replace("{{Variables}}", sv.getInitialization() + "\n\t{{Variables}}");
 		}
 		sprite = sprite.replace("\t{{Variables}}", "");
