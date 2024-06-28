@@ -194,10 +194,11 @@ public class CapsuleBlockClickable extends InvocableClickable {
 					BlockPanel.INSTANCE.removeBlock(clicked.getRenderer());
 					Rect pos = getRenderer().getBlockBundlesSize().get(index);
 					clicked.getRenderer().moveTo(pos.x, pos.y + pos.h);
+					System.out.println(index);
 					if(end != null)
 						nestClickable(index, i++, clicked);
 					else
-						nestClickable(-1, i++, clicked);
+						nestClickable(index, -1, clicked);
 					if(((InvocableClickable) clicked).next() == null) {
 						((InvocableClickable) clicked).setNext(end);
 						break;
