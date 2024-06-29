@@ -22,7 +22,7 @@ public class DebugOut extends PrintStream{
 			"onClick",
 			"onDrag",
 			"onHover",
-			"onHoverEnd",
+			//"onHoverEnd",
 			
 			"paintComponent",
 			"patch",

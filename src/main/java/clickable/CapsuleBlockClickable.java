@@ -130,8 +130,8 @@ public class CapsuleBlockClickable extends InvocableClickable {
 		List<Rect> rcts = getRenderer().getBlockBundlesSize();
 		for(int j = 0; j < getRenderer().getBlockBundlesSize().size(); j++) {
 			Rect pos = rcts.get(j);
-			System.out.println("pY:" + pos.y + " rY:" + (clicked.getRenderer().getY() - getRenderer().getY() + 10) + " pH:" + (pos.y + pos.h + InvocableBlockRenderer.CONNECTOR.getHeight()));
-			if(pos.y <= (clicked.getRenderer().getY() - getRenderer().getY() + 10) && pos.y + pos.h + InvocableBlockRenderer.CONNECTOR.getHeight() >= (clicked.getRenderer().getY() - getRenderer().getY() + 10)) {
+			System.out.println("pY:" + pos.y + " rY:" + (clicked.getRenderer().getGlobalY() - getRenderer().getGlobalY() + 10) + " pH:" + (pos.y + pos.h + InvocableBlockRenderer.CONNECTOR.getHeight()));
+			if(pos.y <= (clicked.getRenderer().getGlobalY() - getRenderer().getGlobalY() + 10) && pos.y + pos.h + InvocableBlockRenderer.CONNECTOR.getHeight() >= (clicked.getRenderer().getGlobalY() - getRenderer().getGlobalY() + 10)) {
 				System.out.println("detected inside bundle " + j);
 				return j;
 			}
@@ -156,6 +156,9 @@ public class CapsuleBlockClickable extends InvocableClickable {
 				System.out.println("hovered:" + hovered.getBlock().toString().replaceAll(".*\\.", ""));
 				hovered.onHoverEnd(click, clicked);
 			}
+		} else if(hovered instanceof CapsuleBlockClickable cbc && cbc.getBlockBundleIndex(clicked) > -1) {
+			hovered.onHoverEnd(click, clicked);
+			return;
 		} else {
 			System.out.println("block hover end");
 			int index = getBlockBundleIndex(clicked);

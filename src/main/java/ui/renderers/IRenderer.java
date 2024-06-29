@@ -203,15 +203,40 @@ public interface IRenderer extends Serializable {
 		
 		public static final double SUBSCALE = 1.25;
 		/**
-		 * Gets the x position of the rendered object
+		 * Gets the local x position of the rendered object
 		 * @return
 		 */
 		public int getX();
+		
 		/**
-		 * Gets the y position of the rendered object
+		 * Gets the global x position of the rendered object
 		 * @return
 		 */
-		public int getY();		
+		public default int getGlobalX() {
+			if(getClickable().getParent() == null) {
+				return getX();
+			} else {
+				return getX() + ((DragableRenderer)getClickable().getParent().getRenderer()).getGlobalX();
+			}
+		}
+		
+		/**
+		 * Gets the local y position of the rendered object
+		 * @return
+		 */
+		public int getY();
+		
+		/**
+		 * Gets the global y position of the rendered object
+		 * @return
+		 */
+		public default int getGlobalY() {
+			if(getClickable().getParent() == null) {
+				return getY();
+			} else {
+				return getY() + ((DragableRenderer)getClickable().getParent().getRenderer()).getGlobalY();
+			}
+		}
 		
 		/**
 		 * Changes the X and Y values of the object
