@@ -75,22 +75,25 @@ public class CapsuleBlockClickable extends InvocableClickable {
 	private transient boolean inside = false;
 	@Override
 	public void onHover(int x, int y, BlockClickable clicked) {
+		System.out.println("▓▓▓▓▓ HOVER " + this + "▓▓▓▓▓ hovered: " + hovered);
 		if(hovered == clicked)
 			hovered = null;
 		super.append = !(between(x, 0, getRenderer().getWidth()) && between(y, 0, getRenderer().getHeight()));
 		int index = getBlockBundleIndex(clicked);
 		inside = index < 0 && !append;
+		System.out.println("outside_bundle=" + inside + " append=" + append);
 		if(inside) {
 			System.out.println("arm hovered");
 			hovered = null;
 			super.onHover(x, y, clicked);
+			return;
 		}
 		if(index < 0) {
 			System.out.println("no bundle");
 			return;
 		}
 		Rect r = getRenderer().getBlockBundlesSize().get(index);
-		System.out.println("hovered: " + (hovered==null?"null":hovered.getBlock().toString().replaceAll(".*\\.", "")));
+		System.out.println("Bundle size: " + r);
 		if(r!=null) {
 			if(hovered != null) {
 				Rect r1 = hovered.getPosition();
@@ -104,10 +107,6 @@ public class CapsuleBlockClickable extends InvocableClickable {
 					hovered = null;
 				}
 			}
-			if(index < 0) {
-				System.out.println("no bundle");
-				return;
-			}
 			for(InvocableBlock ib : getRenderer().getBlocksOf(index)) {
 				InvocableClickable ic = (InvocableClickable) ib.getRenderer().getClickable();
 				Rect r1 = ic.getPosition();
@@ -117,8 +116,8 @@ public class CapsuleBlockClickable extends InvocableClickable {
 				if(x > r1.x && y > r1.y && x < r1.x + r1.w && y < r1.y + r1.h) {
 					System.out.println("hovered " + ic.getBlock().toString().replaceAll(".*\\.", ""));
 					hovered = ic;
+					break;
 				}
-				break;
 			}
 			if(hovered != null)
 				hovered.onHover(x - hovered.getPosition().x, y - hovered.getPosition().y, clicked);
