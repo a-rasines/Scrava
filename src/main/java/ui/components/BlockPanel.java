@@ -274,7 +274,7 @@ public class BlockPanel extends JLayeredPane {
 						g0.drawOval(mouse.x - 1, mouse.y - 1, 2, 2);
 					if(hpoint != null) {
 						g0.setColor(Color.blue);
-						g0.drawOval(hpoint.x - 1 + x, hpoint.y - 1 + y, 2, 2);
+						g0.drawOval((int)((hpoint.x - 1) * zoom), (int)((hpoint.y - 1) * zoom), 2, 2);
 					}
 				}
 			} catch(ArrayIndexOutOfBoundsException e) {

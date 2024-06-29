@@ -118,4 +118,9 @@ public abstract class CapsuleBlock extends LinkedList<InvocableBlock> implements
 	public int hashCode() {
 		return System.identityHashCode(this);
 	}
+	
+	@Override
+	public boolean equals(Object o) {
+		return this.hashCode() == o.hashCode();
+	}
 }

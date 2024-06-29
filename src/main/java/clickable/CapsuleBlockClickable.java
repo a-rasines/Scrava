@@ -162,7 +162,6 @@ public class CapsuleBlockClickable extends InvocableClickable {
 		} else {
 			System.out.println("block hover end");
 			int index = getBlockBundleIndex(clicked);
-			int i = 0;
 			if(index < 0) {
 				System.out.println("no bundle");
 				super.onHoverEnd(click, clicked);
@@ -185,11 +184,11 @@ public class CapsuleBlockClickable extends InvocableClickable {
 					clicked = ((InvocableClickable) clicked).next();
 					ind++;
 				}
-				System.out.println("cl: " + cl.getBlock().toString() + " -> " + getRenderer().get(index, i).getBlock());
+				System.out.println("cl: " + cl.getBlock().toString() + " -> " + getRenderer().get(index, ind).getBlock());
 				if(r.sizeOf(index) > ind + 1)
 					cl.setNext(((InvocableClickable)r.get(index, ind + 1).getClickable()));
 			} else {
-				i = getRenderer().indexOf(index, (DragableRenderer) hovered.getRenderer()) + 1;
+				int i = getRenderer().indexOf(index, (DragableRenderer) hovered.getRenderer()) + 1;
 				System.out.println("Hovered " + hovered.getBlock().toString().replaceAll(".*\\.", "") + " endIndex:" + i);
 				InvocableClickable end = getRenderer().sizeOf(index) > i ? (InvocableClickable) getRenderer().get(index, i).getClickable():null;
 				((InvocableClickable) hovered).setNext((InvocableClickable) clicked);
