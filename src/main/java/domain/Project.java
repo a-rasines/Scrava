@@ -75,10 +75,12 @@ public class Project implements Serializable {
 	
 	public static void newProject(String name) {
 		SpritePanel.clearSprites();
+		active = null;
 		active = new Project(name);
 		ProjectFrame.INSTANCE.setTitle(name + " - Scrava");
-		System.out.println("Sprite count:" + (active.getSprites().size() - 1));
+		System.out.println("Sprite count:" + (active.getSprites().size()));
 		ActionPanel.INSTANCE.repaint();
+		BlockPanel.INSTANCE.repaint();
 	}
 	
 	public Project(String name) {
@@ -128,9 +130,12 @@ public class Project implements Serializable {
 	
 	public synchronized void registerSprite(Sprite s) {
 		if(sprites.contains(s))return;
+		System.out.println("not contains");
 		s.setPosition(sprites.size());
 		if(sprites.add(s)) {
-			if(active == this)
+			System.out.println("added correctly, sprite count=" + sprites.size());
+			System.out.println(active + " " + this);
+			if(active == this || active == null)
 				SpritePanel.addSprite(s);
 			insertVariables(s);
 		}
