@@ -15,6 +15,8 @@ import java.util.List;
 
 import javax.imageio.ImageIO;
 
+import org.w3c.dom.svg.SVGDocument;
+
 import clickable.BlockClickable;
 import domain.models.interfaces.Clickable;
 import domain.models.interfaces.Clickable.Rect;
@@ -160,10 +162,16 @@ public interface IRenderer extends Serializable {
 	}
 	
 	/**
-	 * Returns the visual representation of the renderable
+	 * Returns the visual representation of the renderable made by hand
 	 * @return
 	 */
 	public BufferedImage getRenderable();
+	
+	/**
+	 * Returns the visual representation of the renderable using an SVG document
+	 * @return
+	 */
+	public SVGDocument getRenderableSVG();
 	
 	/**
 	 * Returns the rendered block

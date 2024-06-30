@@ -9,6 +9,8 @@ import java.awt.image.BufferedImage;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.w3c.dom.svg.SVGDocument;
+
 import clickable.BlockClickable;
 import domain.models.interfaces.Clickable.Rect;
 import domain.models.interfaces.Translatable;
@@ -223,5 +225,11 @@ public class SimpleBlockRenderer implements DragableRenderer{
 			clickable.getParent().getRenderer().patch(r.x, r.y, r.h + r.y, r.w, getRenderable());
 		} else
 			BlockPanel.INSTANCE.repaint();
+	}
+
+	@Override
+	public SVGDocument getRenderableSVG() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

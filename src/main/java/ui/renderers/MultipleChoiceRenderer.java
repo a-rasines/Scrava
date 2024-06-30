@@ -9,6 +9,8 @@ import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.w3c.dom.svg.SVGDocument;
+
 import clickable.BlockClickable;
 import clickable.CapsuleBlockClickable;
 import clickable.InvocableClickable;
@@ -245,6 +247,11 @@ public class MultipleChoiceRenderer implements CapsuleRenderer {
 	@Override
 	public int bundleCount() {
 		return bundles.size();
+	}
+	@Override
+	public SVGDocument getRenderableSVG() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }
