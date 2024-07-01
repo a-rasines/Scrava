@@ -1,27 +1,29 @@
 package ui.renderers;
 
-import java.awt.AlphaComposite;
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
-import javax.swing.JFrame;
-import javax.swing.JPanel;
-import javax.swing.SwingUtilities;
+import org.apache.batik.bridge.BridgeContext;
+import org.apache.batik.bridge.GVTBuilder;
+import org.apache.batik.bridge.UserAgentAdapter;
+import org.apache.batik.dom.util.DOMUtilities;
+import org.apache.batik.gvt.GraphicsNode;
+import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
+import org.w3c.dom.svg.SVGDocument;
 
 import clickable.BlockClickable;
 import clickable.LiteralClickable;
 import domain.models.interfaces.Clickable;
 import domain.models.interfaces.Clickable.Rect;
-import domain.models.interfaces.Translatable;
 import domain.models.interfaces.Valuable;
 import domain.values.AbstractLiteral;
 import domain.values.EnumLiteral;
-import domain.values.NumberLiteral;
+import parsers.SVGReader;
 import ui.components.BlockPanel;
 
 public class LiteralRenderer implements IRenderer {
@@ -58,6 +60,9 @@ public class LiteralRenderer implements IRenderer {
 	private final LiteralClickable clickable;
 	private String type;
 	private transient BufferedImage rendered = null;
+	private boolean updateSVG = true;
+	private SVGDocument document = null;
+	private SVGConfig config;
 	
 	private LiteralRenderer(LiteralRenderable<?> block, String type, BlockClickable parent) {
 		this.block = block;
@@ -68,81 +73,24 @@ public class LiteralRenderer implements IRenderer {
 		this.type = type;
 		this.clickable = new LiteralClickable(this, (AbstractLiteral<?>)block, parent);
 	}
-	public transient static final BufferedImage STRING_VAR_START = IRenderer.getRes("textures/variable/literal/stringstart.svg");
-	public transient static final BufferedImage STRING_VAR_END = IRenderer.getRes("textures/variable/literal/stringend.svg");
-	public transient static final BufferedImage NUM_VAR_START = IRenderer.getRes("textures/variable/literal/numstart.svg");
-	public transient static final BufferedImage NUM_VAR_END = IRenderer.getRes("textures/variable/literal/numend.svg");
-	public transient static final BufferedImage BOOLEAN_VAR_START = IRenderer.getRes("textures/variable/literal/booleanstart.svg");
-	public transient static final BufferedImage BOOLEAN_VAR_END = IRenderer.getRes("textures/variable/literal/booleanend.svg");
-	public transient static final BufferedImage ENUM_VAR_START = IRenderer.getRes("textures/variable/literal/enumstart.svg");
-	public transient static final BufferedImage ENUM_VAR_END = IRenderer.getRes("textures/variable/literal/enumend.svg");
 
 	@Override
 	public BufferedImage getRenderable() {
-		if(rendered != null)
+		if(rendered == null)
+			return rendered = SVGReader.toBufferedImage(getRenderableSVG());
+		else
 			return rendered;
-		String value = (this.block instanceof EnumLiteral el)?el.name():this.block.value().toString();
-		BufferedImage left;
-		BufferedImage right;
-		switch(type) {
-		case IRenderable.VARIABLE_STR:
-		case IRenderable.VARIABLE_ANY:
-			left = STRING_VAR_START;
-			right = STRING_VAR_END;
-			break;
-		case IRenderable.VARIABLE_BOOL:
-			left = BOOLEAN_VAR_START;
-			right = BOOLEAN_VAR_END;
-			break;
-		case IRenderable.VARIABLE_NUM:
-			left = NUM_VAR_START;
-			right = NUM_VAR_END;
-			break;
-		case IRenderable.VARIABLE_ENUM:
-			left = ENUM_VAR_START;
-			right = ENUM_VAR_END;
-			
-			break;
-		default:
-			left = STRING_VAR_START;
-			right = STRING_VAR_END;	
-	}
-		rendered = new BufferedImage(left.getWidth() + right.getWidth() + value.length() * FONT_WIDTH, left.getHeight(), BufferedImage.TYPE_INT_ARGB);
-		Graphics g = rendered.getGraphics();
-		if(g instanceof Graphics2D g2d) {
-			 g2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
-	         g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
-	         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-	         g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, opacity));
-		}
-		background(
-				rendered,
-				left.getHeight(), 
-				left.getWidth(), 
-				left.getWidth() 
-				+ value.length() * FONT_WIDTH 
-		);
-		g.drawImage(left, 0, 0, null);
-
-		g.setFont(new Font( font.getName(), Font.PLAIN, 51 ));
-		g.setColor(Color.black);
-		background(rendered, left.getHeight(), left.getWidth()-1, value.length() * FONT_WIDTH + 2);
-		if(this.block instanceof EnumLiteral)
-			g.setColor(Color.white);
-		g.drawString(value, left.getWidth(), left.getHeight()/2 + 20);
-		
-		g.drawImage(right, left.getWidth() + value.length() * FONT_WIDTH, 0, null);
-		return rendered;
 	}
 	
 	@Override
-	public Translatable getBlock() {
+	public LiteralRenderable<?> getBlock() {
 		return block;
 	}
 
 	@Override
 	public void update() {
 		rendered = null;
+		updateSVG = true;
 		if(clickable.getParent() == null)
 			BlockPanel.INSTANCE.repaint();
 		else
@@ -160,32 +108,32 @@ public class LiteralRenderer implements IRenderer {
 		return clickable;
 	}
 
-	public static void main(String[] args) {
-		
-	 	LiteralRenderer sampleImage = new LiteralRenderer(new NumberLiteral<Double>(1.21, null), IRenderable.VARIABLE_STR, new BlockClickable(null, null));
-	 	sampleImage.opacity = 0.5f;
-	 	
-        SwingUtilities.invokeLater(() -> {
-            JFrame frame = new JFrame("Image Display");
-            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-            frame.setSize(500, 500);
-
-            JPanel panel = new JPanel() {
-				private static final long serialVersionUID = -94843536618228336L;
-
-				@Override
-                protected void paintComponent(Graphics g) {
-					g.setColor(Color.black);
-                    g.drawRect(0, 0, 500, 500);
-                    g.drawImage(sampleImage.getRenderable(), 100, 100, this);
-                }
-            };
-            frame.getContentPane().add(panel);
-
-            frame.setLocationRelativeTo(null);
-            frame.setVisible(true);
-        });
-	}
+//	public static void main(String[] args) {
+//		
+//	 	LiteralRenderer sampleImage = new LiteralRenderer(new NumberLiteral<Double>(1.21, null), IRenderable.VARIABLE_STR, new BlockClickable(null, null));
+//	 	sampleImage.opacity = 0.5f;
+//	 	
+//        SwingUtilities.invokeLater(() -> {
+//            JFrame frame = new JFrame("Image Display");
+//            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+//            frame.setSize(500, 500);
+//
+//            JPanel panel = new JPanel() {
+//				private static final long serialVersionUID = -94843536618228336L;
+//
+//				@Override
+//                protected void paintComponent(Graphics g) {
+//					g.setColor(Color.black);
+//                    g.drawRect(0, 0, 500, 500);
+//                    g.drawImage(sampleImage.getRenderable(), 100, 100, this);
+//                }
+//            };
+//            frame.getContentPane().add(panel);
+//
+//            frame.setLocationRelativeTo(null);
+//            frame.setVisible(true);
+//        });
+//	}
 
 	@Override
 	public void delete() {
@@ -208,5 +156,116 @@ public class LiteralRenderer implements IRenderer {
 		Rect r = clickable.getPosition();
 		clickable.getParent().getRenderer().patch(r.x, r.y, r.y + r.h, r.w, getRenderable());
 		
+	}
+	private record SVGConfig(SVGDocument document, double wOffset, double textXOffset, double endOffset) {
+		
+		public SVGDocument document() {
+			return SVGReader.clone(document);
+		}
+		
+	}
+	
+	private static final Map<String, SVGConfig> CONFIG_MAP;
+	
+	static {
+		SVGDocument numberDoc = null;
+		SVGDocument stringDoc = null;
+		SVGDocument booleanDoc = null;
+		SVGDocument enumDoc = null;
+		try { numberDoc = SVGReader.readSVG("textures/variable/literal/num.svg"); } catch(Exception e) {e.printStackTrace();}
+		try { stringDoc = SVGReader.readSVG("textures/variable/literal/string.svg"); } catch(Exception e) {e.printStackTrace();}
+		try { booleanDoc = SVGReader.readSVG("textures/variable/literal/boolean.svg"); } catch(Exception e) {e.printStackTrace();}
+		try { enumDoc = SVGReader.readSVG("textures/variable/literal/enum.svg"); } catch(Exception e) {e.printStackTrace();}
+		CONFIG_MAP = Map.of(
+			IRenderable.VARIABLE_NUM, new SVGConfig(numberDoc, 24, 13, 0),
+			IRenderable.VARIABLE_BOOL, new SVGConfig(booleanDoc, 9.2229801, 7, 0),
+			IRenderable.VARIABLE_STR, new SVGConfig(stringDoc, 12, 5, 0),
+			IRenderable.VARIABLE_ENUM, new SVGConfig(enumDoc, 25, 5, 12.35)
+		);
+	}
+	
+	public static final int FONT_WIDTH_PATH = 7;
+	public static final double FONT_WIDTH_RECT = 7.75;
+	@Override
+	public SVGDocument getRenderableSVG() {
+		if(document == null || updateSVG) {
+			updateSVG = false;
+			boolean isNewDocument = false;
+			if(document == null) {
+				config = CONFIG_MAP.get(type);
+				document = config.document();
+				isNewDocument = true;
+			}
+			Element root = document.getDocumentElement();
+			String value = getBlock().value().toString();
+			if(type.equals(IRenderable.VARIABLE_ENUM))
+				value = ((EnumLiteral<?>)getBlock()).name();
+			String height = root.getAttribute("height");
+			double width;
+			if(document.getElementsByTagName("rect").item(0) != null)
+				width = (2 + config.wOffset() + value.length() * FONT_WIDTH_RECT);
+			else
+				width = (2 + config.wOffset() * 2 + value.length() * FONT_WIDTH_PATH);
+			root.setAttribute("width", ""+width+"mm");
+			root.setAttributeNS(null, "height", height);
+			System.out.println("0 0 " + width + " " + height.replaceAll("[^0-9.]", ""));
+			root.setAttributeNS(null, "viewBox", "0 0 " + width + " " + height.replaceAll("[^0-9.]", ""));
+			
+			Element path = (Element) document.getElementById("resize_path");
+			if(path != null) {
+				String[] commands = path.getAttribute("d").split(" ");
+		        StringBuilder newD = new StringBuilder();
+		        String lastCommand = "";
+		        for (String command : commands) {
+		            if (command.matches("[MLHVCSQTAZmlhvcsqtaz]")) {
+		            	lastCommand = command;
+		                newD.append(command).append(" ");
+		            } else {
+		            	if(lastCommand.equals("h"))
+		            		newD.append(value.length() * FONT_WIDTH_PATH);
+		            	else if(lastCommand.toLowerCase().equals("m")) {
+		            		lastCommand = "";
+		            		newD.append(config.wOffset() + ",0");
+		            	} else
+		            		newD.append(command);
+		            	newD.append(" ");
+		            }
+		        }
+		        path.setAttribute("d", newD.toString().trim());
+			} else {
+				Element rect = document.getElementById("resize_rect");
+				rect.setAttributeNS(null, "width", config.wOffset() + value.length() * FONT_WIDTH_RECT + "");
+				Element end = document.getElementById("end");
+				if(end != null)
+					end.setAttribute("transform", "translate("+ (width - config.endOffset()) + ", 0)");
+			}
+	        Element textElement;
+	        if(isNewDocument) {
+		        textElement = document.createElementNS("http://www.w3.org/2000/svg", "text");
+		        
+		        textElement.setAttributeNS(null, "x", ""+config.textXOffset());
+		        textElement.setAttributeNS(null, "y", String.valueOf(17));
+		        textElement.setAttributeNS(null, "font-size", String.valueOf(16));
+		        textElement.setAttributeNS(null, "font-family", "monofonto");
+		        if(type.equals(IRenderable.VARIABLE_ENUM))
+		        	textElement.setAttributeNS(null, "fill", "white");	
+		        textElement.setTextContent(value);
+		
+		        root.appendChild(textElement);
+			} else {
+				textElement = (Element) document.getElementsByTagName("text").item(0);
+				textElement.setAttributeNS(null, "x", ""+config.textXOffset());
+				textElement.setTextContent(value);
+			}
+//	        if(type.equals(IRenderable.VARIABLE_ENUM)) {
+//		        System.out.println(document.hashCode());
+//		        try (FileWriter writer = new FileWriter(new File(document.hashCode() + ".svg"))) {
+//		            DOMUtilities.writeDocument(document, writer);
+//		        } catch (IOException e) {
+//		            e.printStackTrace();
+//		        }
+//	        }
+		}
+		return document;
 	}
 }

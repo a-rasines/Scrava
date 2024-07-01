@@ -23,9 +23,9 @@
      inkscape:pagecheckerboard="0"
      inkscape:deskcolor="#d1d1d1"
      inkscape:document-units="mm"
-     inkscape:zoom="1.0000001"
-     inkscape:cx="865.49991"
-     inkscape:cy="72.499993"
+     inkscape:zoom="2.0000002"
+     inkscape:cx="73.749993"
+     inkscape:cy="37.249996"
      inkscape:window-width="1920"
      inkscape:window-height="1017"
      inkscape:window-x="-8"
@@ -54,12 +54,12 @@
        inkscape:export-ydpi="96" />
     <path
        id="path43"
-       style="fill:#4ca742;fill-opacity:1;stroke:#ffffff;stroke-width:1.02091;stroke-dasharray:none"
-       d="M 264.78487 -28.951721 L 264.78487 -28.949654 L 238.31362 -28.949654 L 232.34551 -28.949654 C 229.71982 -28.949654 227.60626 -26.83506 227.60626 -24.209375 L 227.60626 -11.14919 C 227.60626 -8.5235053 229.71982 -6.4099447 232.34551 -6.4099447 L 238.31362 -6.4099447 L 264.79107 -6.4099447 L 264.79831 -6.4171794 L 270.75247 -6.4171794 C 273.37752 -6.4171794 275.49068 -8.5303266 275.49068 -11.155391 L 275.49068 -24.212476 C 275.49068 -26.83755 273.37752 -28.951721 270.75247 -28.951721 L 264.78487 -28.951721 z " />
-    <path
-       id="rect49"
-       style="fill:none;stroke:#ffffff;stroke-width:1.00115;stroke-dasharray:none;stroke-opacity:1"
-       d="M 252.10244 -214.90575 L 252.10244 -214.89386 L 246.12865 -214.89386 C 243.49383 -214.89386 241.37286 -212.77186 241.37286 -210.13704 L 241.37286 -197.03138 C 241.37286 -194.39657 243.49383 -192.2756 246.12865 -192.2756 L 252.10244 -192.2756 L 252.10244 -192.26423 L 268.96394 -192.26423 L 268.96394 -192.27302 L 274.94756 -192.27302 C 277.58305 -192.27302 279.70437 -194.39435 279.70437 -197.02983 L 279.70437 -210.13911 C 279.70437 -212.77461 277.58305 -214.89696 274.94756 -214.89696 L 268.96394 -214.89696 L 268.96394 -214.90575 L 252.10244 -214.90575 z " />
+       style="fill:#ffffff;fill-opacity:1;stroke:#ffffff;stroke-width:1.02091;stroke-dasharray:none"
+       d="m 237.28463,-58.977349 h -5.96811 c -2.62569,0 -4.73925,2.114594 -4.73925,4.740279 v 13.060185 c 0,2.625684 2.11356,4.739245 4.73925,4.739245 3.10086,0.0031 6.20171,-5.04e-4 9.30256,-0.0072 2.62505,0 4.73821,-2.113147 4.73821,-4.738211 v -13.057085 c 0,-2.625074 -2.11316,-4.739245 -4.73821,-4.739245 z"
+       sodipodi:nodetypes="csssscsscc"
+       inkscape:export-filename="src\main\resources\textures\variable\literal\string.svg"
+       inkscape:export-xdpi="96"
+       inkscape:export-ydpi="96" />
     <path
        id="path47"
        style="fill:#00ff00;stroke:#ffffff;stroke-width:1;fill-opacity:1"
@@ -95,8 +95,12 @@
        inkscape:export-ydpi="96" />
     <path
        id="path41"
-       style="fill:#4ca742;fill-opacity:1;stroke:#ffffff;stroke-width:1;stroke-dasharray:none;stroke-opacity:1"
-       d="m 251.70244,26.042245 -0.99942,0.707967 -5.83943,5.839438 c -1.20613,1.225275 -1.88261,2.994625 -1.88413,4.713923 0.001,1.719607 0.6778,3.3696 1.88413,4.595069 l 5.83943,5.958293 0.99942,0.72502 h 26.47746 l 0.7059,-0.72502 5.83944,-5.958293 c 1.20632,-1.225469 1.88363,-2.87546 1.88463,-4.595068 -0.002,-1.719299 -0.67851,-3.488646 -1.88463,-4.713924 l -5.83944,-5.839437 -0.71004,-0.707967 z" />
+       style="fill:#ffffff;fill-opacity:1;stroke:#ffffff;stroke-width:1;stroke-dasharray:none;stroke-opacity:1"
+       d="m 233.65329,-105.22357 -0.99942,0.70796 -5.83943,5.83944 c -1.20613,1.225275 -1.88261,2.994625 -1.88413,4.713923 0.001,1.719607 0.6778,3.3696 1.88413,4.595069 l 5.83943,5.958293 0.99942,0.72502 2.99783,0 0.7059,-0.72502 5.83944,-5.958293 c 1.20632,-1.225469 1.88363,-2.87546 1.88463,-4.595068 -0.002,-1.719299 -0.67851,-3.488646 -1.88463,-4.713924 l -5.83944,-5.83944 -0.71004,-0.70796 z"
+       sodipodi:nodetypes="ccccccccccccccc"
+       inkscape:export-filename="src\main\resources\textures\variable\literal\boolean.svg"
+       inkscape:export-xdpi="96"
+       inkscape:export-ydpi="96" />
     <path
        id="path40"
        style="fill:#4ca742;fill-opacity:1;stroke:#ffffff;stroke-width:1;stroke-dasharray:none;stroke-opacity:1"
@@ -180,8 +184,12 @@
        inkscape:export-ydpi="96" />
     <path
        id="rect2"
-       style="fill:#4ca742;fill-opacity:1;stroke:#ffffff;stroke-width:1;stroke-dasharray:none"
-       d="m 146.38032,88.784762 a 11.300545,11.300545 0 0 0 -11.3006,11.300598 11.300545,11.300545 0 0 0 11.3006,11.30061 h 21.19561 a 11.300545,11.300545 0 0 0 11.3006,-11.30061 11.300545,11.300545 0 0 0 -11.3006,-11.300598 z" />
+       style="fill:#ffffff;fill-opacity:1;stroke:#ffffff;stroke-width:1;stroke-dasharray:none"
+       d="m 192.87213,-93.45372 c -6.24116,-3e-5 -11.30063,5.059437 -11.3006,11.300598 -4e-5,6.241166 5.05943,11.30064 11.3006,11.30061 h 1.5503 c 6.24116,3e-5 11.30064,-5.059444 11.3006,-11.30061 3e-5,-6.241161 -5.05944,-11.300628 -11.3006,-11.300598 z"
+       inkscape:export-filename="src\main\resources\textures\variable\literal\num.svg"
+       inkscape:export-xdpi="96"
+       inkscape:export-ydpi="96"
+       sodipodi:nodetypes="ccccccc" />
     <path
        id="path14"
        style="fill:#ffffff;fill-opacity:1;stroke:#ffffff;stroke-width:1.60012;stroke-dasharray:none;stroke-opacity:1"
@@ -409,17 +417,20 @@
        inkscape:export-filename="src\main\resources\textures\variable\enumstart.svg"
        inkscape:export-xdpi="96"
        inkscape:export-ydpi="96" />
-    <path
-       id="path42"
-       style="fill:none;fill-opacity:1;stroke:#ffffff;stroke-width:1.01872;stroke-dasharray:none;stroke-opacity:1"
-       d="m 268.9559,-214.89676 v 22.62382 h 5.99145 c 2.63549,0 4.75695,-2.12145 4.75695,-4.75694 v -13.10907 c 0,-2.6355 -2.12146,-4.75781 -4.75695,-4.75781 z"
-       inkscape:export-filename="src\main\resources\textures\variable\enumend.svg"
-       inkscape:export-xdpi="96"
-       inkscape:export-ydpi="96" />
-    <path
-       style="fill:none;stroke:#ffffff;stroke-width:1;stroke-opacity:1"
-       d="m 270.79763,-207.01905 3.53248,6.11841 3.53245,-6.11841"
-       id="path49" />
+    <g
+       id="g8">
+      <path
+         id="path42"
+         style="fill:none;fill-opacity:1;stroke:#ffffff;stroke-width:1.01872;stroke-dasharray:none;stroke-opacity:1"
+         d="m 276.29324,-147.35945 v 22.62382 h 5.99145 c 2.63549,0 4.75695,-2.12145 4.75695,-4.75694 v -13.10907 c 0,-2.6355 -2.12146,-4.75781 -4.75695,-4.75781 z"
+         inkscape:export-filename="src\main\resources\textures\variable\enumend.svg"
+         inkscape:export-xdpi="96"
+         inkscape:export-ydpi="96" />
+      <path
+         style="fill:none;stroke:#ffffff;stroke-width:1;stroke-opacity:1"
+         d="m 278.13497,-139.48174 3.53248,6.11841 3.53245,-6.11841"
+         id="path49" />
+    </g>
     <rect
        style="fill:#7d7d7d;stroke-width:0.0567012"
        id="rect46"
@@ -467,5 +478,49 @@
        cy="-142.60744"
        rx="0.62563723"
        ry="0.61264068" />
+    <text
+       xml:space="preserve"
+       style="font-weight:300;font-size:31.1031px;font-family:'Segoe UI';-inkscape-font-specification:'Segoe UI Light';text-align:center;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.612266;stroke-opacity:0.992157"
+       x="172.1871"
+       y="-56.168137"
+       id="text1"><tspan
+         sodipodi:role="line"
+         id="tspan1"
+         style="fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.612266"
+         x="172.1871"
+         y="-56.168137">A</tspan></text>
+    <rect
+       style="fill:#ffffff;fill-opacity:1;stroke-width:1.27576;stroke-opacity:0.992157"
+       id="rect6"
+       width="19.800926"
+       height="23.563776"
+       x="259.27203"
+       y="-59.489838"
+       ry="5.3236141"
+       inkscape:export-filename="src\main\resources\textures\variable\literal\string.svg"
+       inkscape:export-xdpi="96"
+       inkscape:export-ydpi="96" />
+    <rect
+       style="fill:none;fill-opacity:1;stroke:#ffffff;stroke-width:1.04756;stroke-dasharray:none;stroke-opacity:1"
+       id="resize_rect"
+       width="38.331535"
+       height="22.543137"
+       x="248.70215"
+       y="-147.31906"
+       ry="4.7106452"
+       inkscape:export-filename="src\main\resources\textures\variable\literal\enum.svg"
+       inkscape:export-xdpi="96"
+       inkscape:export-ydpi="96" />
+    <rect
+       style="fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:1.02052"
+       id="rect8"
+       width="25.151501"
+       height="23.601208"
+       x="4.5389042"
+       y="-40.745831"
+       ry="11.800604"
+       inkscape:export-filename="src\main\resources\textures\variable\literal\num.svg"
+       inkscape:export-xdpi="96"
+       inkscape:export-ydpi="96" />
   </g>
 </svg>

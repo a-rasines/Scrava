@@ -14,7 +14,7 @@ import domain.values.EnumLiteral;
 public abstract class KeyEventBlock extends EventBlock {
 	private static final long serialVersionUID = -4600101075423209197L;
 	
-	private final transient static Map<String, Integer> KEY_MAP = new TreeMap<>();
+	public final transient static Map<String, Integer> KEY_MAP = new TreeMap<>();
 	protected transient EnumLiteral<Integer> KEY = new EnumLiteral<>(KEY_MAP, this);
 	private String selected;
 	

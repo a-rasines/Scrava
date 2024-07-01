@@ -10,8 +10,15 @@ import java.awt.image.BufferedImage;
 import java.util.LinkedList;
 import java.util.List;
 
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
+
+import org.w3c.dom.svg.SVGDocument;
+
 import clickable.BlockClickable;
 import clickable.InvocableClickable;
+import domain.blocks.invocable.movement.MoveBlock;
 import domain.models.interfaces.Clickable.Rect;
 import domain.models.interfaces.InvocableBlock;
 import domain.models.interfaces.Translatable;
@@ -247,6 +254,37 @@ public class InvocableBlockRenderer implements DragableRenderer {
 			clickable.getParent().getRenderer().patch(r.x, r.y, r.h + r.y, r.w, rend);	
 		} else
 			BlockPanel.INSTANCE.repaint();
+	}
+
+	@Override
+	public SVGDocument getRenderableSVG() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
+	public static void main(String[] args) {		
+	 	InvocableBlockRenderer ibr = new MoveBlock(null).getRenderer();
+	 	
+        SwingUtilities.invokeLater(() -> {
+            JFrame frame = new JFrame("Image Display");
+            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+            frame.setSize(500, 500);
+
+            JPanel panel = new JPanel() {
+				private static final long serialVersionUID = -94843536618228336L;
+
+				@Override
+                protected void paintComponent(Graphics g) {
+					g.setColor(Color.black);
+                    g.drawRect(0, 0, 500, 500);
+                    g.drawImage(ibr.getRenderable(), 100, 100, this);
+                }
+            };
+            frame.getContentPane().add(panel);
+
+            frame.setLocationRelativeTo(null);
+            frame.setVisible(true);
+        });
 	}
 }
 

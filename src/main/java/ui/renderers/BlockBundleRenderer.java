@@ -9,6 +9,8 @@ import java.awt.image.BufferedImage;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.w3c.dom.svg.SVGDocument;
+
 import clickable.BlockClickable;
 import clickable.CapsuleBlockClickable;
 import domain.models.interfaces.Clickable.Rect;
@@ -324,6 +326,11 @@ public class BlockBundleRenderer implements CapsuleRenderer{
 	@Override
 	public int bundleCount() {
 		return 1;
+	}
+	@Override
+	public SVGDocument getRenderableSVG(){
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

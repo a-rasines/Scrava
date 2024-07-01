@@ -51,6 +51,10 @@ dependencies {
     compileOnly group: "org.jetbrains", name: "annotations", version: "13.0"
 
     testImplementation 'junit:junit:4.13.2'
+    
+    configurations.all {
+        exclude group: 'xml-apis', module: 'xml-apis'
+    }
 }
 
 //test {
