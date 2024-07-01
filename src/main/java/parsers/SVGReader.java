@@ -44,8 +44,8 @@ public class SVGReader {
 //        JSVGCanvas canvas = new JSVGCanvas();
 //        frame.getContentPane().add(canvas, BorderLayout.CENTER);
 //        canvas.setSVGDocument(document);
-//        LiteralRenderer lr = (LiteralRenderer) new NumberLiteral<Integer>(123456789, null).getRenderer();
-        LiteralRenderer lr = (LiteralRenderer) new BooleanLiteral(false, null).getRenderer();
+//        LiteralRenderer lr = (LiteralRenderer) new NumberLiteral<Integer>(123450, null).getRenderer();
+        LiteralRenderer lr = (LiteralRenderer) new BooleanLiteral(true, null).getRenderer();
 //        LiteralRenderer lr = (LiteralRenderer) new StringLiteral("123456789987654321", null).getRenderer();
 //        LiteralRenderer lr = (LiteralRenderer) new EnumLiteral<Integer>(KeyEventBlock.KEY_MAP, null).getRenderer();
         BufferedImage bi = lr.getRenderable();

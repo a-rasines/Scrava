@@ -177,8 +177,8 @@ public class LiteralRenderer implements IRenderer {
 		try { booleanDoc = SVGReader.readSVG("textures/variable/literal/boolean.svg"); } catch(Exception e) {e.printStackTrace();}
 		try { enumDoc = SVGReader.readSVG("textures/variable/literal/enum.svg"); } catch(Exception e) {e.printStackTrace();}
 		CONFIG_MAP = Map.of(
-			IRenderable.VARIABLE_NUM, new SVGConfig(numberDoc, 24, 10, 0),
-			IRenderable.VARIABLE_BOOL, new SVGConfig(booleanDoc, 20, 11.25, 0),
+			IRenderable.VARIABLE_NUM, new SVGConfig(numberDoc, 24, 13, 0),
+			IRenderable.VARIABLE_BOOL, new SVGConfig(booleanDoc, 9.2229801, 7, 0),
 			IRenderable.VARIABLE_STR, new SVGConfig(stringDoc, 12, 5, 0),
 			IRenderable.VARIABLE_ENUM, new SVGConfig(enumDoc, 25, 5, 12.35)
 		);
@@ -205,7 +205,7 @@ public class LiteralRenderer implements IRenderer {
 			if(document.getElementsByTagName("rect").item(0) != null)
 				width = (2 + config.wOffset() + value.length() * FONT_WIDTH_RECT);
 			else
-				width = (2 + config.wOffset() + value.length() * FONT_WIDTH_PATH);
+				width = (2 + config.wOffset() * 2 + value.length() * FONT_WIDTH_PATH);
 			root.setAttribute("width", ""+width+"mm");
 			root.setAttributeNS(null, "height", height);
 			System.out.println("0 0 " + width + " " + height.replaceAll("[^0-9.]", ""));
@@ -223,10 +223,10 @@ public class LiteralRenderer implements IRenderer {
 		            } else {
 		            	if(lastCommand.equals("h"))
 		            		newD.append(value.length() * FONT_WIDTH_PATH);
-//		            	else if(lastCommand.equals("m")) {
-//		            		lastCommand = "";
-//		            		newD.append((config.xOffset() - value.length() * FONT_WIDTH_PATH/2) + "," + config.yOffset());
-		            	else
+		            	else if(lastCommand.toLowerCase().equals("m")) {
+		            		lastCommand = "";
+		            		newD.append(config.wOffset() + ",0");
+		            	} else
 		            		newD.append(command);
 		            	newD.append(" ");
 		            }
@@ -258,12 +258,12 @@ public class LiteralRenderer implements IRenderer {
 				textElement.setTextContent(value);
 			}
 //	        if(type.equals(IRenderable.VARIABLE_ENUM)) {
-		        System.out.println(document.hashCode());
-		        try (FileWriter writer = new FileWriter(new File(document.hashCode() + ".svg"))) {
-		            DOMUtilities.writeDocument(document, writer);
-		        } catch (IOException e) {
-		            e.printStackTrace();
-		        }
+//		        System.out.println(document.hashCode());
+//		        try (FileWriter writer = new FileWriter(new File(document.hashCode() + ".svg"))) {
+//		            DOMUtilities.writeDocument(document, writer);
+//		        } catch (IOException e) {
+//		            e.printStackTrace();
+//		        }
 //	        }
 		}
 		return document;
