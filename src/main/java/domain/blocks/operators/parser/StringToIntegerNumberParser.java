@@ -11,7 +11,7 @@ public class StringToIntegerNumberParser extends ValuableModifier<String, Long> 
 	private static final long serialVersionUID = -2316860509271581027L;
 
 	public StringToIntegerNumberParser() {
-		value = new StringLiteral("", this);
+		value = new StringLiteral("0", this);
 	}
 	@Override
 	public StringToIntegerNumberParser create(Sprite s) {

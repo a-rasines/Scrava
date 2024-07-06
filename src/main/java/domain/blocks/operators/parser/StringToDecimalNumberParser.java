@@ -11,7 +11,7 @@ public class StringToDecimalNumberParser extends ValuableModifier<String, Double
 	private static final long serialVersionUID = -2316860509271581027L;
 
 	public StringToDecimalNumberParser() {
-		value = new StringLiteral("", this);
+		value = new StringLiteral("0", this);
 	}
 	
 	@Override

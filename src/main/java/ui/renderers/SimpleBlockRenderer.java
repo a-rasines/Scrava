@@ -2,21 +2,23 @@ package ui.renderers;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
-import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
+import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
 import org.w3c.dom.svg.SVGDocument;
 
 import clickable.BlockClickable;
 import domain.models.interfaces.Clickable.Rect;
-import domain.models.interfaces.Translatable;
 import domain.models.interfaces.Valuable;
 import domain.models.interfaces.VariableHolder;
+import parsers.SVGReader;
 import ui.components.BlockPanel;
+import ui.domain.SVGConfig;
 import ui.renderers.IRenderer.DragableRenderer;
 import ui.renderers.SimpleBlockRenderer.SimpleRenderable.BlockCategory;
 
@@ -89,30 +91,33 @@ public class SimpleBlockRenderer implements DragableRenderer{
 	
 	@Override
 	public BufferedImage getRenderable() {
-		if(rendered(null, false) != null)
-			return rendered(null, false);
-		
-		BufferedImage start = block.getCategory().start;
-		BufferedImage text = renderText(block.getTitle(), start.getWidth(), getHeight());
-		BufferedImage end = block.getCategory().end;
-		
-		BufferedImage rendered = new BufferedImage(start.getWidth() + text.getWidth() + end.getWidth(), getHeight(), BufferedImage.TYPE_INT_ARGB);
-		Graphics g = rendered.getGraphics();
-		if(g instanceof Graphics2D g2d) {
-			 g2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
-	         g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
-	         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-	         g2d.setStroke(new BasicStroke(2));
-		}
-		
-		g.drawImage(start.getScaledInstance(start.getWidth(), getHeight(), BufferedImage.SCALE_SMOOTH), 0, 0, null);
-		
-		background(rendered,getHeight(),start.getWidth(),text.getWidth());
-		g.drawImage(text, start.getWidth(), 0, null);
-		
-		g.drawImage(end.getScaledInstance(start.getWidth(), getHeight(), BufferedImage.SCALE_SMOOTH), start.getWidth() + text.getWidth(), 0, null);
-		rendered(rendered, true);
-		return rendered;
+		if(rendered(null, false) == null)
+			rendered(SVGReader.toBufferedImage(getRenderableSVG()), true);
+		return rendered(null, false);
+//		if(rendered(null, false) != null)
+//			return rendered(null, false);
+//		
+//		BufferedImage start = block.getCategory().start;
+//		BufferedImage text = renderText(block.getTitle(), start.getWidth(), getHeight());
+//		BufferedImage end = block.getCategory().end;
+//		
+//		BufferedImage rendered = new BufferedImage(start.getWidth() + text.getWidth() + end.getWidth(), getHeight(), BufferedImage.TYPE_INT_ARGB);
+//		Graphics g = rendered.getGraphics();
+//		if(g instanceof Graphics2D g2d) {
+//			 g2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+//	         g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+//	         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+//	         g2d.setStroke(new BasicStroke(2));
+//		}
+//		
+//		g.drawImage(start.getScaledInstance(start.getWidth(), getHeight(), BufferedImage.SCALE_SMOOTH), 0, 0, null);
+//		
+//		background(rendered,getHeight(),start.getWidth(),text.getWidth());
+//		g.drawImage(text, start.getWidth(), 0, null);
+//		
+//		g.drawImage(end.getScaledInstance(start.getWidth(), getHeight(), BufferedImage.SCALE_SMOOTH), start.getWidth() + text.getWidth(), 0, null);
+//		rendered(rendered, true);
+//		return rendered;
 	}
 	
 	@Override
@@ -139,7 +144,7 @@ public class SimpleBlockRenderer implements DragableRenderer{
 	}
 	
 	@Override
-	public Translatable getBlock() {
+	public SimpleRenderable<?> getBlock() {
 		return block;
 	}
 
@@ -227,9 +232,65 @@ public class SimpleBlockRenderer implements DragableRenderer{
 			BlockPanel.INSTANCE.repaint();
 	}
 
+private static final Map<Class<?>, SVGConfig> CONFIG_MAP;
+	
+	static {
+		SVGDocument numberDoc = null;
+		SVGDocument stringDoc = null;
+		SVGDocument booleanDoc = null;
+		try { numberDoc = SVGReader.readSVG("textures/variable/literal/num.svg"); } catch(Exception e) {e.printStackTrace();}
+		try { stringDoc = SVGReader.readSVG("textures/variable/literal/string.svg"); } catch(Exception e) {e.printStackTrace();}
+		try { booleanDoc = SVGReader.readSVG("textures/variable/literal/boolean.svg"); } catch(Exception e) {e.printStackTrace();}
+		Element[] cores = new Element[] {
+				numberDoc.getDocumentElement(),
+				stringDoc.getDocumentElement(),
+				booleanDoc.getDocumentElement()
+		};
+		for(Element c : cores) {
+			double height = Double.parseDouble(c.getAttribute("height").replaceAll("[^0-9.]", "")) + 1;
+			c.setAttribute("height", height + c.getAttribute("height").replaceAll("[0-9.]", ""));
+			String[] viewBox = c.getAttribute("viewBox").split(" ");
+			viewBox[3] = "" + height;
+			c.setAttribute("viewBox", String.join(" ", viewBox));
+			fillColor(c);
+		}
+		CONFIG_MAP = Map.of(
+			Number.class, new SVGConfig(numberDoc, 24, 13, 0),
+			Boolean.class, new SVGConfig(booleanDoc, 9.2229801, 7, 0),
+			String.class, new SVGConfig(stringDoc, 12, 5, 0)
+		);
+	}
+	
+	private static void fillColor(Element parent) {
+		NodeList nl = parent.getChildNodes();
+		String style = null;
+		for(int i = 0; i < nl.getLength(); i++)
+			if(nl.item(i) instanceof Element e) {
+				if((style = e.getAttribute("style")) != null)
+					e.setAttribute("style", style.replace("fill:#ffffff", "fill:#e97d00")
+												 .replace("stroke:none", "stroke:#ffffff;stroke-opacity:1;stroke-dasharray:none"));
+				fillColor(e);
+			}
+	}
+	
+	public static final int FONT_WIDTH_PATH = 7;
+	public static final double FONT_WIDTH_RECT = 7.75;
+	private transient SVGConfig config = null;
+	private transient SVGDocument document = null;
+	
 	@Override
 	public SVGDocument getRenderableSVG() {
-		// TODO Auto-generated method stub
-		return null;
+		boolean newDocument = false;
+		if(config == null) {
+			config = switch(getBlock().value()) {
+				case Number n -> CONFIG_MAP.get(Number.class);
+				case Boolean b -> CONFIG_MAP.get(Boolean.class);
+				default -> CONFIG_MAP.get(String.class);
+			};
+			document = config.document();
+			newDocument = true;
+		}
+		
+		return addText(getBlock().getTitle());
 	}
 }

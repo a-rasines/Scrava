@@ -7,24 +7,36 @@ import java.awt.FontFormatException;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.GraphicsEnvironment;
+import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
+import java.util.LinkedList;
 import java.util.List;
 
 import javax.imageio.ImageIO;
 
+import org.apache.batik.anim.dom.SVGDOMImplementation;
+import org.apache.batik.anim.dom.SVGOMSVGElement;
+import org.apache.batik.anim.dom.SVGOMTextElement;
+import org.apache.batik.bridge.BridgeContext;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 import org.w3c.dom.svg.SVGDocument;
+import org.w3c.dom.svg.SVGLocatable;
 
 import clickable.BlockClickable;
 import domain.models.interfaces.Clickable;
 import domain.models.interfaces.Clickable.Rect;
 import domain.models.interfaces.Translatable;
+import domain.models.interfaces.VariableHolder;
+import parsers.SVGReader;
 import ui.components.BlockPanel;
 
 public interface IRenderer extends Serializable {
 	public static final int FONT_WIDTH = 28;
+	public static final int FONT_WIDTH_SVG = 10;
 	
 	public static interface IRenderable extends Serializable, Translatable {
 		
@@ -63,7 +75,7 @@ public interface IRenderer extends Serializable {
 			e.printStackTrace();
 			return null;
 		}
-	}	
+	}
 	
 	public default void background(BufferedImage rendered, int height, int start, int width) {
 		for(int y = 0; y < height; y++) {
@@ -272,7 +284,6 @@ public interface IRenderer extends Serializable {
 			String[] parts = text.split("\\{\\{");
 			int len = 0;
 			int vari = 0;
-			System.out.println(text);
 			for(String part : parts) {		
 				if(part.split(" ")[0].contains("}}")) {
 					String[] divided = part.split("}}");
@@ -298,10 +309,82 @@ public interface IRenderer extends Serializable {
 					g.drawString(part, len, height/2  + 20);
 					len += part.length() * FONT_WIDTH;
 				}
-						
 			}
 			return rendered;
 		}
 		
+		public default SVGDocument addText(String text) {
+	        SVGDocument document = (SVGDocument) SVGDOMImplementation.getDOMImplementation().createDocument(SVGDOMImplementation.SVG_NAMESPACE_URI, "svg", null);
+	        SVGOMSVGElement root = (SVGOMSVGElement)document.getDocumentElement();
+	        List<Element> elements = new LinkedList<>();
+	        String[] parts = text.split("\\{\\{");
+			int vari = 0;
+			for(String part : parts) {
+				if(part.split(" ")[0].contains("}}")) {
+					String[] divided = part.split("}}");
+					IRenderer rend = getChildren().get(vari++);
+					SVGDocument doc = rend.getRenderableSVG();
+					Node child = document.importNode(doc.getDocumentElement(), true);
+					root.appendChild(child);
+					if(divided.length > 1 && divided[1].strip().length() > 0) {
+						SVGOMTextElement textElement = (SVGOMTextElement) document.createElementNS("http://www.w3.org/2000/svg", "text");
+
+				        textElement.setAttributeNS(null, "y", String.valueOf(17));
+				        textElement.setAttributeNS(null, "id", divided[1]);
+				        textElement.setAttributeNS(null, "font-size", String.valueOf(16));
+				        textElement.setAttributeNS(null, "font-family", "monospace");
+				        textElement.setTextContent(divided[1]);
+				        
+				        root.appendChild(textElement);
+				        elements.add(textElement);
+
+					}
+				} else if(!part.strip().equals("")){
+					SVGOMTextElement textElement = (SVGOMTextElement) document.createElementNS("http://www.w3.org/2000/svg", "text");
+
+			        textElement.setAttributeNS(null, "y", String.valueOf(17));
+			        textElement.setAttributeNS(null, "font-size", String.valueOf(16));
+			        textElement.setAttributeNS(null, "font-family", "monospace");
+			        textElement.setAttributeNS(null, "dx", "10");
+			        textElement.setAttributeNS(null, "id", part);
+			        textElement.setTextContent(part);
+
+			        root.appendChild(textElement);
+			        elements.add(textElement);
+				}
+			}
+			float len = 0;
+			int child = 0;
+			BridgeContext ctx = SVGReader.build(document);
+			for(Element e = root.getFirstElementChild(); e != null; e = (Element)e.getNextSibling()) {
+				if(e instanceof SVGLocatable ge) {
+					Rectangle2D bb = ctx.getGraphicsNode(e).getBounds();
+					if(bb == null) {
+						System.out.println(ge.getClass());
+						continue;
+					}
+					System.out.println(bb.getX() + " " + bb.getY() + " " + bb.getWidth() + " " + bb.getHeight());
+					double w = bb.getWidth();
+					double x0 = 0;
+					if(e instanceof SVGOMTextElement te) {
+						w = FONT_WIDTH_SVG *  te.getTextContent().length();
+						x0 = (te.getTextContent().length() - te.getTextContent().stripLeading().length()) * FONT_WIDTH_SVG;
+						System.out.println(x0 + " " + te.getTextContent().length() + " " + te.getTextContent().stripLeading().length());
+//						w += x0 + (te.getTextContent().length() - te.getTextContent().stripTrailing().length()) * FONT_WIDTH_SVG;
+					} else {
+						e.setAttributeNS(null, "id", "child_"+child);
+						((VariableHolder)getBlock()).getVariableAt(child).getRenderer().getClickable().setPosition((int)len, (int)bb.getY());
+					}
+					System.out.println(ge.getClass() + " " + w + " " + len + " " + x0);
+					e.setAttributeNS(null, "x", ""+(x0 + len));
+					len += w;
+				}
+			}
+			double h = ctx.getGraphicsNode(root).getBounds().getHeight();
+			root.setAttributeNS(null, "width", len + "");
+			root.setAttributeNS(null, "height", h + "");
+			root.setAttributeNS(null, "viewBox", "0 0 " + (len+1.25) + " " + h);
+			return document;
+		}
 	}
 }

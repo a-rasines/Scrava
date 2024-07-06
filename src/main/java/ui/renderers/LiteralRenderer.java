@@ -1,20 +1,26 @@
 package ui.renderers;
 
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Map;
 
+import javax.swing.ImageIcon;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.WindowConstants;
+
+import org.apache.batik.anim.dom.SVGOMRectElement;
+import org.apache.batik.anim.dom.SVGOMSVGElement;
 import org.apache.batik.bridge.BridgeContext;
-import org.apache.batik.bridge.GVTBuilder;
-import org.apache.batik.bridge.UserAgentAdapter;
-import org.apache.batik.dom.util.DOMUtilities;
-import org.apache.batik.gvt.GraphicsNode;
 import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
 import org.w3c.dom.svg.SVGDocument;
+import org.w3c.dom.svg.SVGPathElement;
 
 import clickable.BlockClickable;
 import clickable.LiteralClickable;
@@ -22,9 +28,11 @@ import domain.models.interfaces.Clickable;
 import domain.models.interfaces.Clickable.Rect;
 import domain.models.interfaces.Valuable;
 import domain.values.AbstractLiteral;
+import domain.values.BooleanLiteral;
 import domain.values.EnumLiteral;
 import parsers.SVGReader;
 import ui.components.BlockPanel;
+import ui.domain.SVGConfig;
 
 public class LiteralRenderer implements IRenderer {
 	
@@ -61,8 +69,9 @@ public class LiteralRenderer implements IRenderer {
 	private String type;
 	private transient BufferedImage rendered = null;
 	private boolean updateSVG = true;
-	private SVGDocument document = null;
-	private SVGConfig config;
+	private transient SVGDocument document = null;
+	private transient SVGConfig config;
+	private transient BridgeContext ctx;
 	
 	private LiteralRenderer(LiteralRenderable<?> block, String type, BlockClickable parent) {
 		this.block = block;
@@ -76,9 +85,11 @@ public class LiteralRenderer implements IRenderer {
 
 	@Override
 	public BufferedImage getRenderable() {
-		if(rendered == null)
-			return rendered = SVGReader.toBufferedImage(getRenderableSVG());
-		else
+		if(rendered == null) {
+			SVGDocument doc = getRenderableSVG();
+			BufferedImage bi = SVGReader.toBufferedImage(doc);
+			return rendered = bi;
+		}else
 			return rendered;
 	}
 	
@@ -108,32 +119,29 @@ public class LiteralRenderer implements IRenderer {
 		return clickable;
 	}
 
-//	public static void main(String[] args) {
-//		
-//	 	LiteralRenderer sampleImage = new LiteralRenderer(new NumberLiteral<Double>(1.21, null), IRenderable.VARIABLE_STR, new BlockClickable(null, null));
-//	 	sampleImage.opacity = 0.5f;
-//	 	
-//        SwingUtilities.invokeLater(() -> {
-//            JFrame frame = new JFrame("Image Display");
-//            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-//            frame.setSize(500, 500);
-//
-//            JPanel panel = new JPanel() {
-//				private static final long serialVersionUID = -94843536618228336L;
-//
-//				@Override
-//                protected void paintComponent(Graphics g) {
-//					g.setColor(Color.black);
-//                    g.drawRect(0, 0, 500, 500);
-//                    g.drawImage(sampleImage.getRenderable(), 100, 100, this);
-//                }
-//            };
-//            frame.getContentPane().add(panel);
-//
-//            frame.setLocationRelativeTo(null);
-//            frame.setVisible(true);
-//        });
-//	}
+	public static void main(String[] args) throws URISyntaxException, IOException {
+//  	SVGDocument document = readSVG("textures/sprite/def.svg");
+	  JFrame frame = new JFrame("SVG Display");
+	  frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+	  frame.setSize(800, 600);
+
+//	  JSVGCanvas canvas = new JSVGCanvas();
+//	  frame.getContentPane().add(canvas, BorderLayout.CENTER);
+//	  canvas.setSVGDocument(document);
+//	  LiteralRenderer lr = (LiteralRenderer) new NumberLiteral<Integer>(123450, null).getRenderer();
+	  LiteralRenderer lr = (LiteralRenderer) new BooleanLiteral(true, null).getRenderer();
+	//  LiteralRenderer lr = (LiteralRenderer) new StringLiteral("123456789987654321", null).getRenderer();
+	//  LiteralRenderer lr = (LiteralRenderer) new EnumLiteral<Integer>(KeyEventBlock.KEY_MAP, null).getRenderer();
+	  BufferedImage bi = lr.getRenderable();
+	  Graphics g = bi.getGraphics();
+	  g.setColor(Color.red);
+	  g.drawRect(0, 0, bi.getWidth(), bi.getHeight());
+	  g.drawLine(bi.getWidth()/2, 0, bi.getWidth()/2, bi.getHeight());
+	  frame.add(new JLabel(new ImageIcon(bi)), BorderLayout.CENTER);
+	  
+	
+	  frame.setVisible(true);
+	}
 
 	@Override
 	public void delete() {
@@ -157,13 +165,6 @@ public class LiteralRenderer implements IRenderer {
 		clickable.getParent().getRenderer().patch(r.x, r.y, r.y + r.h, r.w, getRenderable());
 		
 	}
-	private record SVGConfig(SVGDocument document, double wOffset, double textXOffset, double endOffset) {
-		
-		public SVGDocument document() {
-			return SVGReader.clone(document);
-		}
-		
-	}
 	
 	private static final Map<String, SVGConfig> CONFIG_MAP;
 	
@@ -178,14 +179,12 @@ public class LiteralRenderer implements IRenderer {
 		try { enumDoc = SVGReader.readSVG("textures/variable/literal/enum.svg"); } catch(Exception e) {e.printStackTrace();}
 		CONFIG_MAP = Map.of(
 			IRenderable.VARIABLE_NUM, new SVGConfig(numberDoc, 24, 13, 0),
-			IRenderable.VARIABLE_BOOL, new SVGConfig(booleanDoc, 9.2229801, 7, 0),
+			IRenderable.VARIABLE_BOOL, new SVGConfig(booleanDoc, 8.75, 9, 0),
 			IRenderable.VARIABLE_STR, new SVGConfig(stringDoc, 12, 5, 0),
 			IRenderable.VARIABLE_ENUM, new SVGConfig(enumDoc, 25, 5, 12.35)
 		);
 	}
 	
-	public static final int FONT_WIDTH_PATH = 7;
-	public static final double FONT_WIDTH_RECT = 7.75;
 	@Override
 	public SVGDocument getRenderableSVG() {
 		if(document == null || updateSVG) {
@@ -194,24 +193,17 @@ public class LiteralRenderer implements IRenderer {
 			if(document == null) {
 				config = CONFIG_MAP.get(type);
 				document = config.document();
+				ctx = SVGReader.build(document);
 				isNewDocument = true;
 			}
-			Element root = document.getDocumentElement();
+			SVGOMSVGElement root = (SVGOMSVGElement)document.getDocumentElement();
 			String value = getBlock().value().toString();
 			if(type.equals(IRenderable.VARIABLE_ENUM))
 				value = ((EnumLiteral<?>)getBlock()).name();
-			String height = root.getAttribute("height");
-			double width;
-			if(document.getElementsByTagName("rect").item(0) != null)
-				width = (2 + config.wOffset() + value.length() * FONT_WIDTH_RECT);
-			else
-				width = (2 + config.wOffset() * 2 + value.length() * FONT_WIDTH_PATH);
-			root.setAttribute("width", ""+width+"mm");
-			root.setAttributeNS(null, "height", height);
-			System.out.println("0 0 " + width + " " + height.replaceAll("[^0-9.]", ""));
-			root.setAttributeNS(null, "viewBox", "0 0 " + width + " " + height.replaceAll("[^0-9.]", ""));
 			
-			Element path = (Element) document.getElementById("resize_path");
+			SVGPathElement path = (SVGPathElement) document.getElementById("resize_path");
+			SVGOMRectElement rect = null;
+			Element end = null;
 			if(path != null) {
 				String[] commands = path.getAttribute("d").split(" ");
 		        StringBuilder newD = new StringBuilder();
@@ -222,7 +214,7 @@ public class LiteralRenderer implements IRenderer {
 		                newD.append(command).append(" ");
 		            } else {
 		            	if(lastCommand.equals("h"))
-		            		newD.append(value.length() * FONT_WIDTH_PATH);
+		            		newD.append(value.length() * FONT_WIDTH_SVG);
 		            	else if(lastCommand.toLowerCase().equals("m")) {
 		            		lastCommand = "";
 		            		newD.append(config.wOffset() + ",0");
@@ -233,11 +225,9 @@ public class LiteralRenderer implements IRenderer {
 		        }
 		        path.setAttribute("d", newD.toString().trim());
 			} else {
-				Element rect = document.getElementById("resize_rect");
-				rect.setAttributeNS(null, "width", config.wOffset() + value.length() * FONT_WIDTH_RECT + "");
-				Element end = document.getElementById("end");
-				if(end != null)
-					end.setAttribute("transform", "translate("+ (width - config.endOffset()) + ", 0)");
+				rect = (SVGOMRectElement)document.getElementById("resize_rect");
+				rect.setAttributeNS(null, "width", config.wOffset() + value.length() * FONT_WIDTH_SVG + "");
+				end = document.getElementById("end");
 			}
 	        Element textElement;
 	        if(isNewDocument) {
@@ -246,7 +236,7 @@ public class LiteralRenderer implements IRenderer {
 		        textElement.setAttributeNS(null, "x", ""+config.textXOffset());
 		        textElement.setAttributeNS(null, "y", String.valueOf(17));
 		        textElement.setAttributeNS(null, "font-size", String.valueOf(16));
-		        textElement.setAttributeNS(null, "font-family", "monofonto");
+		        textElement.setAttributeNS(null, "font-family", "monospace");
 		        if(type.equals(IRenderable.VARIABLE_ENUM))
 		        	textElement.setAttributeNS(null, "fill", "white");	
 		        textElement.setTextContent(value);
@@ -257,6 +247,16 @@ public class LiteralRenderer implements IRenderer {
 				textElement.setAttributeNS(null, "x", ""+config.textXOffset());
 				textElement.setTextContent(value);
 			}
+	        Rectangle2D bb = ctx.getGraphicsNode(path == null?rect:path).getBounds();
+	        if(end != null)
+				end.setAttribute("transform", "translate("+ (bb.getWidth() - config.endOffset()) + ", 0)");
+			root.setAttributeNS(null, "width", ""  + bb.getWidth());
+			root.setAttributeNS(null, "height", "" + bb.getHeight());
+			root.setAttributeNS(null, "viewBox", "0 0 " + bb.getWidth() + " " + bb.getHeight());
+//			root.removeAttribute("width");
+//			root.removeAttribute("height");
+//			root.removeAttribute("viewBox");
+			
 //	        if(type.equals(IRenderable.VARIABLE_ENUM)) {
 //		        System.out.println(document.hashCode());
 //		        try (FileWriter writer = new FileWriter(new File(document.hashCode() + ".svg"))) {
