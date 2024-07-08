@@ -32,7 +32,7 @@ import org.w3c.dom.svg.SVGDocument;
 import org.w3c.dom.svg.SVGRect;
 
 import debug.DebugOut;
-import domain.blocks.operators.AppendOperator;
+import domain.blocks.operators.RandomOperator;
 import ui.renderers.SimpleBlockRenderer;
 
 public class SVGReader {
@@ -69,9 +69,9 @@ public class SVGReader {
 //        LiteralRenderer r = (LiteralRenderer) new StringLiteral("123456789987654321", null).getRenderer();
 //        LiteralRenderer r = (LiteralRenderer) new EnumLiteral<Integer>(KeyEventBlock.KEY_MAP, null).getRenderer();
 
-        SimpleBlockRenderer r = (SimpleBlockRenderer) new AppendOperator().getRenderer();
+//        SimpleBlockRenderer r = (SimpleBlockRenderer) new AppendOperator().getRenderer();
 //        SimpleBlockRenderer r = (SimpleBlockRenderer) new AddOperator().getRenderer();
-//        SimpleBlockRenderer r = (SimpleBlockRenderer) new RandomOperator().getRenderer();
+        SimpleBlockRenderer r = (SimpleBlockRenderer) new RandomOperator().getRenderer();
         SVGDocument doc = r.getRenderableSVG();
         System.out.println(doc.hashCode());
         try (FileWriter writer = new FileWriter(new File(doc.hashCode() + ".svg"))) {

@@ -2,12 +2,16 @@ package ui.renderers;
 
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 
 import org.apache.batik.anim.dom.SVGOMRectElement;
 import org.apache.batik.anim.dom.SVGOMSVGElement;
 import org.apache.batik.bridge.BridgeContext;
+import org.apache.batik.dom.util.DOMUtilities;
 import org.apache.batik.gvt.GraphicsNode;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -234,7 +238,7 @@ public class SimpleBlockRenderer implements DragableRenderer{
 	private transient SVGDocument document = null;
 	private transient BridgeContext ctx = null;
 	private transient GraphicsNode gn = null;
-	private boolean updateSVG = true;
+	private boolean updateSVG = false;
 	
 	@Override
 	public SVGDocument getRenderableSVG() {
@@ -278,7 +282,7 @@ public class SimpleBlockRenderer implements DragableRenderer{
 				rect.setAttributeNS(null, "width", config.wOffset() + textWidth+ "");
 			}
 			Node child = document.importNode(text.getDocumentElement(), true);
-			((Element)child).setAttributeNS(null, "x", "0");
+			((Element)child).setAttributeNS(null, "x", config.textXOffset() + "");
 			root.appendChild(child);
 			ctx = SVGReader.build(document);
 			Rectangle2D bb = ctx.getGraphicsNode(path == null?rect:path).getBounds();

@@ -353,6 +353,7 @@ public interface IRenderer extends Serializable {
 			float len = 0;
 			int child = 0;
 			BridgeContext ctx = SVGReader.build(document);
+			double h = ctx.getGraphicsNode(root).getBounds().getHeight();
 			for(Element e = root.getFirstElementChild(); e != null; e = (Element)e.getNextSibling()) {
 				if(e instanceof SVGLocatable ge) {
 					Rectangle2D bb = ctx.getGraphicsNode(e).getBounds();
@@ -373,11 +374,13 @@ public interface IRenderer extends Serializable {
 						((VariableHolder)getBlock()).getVariableAt(child).getRenderer().getClickable().setPosition((int)len, (int)bb.getY());
 					}
 					System.out.println(ge.getClass() + " " + w + " " + len + " " + x0);
-					e.setAttributeNS(null, "x", ""+(x0 + len));
+					if((x0 + len) == 0)
+						e.removeAttribute("dx");
+					else
+						e.setAttributeNS(null, "x", ""+(x0 + len));
 					len += w;
 				}
 			}
-			double h = ctx.getGraphicsNode(root).getBounds().getHeight();
 			root.setAttributeNS(null, "width", len + "");
 			root.setAttributeNS(null, "height", h + "");
 			root.setAttributeNS(null, "viewBox", "0 0 " + (len+1.25) + " " + h);
