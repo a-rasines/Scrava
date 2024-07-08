@@ -39,7 +39,7 @@ public class SimpleBlockRenderer implements DragableRenderer{
 		 * This enum represents the different block texture groups
 		 */
 		public enum BlockCategory {
-				OPERATOR("#e97d00"),
+				OPERATOR("#4ca742"),
 				VARIABLE("#e97d00"),
 				;
 			
