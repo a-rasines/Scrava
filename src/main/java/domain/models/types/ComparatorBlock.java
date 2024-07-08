@@ -8,7 +8,7 @@ public abstract class ComparatorBlock<T> extends ConditionalBlock<T>{
 	
 	@Override
 	public BlockCategory getCategory() {
-		return BlockCategory.CONDITIONAL;
+		return BlockCategory.OPERATOR;
 	}
 	
 	public Boolean value(Valuable<? extends T> left, Valuable<? extends T> right) {

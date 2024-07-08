@@ -71,12 +71,7 @@ public abstract class OperatorBlock<T, R> implements SimpleRenderable<R> {
 	}
 	@Override
 	public BlockCategory getCategory() {
-		if(value() instanceof Number)
-			return BlockCategory.OPERATOR;
-		else if(value() instanceof Boolean)
-			return BlockCategory.CONDITIONAL;
-		else
-			return BlockCategory.STRING_OPERATOR;
+		return BlockCategory.OPERATOR;
 	}
 
 	@Override

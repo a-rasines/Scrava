@@ -22,11 +22,7 @@ public interface IVariable<T> extends SimpleRenderable<T>, Valuable<T> {
 	
 	@Override
 	public default BlockCategory getCategory() {
-		return switch(value()) {
-			case Number n -> BlockCategory.NUMBER_VARIABLE;
-			case Boolean b -> BlockCategory.BOOLEAN_VARIABLE;
-			default -> BlockCategory.STRING_VARIABLE;
-		};
+		return BlockCategory.VARIABLE;
 	}
 	
 	public static List<IVariable<?>> getVisibleVariables() {

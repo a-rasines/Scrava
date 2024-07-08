@@ -32,8 +32,8 @@ import org.w3c.dom.svg.SVGDocument;
 import org.w3c.dom.svg.SVGRect;
 
 import debug.DebugOut;
-import domain.values.BooleanLiteral;
-import ui.renderers.LiteralRenderer;
+import domain.blocks.operators.AppendOperator;
+import ui.renderers.SimpleBlockRenderer;
 
 public class SVGReader {
 
@@ -65,11 +65,11 @@ public class SVGReader {
 //        frame.getContentPane().add(canvas, BorderLayout.CENTER);
 //        canvas.setSVGDocument(document);
 //        LiteralRenderer r = (LiteralRenderer) new NumberLiteral<Integer>(123450, null).getRenderer();
-        LiteralRenderer r = (LiteralRenderer) new BooleanLiteral(true, null).getRenderer();
+//        LiteralRenderer r = (LiteralRenderer) new BooleanLiteral(true, null).getRenderer();
 //        LiteralRenderer r = (LiteralRenderer) new StringLiteral("123456789987654321", null).getRenderer();
 //        LiteralRenderer r = (LiteralRenderer) new EnumLiteral<Integer>(KeyEventBlock.KEY_MAP, null).getRenderer();
 
-//        SimpleBlockRenderer r = (SimpleBlockRenderer) new AppendOperator().getRenderer();
+        SimpleBlockRenderer r = (SimpleBlockRenderer) new AppendOperator().getRenderer();
 //        SimpleBlockRenderer r = (SimpleBlockRenderer) new AddOperator().getRenderer();
 //        SimpleBlockRenderer r = (SimpleBlockRenderer) new RandomOperator().getRenderer();
         SVGDocument doc = r.getRenderableSVG();

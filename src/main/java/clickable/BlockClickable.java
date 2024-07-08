@@ -41,8 +41,8 @@ public class BlockClickable implements Clickable{
 		
 	}
 	
-	protected boolean between(int v, int min, int max) {
-		return v <= max && v >= min;
+	protected boolean between(int v, double x, double d) {
+		return v <= d && v >= x;
 	}
 	
 	protected transient int cx;
@@ -59,7 +59,7 @@ public class BlockClickable implements Clickable{
 			System.out.println(renderer.getBlock().toString().replaceAll(".*\\.", "") + " -> " + c.getBlock().toString().replaceAll(".*\\.", "") + " x:" + x + " y:" + y + " rx:" + rect.x + " ry:" + rect.y);
 			if(between(x, rect.x, rect.x + rect.w) && between(y, rect.y, rect.y + rect.h)) {
 				System.out.println("inside " + c.getBlock().toString().replaceAll(".*\\.", ""));
-				(clicked = c).onClick(x - rect.x, y - rect.y);
+				(clicked = c).onClick(x - (int)rect.x, y - (int)rect.y);
 				return;
 			}
 		}
@@ -161,7 +161,7 @@ public class BlockClickable implements Clickable{
 			Rect rect = hovered.getPosition();
 			if(between(x, rect.x, rect.x + rect.w) && between(y, rect.y, rect.y + rect.h)) {
 				System.out.println("hovered " + renderer.getBlock().toString().replaceAll(".*\\.", "") + " -> " + hovered.getBlock().toString().replaceAll(".*\\.", "") + " x:" + x + " y:" + y + " rx:" + rect.x + " ry:" + rect.y);
-				hovered.onHover(x - rect.x, y - rect.y, clicked);
+				hovered.onHover(x - (int)rect.x, y - (int)rect.y, clicked);
 			} else {
 				System.out.println("hoverChange old:" + renderer.getBlock().toString().replaceAll(".*\\.", "") + " -> " + hovered.getBlock().toString().replaceAll(".*\\.", "") + " x:" + x + " y:" + y + " rx:" + rect.x + " ry:" + rect.y);
 				onHoverEnd(false, clicked);
@@ -176,7 +176,7 @@ public class BlockClickable implements Clickable{
 			System.out.println("checking " + renderer.getBlock().toString().replaceAll(".*\\.", "") + " -> " + c.getBlock().toString().replaceAll(".*\\.", "") + " x:" + x + " y:" + y + " rx:" + rect.x + " ry:" + rect.y + " w:" + rect.w + " h:" + rect.h);
 			if(between(x, rect.x, rect.x + rect.w) && between(y, rect.y, rect.y + rect.h)) {
 				System.out.println("inside");
-				(hovered = c).onHover(x - rect.x, y - rect.y, clicked);
+				(hovered = c).onHover(x - (int)rect.x, y - (int)rect.y, clicked);
 				return;
 			}
 		}

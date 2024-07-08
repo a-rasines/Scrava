@@ -207,7 +207,7 @@ public class BlockPanel extends JLayeredPane {
 				int w = 0;
 				while(next != null) {
 					y += next.getRenderer().getHeight();
-					w = Math.max(w, next.getRenderer().getWidth());
+					w = Math.max(w, (int)next.getRenderer().getWidth());
 					next = next.next();
 				}
 				next = (InvocableClickable) clicked;
@@ -312,7 +312,7 @@ public class BlockPanel extends JLayeredPane {
 				System.out.println(clicked.getClass().getSimpleName() + " " + clicked.getBlock().toString().replaceAll(".*\\.", "") + 
 						" px:" + clickPosition.x + " py:" + clickPosition.y + 
 						" xf:" + (clickPosition.x - clicked.getPosition().x) + " yf:" + (clickPosition.x - clicked.getPosition().x));
-				clicked.onClick(clickPosition.x - clicked.getPosition().x, clickPosition.y - clicked.getPosition().y);//(int)(mouse.x - (clicked.getPosition().x + x) * zoom), (int)(mouse.y - (clicked.getPosition().y + y) * zoom));
+				clicked.onClick(clickPosition.x - (int)clicked.getPosition().x, clickPosition.y - (int)clicked.getPosition().y);//(int)(mouse.x - (clicked.getPosition().x + x) * zoom), (int)(mouse.y - (clicked.getPosition().y + y) * zoom));
 				repaint();
 			} else {
 				cx = (int) (mouse.x / zoom - x);
@@ -382,7 +382,7 @@ public class BlockPanel extends JLayeredPane {
 					hovered.onHoverEnd(false, clicked);
 				}
 				hovered = dr.getClickable();
-				hovered.onHover(hpoint.x - hovered.getPosition().x, hpoint.y - hovered.getPosition().y, clicked);
+				hovered.onHover((int)hpoint.x - (int)hovered.getPosition().x, (int)hpoint.y - (int)hovered.getPosition().y, clicked);
 				return true;
 			}
 			

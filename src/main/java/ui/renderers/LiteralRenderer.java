@@ -8,7 +8,6 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.List;
-import java.util.Map;
 
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
@@ -18,6 +17,7 @@ import javax.swing.WindowConstants;
 import org.apache.batik.anim.dom.SVGOMRectElement;
 import org.apache.batik.anim.dom.SVGOMSVGElement;
 import org.apache.batik.bridge.BridgeContext;
+import org.apache.batik.gvt.GraphicsNode;
 import org.w3c.dom.Element;
 import org.w3c.dom.svg.SVGDocument;
 import org.w3c.dom.svg.SVGPathElement;
@@ -25,7 +25,6 @@ import org.w3c.dom.svg.SVGPathElement;
 import clickable.BlockClickable;
 import clickable.LiteralClickable;
 import domain.models.interfaces.Clickable;
-import domain.models.interfaces.Clickable.Rect;
 import domain.models.interfaces.Valuable;
 import domain.values.AbstractLiteral;
 import domain.values.BooleanLiteral;
@@ -70,8 +69,9 @@ public class LiteralRenderer implements IRenderer {
 	private transient BufferedImage rendered = null;
 	private boolean updateSVG = true;
 	private transient SVGDocument document = null;
-	private transient SVGConfig config;
-	private transient BridgeContext ctx;
+	private transient SVGConfig config = null;
+	private transient BridgeContext ctx = null;
+	private transient GraphicsNode gn = null;
 	
 	private LiteralRenderer(LiteralRenderable<?> block, String type, BlockClickable parent) {
 		this.block = block;
@@ -149,41 +149,32 @@ public class LiteralRenderer implements IRenderer {
 	}
 
 	@Override
-	public int getHeight() {
-		return getRenderable().getHeight();
+	public double getHeight() {
+		if(gn == null) {
+			getRenderableSVG();
+			gn = ctx.getGraphicsNode(document.getDocumentElement());
+		}
+		return gn.getBounds().getHeight();
 	}
 
 	@Override
-	public int getWidth() {
-		return getRenderable().getWidth();
+	public double getWidth() {
+		if(gn == null) {
+			getRenderableSVG();
+			gn = ctx.getGraphicsNode(document.getDocumentElement());
+		}
+		return gn.getBounds().getWidth();
 	}
 
-	@Override
-	public void patch(int x, int y, int h, int w, BufferedImage bi) {
-		rendered = null;
-		Rect r = clickable.getPosition();
-		clickable.getParent().getRenderer().patch(r.x, r.y, r.y + r.h, r.w, getRenderable());
+//	@Override
+//	public void patch(int x, int y, int h, int w, BufferedImage bi) {
+//		rendered = null;
+//		Rect r = clickable.getPosition();
+//		clickable.getParent().getRenderer().patch(r.x, r.y, r.y + r.h, r.w, getRenderable());
 		
-	}
+//	}
 	
-	private static final Map<String, SVGConfig> CONFIG_MAP;
 	
-	static {
-		SVGDocument numberDoc = null;
-		SVGDocument stringDoc = null;
-		SVGDocument booleanDoc = null;
-		SVGDocument enumDoc = null;
-		try { numberDoc = SVGReader.readSVG("textures/variable/literal/num.svg"); } catch(Exception e) {e.printStackTrace();}
-		try { stringDoc = SVGReader.readSVG("textures/variable/literal/string.svg"); } catch(Exception e) {e.printStackTrace();}
-		try { booleanDoc = SVGReader.readSVG("textures/variable/literal/boolean.svg"); } catch(Exception e) {e.printStackTrace();}
-		try { enumDoc = SVGReader.readSVG("textures/variable/literal/enum.svg"); } catch(Exception e) {e.printStackTrace();}
-		CONFIG_MAP = Map.of(
-			IRenderable.VARIABLE_NUM, new SVGConfig(numberDoc, 24, 13, 0),
-			IRenderable.VARIABLE_BOOL, new SVGConfig(booleanDoc, 8.75, 9, 0),
-			IRenderable.VARIABLE_STR, new SVGConfig(stringDoc, 12, 5, 0),
-			IRenderable.VARIABLE_ENUM, new SVGConfig(enumDoc, 25, 5, 12.35)
-		);
-	}
 	
 	@Override
 	public SVGDocument getRenderableSVG() {
@@ -191,7 +182,7 @@ public class LiteralRenderer implements IRenderer {
 			updateSVG = false;
 			boolean isNewDocument = false;
 			if(document == null) {
-				config = CONFIG_MAP.get(type);
+				config = SVGConfig.getConfig(type);
 				document = config.document();
 				ctx = SVGReader.build(document);
 				isNewDocument = true;
@@ -253,18 +244,7 @@ public class LiteralRenderer implements IRenderer {
 			root.setAttributeNS(null, "width", ""  + bb.getWidth());
 			root.setAttributeNS(null, "height", "" + bb.getHeight());
 			root.setAttributeNS(null, "viewBox", "0 0 " + bb.getWidth() + " " + bb.getHeight());
-//			root.removeAttribute("width");
-//			root.removeAttribute("height");
-//			root.removeAttribute("viewBox");
-			
-//	        if(type.equals(IRenderable.VARIABLE_ENUM)) {
-//		        System.out.println(document.hashCode());
-//		        try (FileWriter writer = new FileWriter(new File(document.hashCode() + ".svg"))) {
-//		            DOMUtilities.writeDocument(document, writer);
-//		        } catch (IOException e) {
-//		            e.printStackTrace();
-//		        }
-//	        }
+
 		}
 		return document;
 	}

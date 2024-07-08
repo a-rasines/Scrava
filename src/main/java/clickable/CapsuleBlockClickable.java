@@ -99,7 +99,7 @@ public class CapsuleBlockClickable extends InvocableClickable {
 				Rect r1 = hovered.getPosition();
 				if(x > r1.x && y > r1.y && x < r1.x + r1.w && y < r1.y + r1.h + InvocableBlockRenderer.CONNECTOR.getHeight()) {
 					System.out.println("px:" + x + " py:" + y + " hx:" + hovered.getPosition().x + " hy:" + hovered.getPosition().y + " rx:" + r.x + " ry:" + r.y);
-					hovered.onHover(x - hovered.getPosition().x, y - hovered.getPosition().y, clicked);
+					hovered.onHover(x - (int)hovered.getPosition().x, y - (int)hovered.getPosition().y, clicked);
 					return;
 				} else {
 					hovered.onHoverEnd(false, clicked);
@@ -120,7 +120,7 @@ public class CapsuleBlockClickable extends InvocableClickable {
 				}
 			}
 			if(hovered != null)
-				hovered.onHover(x - hovered.getPosition().x, y - hovered.getPosition().y, clicked);
+				hovered.onHover(x - (int)hovered.getPosition().x, y - (int)hovered.getPosition().y, clicked);
 		}
 		
 	}
@@ -194,7 +194,7 @@ public class CapsuleBlockClickable extends InvocableClickable {
 				while(true) {
 					BlockPanel.INSTANCE.removeBlock(clicked.getRenderer());
 					Rect pos = getRenderer().getBlockBundlesSize().get(index);
-					clicked.getRenderer().moveTo(pos.x, pos.y + pos.h);
+					clicked.getRenderer().moveTo((int)pos.x, (int)pos.y + (int)pos.h);
 					System.out.println(index);
 					if(end != null)
 						nestClickable(index, i++, clicked);

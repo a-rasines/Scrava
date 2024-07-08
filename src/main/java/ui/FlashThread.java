@@ -19,7 +19,7 @@ public class FlashThread extends Thread{
 		if(this.hovered != null) {
 			interupted = true;
 			this.hovered.opacity = 1;
-			this.hovered.patch(0,0,0,0,null);
+			//this.hovered.patch(0,0,0,0,null);
 			interupted = false;
 		}
 		this.hovered = hovered;
@@ -32,10 +32,10 @@ public class FlashThread extends Thread{
 				if(opacity <= -90) opacity = 90;
 				opacity -= 5;
 				hovered.opacity = ((Math.abs(opacity)+10)/100);
-				try {
-					if(!interupted) //Threads racing once again
-						hovered.patch(0,0,0,0,null);
-				} catch(NullPointerException e) {}//Threads racing, I ain't no traffic cop
+//				try {
+//					if(!interupted) //Threads racing once again
+//						hovered.patch(0,0,0,0,null);
+//				} catch(NullPointerException e) {}//Threads racing, I ain't no traffic cop
 			}
 			try { Thread.sleep(16); } catch (InterruptedException e) { e.printStackTrace(); }
 		}

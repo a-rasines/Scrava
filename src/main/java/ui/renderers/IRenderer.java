@@ -1,11 +1,8 @@
 package ui.renderers;
 
-import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.FontFormatException;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
 import java.awt.GraphicsEnvironment;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
@@ -28,11 +25,9 @@ import org.w3c.dom.svg.SVGLocatable;
 
 import clickable.BlockClickable;
 import domain.models.interfaces.Clickable;
-import domain.models.interfaces.Clickable.Rect;
 import domain.models.interfaces.Translatable;
 import domain.models.interfaces.VariableHolder;
 import parsers.SVGReader;
-import ui.components.BlockPanel;
 
 public interface IRenderer extends Serializable {
 	public static final int FONT_WIDTH = 28;
@@ -195,9 +190,9 @@ public interface IRenderer extends Serializable {
 	 */
 	public void update();
 	
-	public int getHeight();
+	public double getHeight();
 	
-	public int getWidth();
+	public double getWidth();
 	
 	/**
 	 * Replaces the pixels from x to x + w
@@ -207,7 +202,7 @@ public interface IRenderer extends Serializable {
 	 * @param w width of the patch
 	 * @param newI new image to put on the 
 	 */
-	public void patch(int x, int y, int h, int w, BufferedImage newI);
+//	public void patch(int x, int y, int h, int w, BufferedImage newI);
 	
 	/**
 	 * Returns the tree of renderables nested inside 
@@ -274,44 +269,44 @@ public interface IRenderer extends Serializable {
 		@Override
 		public BlockClickable getClickable();
 		
-		public default BufferedImage renderText(String text, int startX, int height) {
-			int w = text.replaceAll("\\{\\{.*?}}", "").length() * FONT_WIDTH;
-			for(IRenderer rend : getChildren())
-				w += rend.getRenderable().getWidth();
-			BufferedImage rendered = new BufferedImage(w, height, BufferedImage.TYPE_INT_ARGB);
-			Graphics g = rendered.getGraphics();
-			g.setFont(new Font( font.getName(), Font.PLAIN, 55 ));
-			String[] parts = text.split("\\{\\{");
-			int len = 0;
-			int vari = 0;
-			for(String part : parts) {		
-				if(part.split(" ")[0].contains("}}")) {
-					String[] divided = part.split("}}");
-					IRenderer rend = getChildren().get(vari++);
-					BufferedImage subblock = rend.getRenderable();
-					rend.getClickable().setPosition(startX + len - 1, (int)((height- subblock.getHeight())/2));
-					g.drawImage(subblock, len - 1, (int)((height- subblock.getHeight())/2) , null);
-					if(BlockPanel.DEBUG_SHOW_HITBOXES) {
-						g.setColor(Color.green);
-						((Graphics2D)g).setStroke(new BasicStroke(2));
-						Rect r = rend.getClickable().getPosition();
-						g.drawRect(r.x + 1 - startX, r.y + 1, r.w - 2, r.h - 2);
-						g.setColor(Color.white);
-					}
-					len += subblock.getWidth();
-				
-					if(divided.length == 2) {
-						g.drawString(divided[1], len, height/2 + 20);
-						len += divided[1].length() * FONT_WIDTH;
-					}
-					
-				} else {
-					g.drawString(part, len, height/2  + 20);
-					len += part.length() * FONT_WIDTH;
-				}
-			}
-			return rendered;
-		}
+//		public default BufferedImage renderText(String text, int startX, int height) {
+//			int w = text.replaceAll("\\{\\{.*?}}", "").length() * FONT_WIDTH;
+//			for(IRenderer rend : getChildren())
+//				w += rend.getRenderable().getWidth();
+//			BufferedImage rendered = new BufferedImage(w, height, BufferedImage.TYPE_INT_ARGB);
+//			Graphics g = rendered.getGraphics();
+//			g.setFont(new Font( font.getName(), Font.PLAIN, 55 ));
+//			String[] parts = text.split("\\{\\{");
+//			int len = 0;
+//			int vari = 0;
+//			for(String part : parts) {		
+//				if(part.split(" ")[0].contains("}}")) {
+//					String[] divided = part.split("}}");
+//					IRenderer rend = getChildren().get(vari++);
+//					BufferedImage subblock = rend.getRenderable();
+//					rend.getClickable().setPosition(startX + len - 1, (int)((height- subblock.getHeight())/2));
+//					g.drawImage(subblock, len - 1, (int)((height- subblock.getHeight())/2) , null);
+//					if(BlockPanel.DEBUG_SHOW_HITBOXES) {
+//						g.setColor(Color.green);
+//						((Graphics2D)g).setStroke(new BasicStroke(2));
+//						Rect r = rend.getClickable().getPosition();
+//						g.drawRect(r.x + 1 - startX, r.y + 1, r.w - 2, r.h - 2);
+//						g.setColor(Color.white);
+//					}
+//					len += subblock.getWidth();
+//				
+//					if(divided.length == 2) {
+//						g.drawString(divided[1], len, height/2 + 20);
+//						len += divided[1].length() * FONT_WIDTH;
+//					}
+//					
+//				} else {
+//					g.drawString(part, len, height/2  + 20);
+//					len += part.length() * FONT_WIDTH;
+//				}
+//			}
+//			return rendered;
+//		}
 		
 		public default SVGDocument addText(String text) {
 	        SVGDocument document = (SVGDocument) SVGDOMImplementation.getDOMImplementation().createDocument(SVGDOMImplementation.SVG_NAMESPACE_URI, "svg", null);
@@ -331,6 +326,7 @@ public interface IRenderer extends Serializable {
 
 				        textElement.setAttributeNS(null, "y", String.valueOf(17));
 				        textElement.setAttributeNS(null, "id", divided[1]);
+				        textElement.setAttributeNS(null, "style", "fill:white");
 				        textElement.setAttributeNS(null, "font-size", String.valueOf(16));
 				        textElement.setAttributeNS(null, "font-family", "monospace");
 				        textElement.setTextContent(divided[1]);
@@ -344,6 +340,7 @@ public interface IRenderer extends Serializable {
 
 			        textElement.setAttributeNS(null, "y", String.valueOf(17));
 			        textElement.setAttributeNS(null, "font-size", String.valueOf(16));
+			        textElement.setAttributeNS(null, "style", "fill:white");
 			        textElement.setAttributeNS(null, "font-family", "monospace");
 			        textElement.setAttributeNS(null, "dx", "10");
 			        textElement.setAttributeNS(null, "id", part);

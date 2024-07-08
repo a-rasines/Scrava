@@ -37,7 +37,7 @@ public class OrBlock extends ConditionalBlock<Boolean> {
 
 	@Override
 	public BlockCategory getCategory() {
-		return BlockCategory.CONDITIONAL;
+		return BlockCategory.OPERATOR;
 	}
 
 	@Override

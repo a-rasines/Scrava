@@ -15,16 +15,16 @@ public interface Clickable extends Serializable{
 		public String toString() {
 			return "Rect [x=" + x + ", y=" + y + ", h=" + h + ", w=" + w + "]";
 		}
-		public int x;
-		public int y;
-		public int h;
-		public int w;
-		public Rect(int x, int y, int h, int w) {
+		public double x;
+		public double y;
+		public double h;
+		public double w;
+		public Rect(double x, double y, double d, double e) {
 			super();
 			this.x = x;
 			this.y = y;
-			this.h = h;
-			this.w = w;
+			this.h = d;
+			this.w = e;
 		}
 		
 		

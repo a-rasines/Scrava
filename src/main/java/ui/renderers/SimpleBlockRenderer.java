@@ -1,26 +1,27 @@
 package ui.renderers;
 
-import java.awt.BasicStroke;
-import java.awt.Color;
-import java.awt.Graphics2D;
+import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
+import org.apache.batik.anim.dom.SVGOMRectElement;
+import org.apache.batik.anim.dom.SVGOMSVGElement;
+import org.apache.batik.bridge.BridgeContext;
+import org.apache.batik.gvt.GraphicsNode;
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.w3c.dom.svg.SVGDocument;
+import org.w3c.dom.svg.SVGPathElement;
 
 import clickable.BlockClickable;
-import domain.models.interfaces.Clickable.Rect;
 import domain.models.interfaces.Valuable;
 import domain.models.interfaces.VariableHolder;
 import parsers.SVGReader;
 import ui.components.BlockPanel;
 import ui.domain.SVGConfig;
 import ui.renderers.IRenderer.DragableRenderer;
-import ui.renderers.SimpleBlockRenderer.SimpleRenderable.BlockCategory;
 
 public class SimpleBlockRenderer implements DragableRenderer{
 	private static final long serialVersionUID = 2111348834794671783L;
@@ -38,25 +39,16 @@ public class SimpleBlockRenderer implements DragableRenderer{
 		 * This enum represents the different block texture groups
 		 */
 		public enum BlockCategory {
-				OPERATOR(IRenderer.getRes("textures/operator/start.svg"), IRenderer.getRes("textures/operator/end.svg")),
-				NUMBER_VARIABLE(IRenderer.getRes("textures/variable/numvarstart.svg"), IRenderer.getRes("textures/variable/numvarend.svg")),
-				STRING_VARIABLE(IRenderer.getRes("textures/variable/stringvarstart.svg"), IRenderer.getRes("textures/variable/stringvarend.svg")),
-				BOOLEAN_VARIABLE(IRenderer.getRes("textures/variable/booleanvarstart.svg"), IRenderer.getRes("textures/variable/booleanvarend.svg")),
-				CONDITIONAL(IRenderer.getRes("textures/operator/conditional_start.svg"), IRenderer.getRes("textures/operator/conditional_end.svg")),
-				STRING_OPERATOR(IRenderer.getRes("textures/operator/string_operator.svg"), IRenderer.getRes("textures/operator/string_operator_end.svg"))
+				OPERATOR("#e97d00"),
+				VARIABLE("#e97d00"),
 				;
 			
 			/**
-			 * Left end of the block
+			 * color to fill the block with
 			 */
-			public final BufferedImage start;
-			/**
-			 * Right end of the block
-			 */
-			public final BufferedImage end;
-			BlockCategory(BufferedImage start, BufferedImage end){
-				this.start = start;
-				this.end = end;
+			public final String color;
+			BlockCategory(String color){
+				this.color = color;
 			}
 		}
 	}
@@ -86,8 +78,6 @@ public class SimpleBlockRenderer implements DragableRenderer{
 		this.y = y;
 		this.clickable = new BlockClickable(this, null);
 	}
-	
-	private transient static final int FONT_WIDTH = 25;
 	
 	@Override
 	public BufferedImage getRenderable() {
@@ -151,6 +141,7 @@ public class SimpleBlockRenderer implements DragableRenderer{
 	@Override
 	public void update() {
 		rendered(null, true);
+		updateSVG = true;
 		if(clickable.getParent() == null)
 			BlockPanel.INSTANCE.repaint();
 		else
@@ -172,28 +163,23 @@ public class SimpleBlockRenderer implements DragableRenderer{
 		}
 		return output;
 	}
-	@Override
-	public int getHeight() {
-		if(getChildren().size() == 0)
-			return block.getCategory().start.getHeight();
-		else {
-			int h = 0;
-			for (IRenderer ir : getChildren())
-				h = Math.max(h, ir.getRenderable().getHeight());
-			return (int) Math.round(h * SUBSCALE);
-		}
-	}
 	
 	@Override
-	public int getWidth() {
-		BlockCategory bc = block.getCategory();
-		int w = bc.start.getWidth() 
-				   + bc.end.getWidth() 
-				   + block.getTitle().replaceAll("\\{\\{.*?}}", "").length() * FONT_WIDTH;
-		for(IRenderer rend : getChildren())
-			w += rend.getRenderable().getWidth();
-		return w;
-		
+	public double getHeight() {
+		if(gn == null) {
+			getRenderableSVG();
+			gn = ctx.getGraphicsNode(document.getDocumentElement());
+		}
+		return gn.getBounds().getHeight();
+	}
+
+	@Override
+	public double getWidth() {
+		if(gn == null) {
+			getRenderableSVG();
+			gn = ctx.getGraphicsNode(document.getDocumentElement());
+		}
+		return gn.getBounds().getWidth();
 	}
 
 	@Override
@@ -214,83 +200,95 @@ public class SimpleBlockRenderer implements DragableRenderer{
 			rend.delete();
 		
 	}
-	@Override
-	public void patch(int x, int y, int h, int w, BufferedImage bi) {
-		BufferedImage rend =  rendered(null, false);
-		System.out.println("x:"+x+" h:"+h+" w:"+w);
-		background(rend, h, x, w);
-		Graphics2D g = (Graphics2D) rend.getGraphics();
-		g.drawImage(bi, x, y, null);
-		g.setColor(Color.green);
-		g.setStroke(new BasicStroke(2));
-		g.drawRect(x + 1, y + 1, w - 2, h - 2);
-		rendered(rend, true);
-		if(clickable.getParent() != null) {
-			Rect r = clickable.getPosition();
-			clickable.getParent().getRenderer().patch(r.x, r.y, r.h + r.y, r.w, getRenderable());
-		} else
-			BlockPanel.INSTANCE.repaint();
-	}
-
-private static final Map<Class<?>, SVGConfig> CONFIG_MAP;
+//	@Override
+//	public void patch(int x, int y, int h, int w, BufferedImage bi) {
+//		BufferedImage rend =  rendered(null, false);
+//		System.out.println("x:"+x+" h:"+h+" w:"+w);
+//		background(rend, h, x, w);
+//		Graphics2D g = (Graphics2D) rend.getGraphics();
+//		g.drawImage(bi, x, y, null);
+//		g.setColor(Color.green);
+//		g.setStroke(new BasicStroke(2));
+//		g.drawRect(x + 1, y + 1, w - 2, h - 2);
+//		rendered(rend, true);
+//		if(clickable.getParent() != null) {
+//			Rect r = clickable.getPosition();
+//			clickable.getParent().getRenderer().patch(r.x, r.y, r.h + r.y, r.w, getRenderable());
+//		} else
+//			BlockPanel.INSTANCE.repaint();
+//	}
 	
-	static {
-		SVGDocument numberDoc = null;
-		SVGDocument stringDoc = null;
-		SVGDocument booleanDoc = null;
-		try { numberDoc = SVGReader.readSVG("textures/variable/literal/num.svg"); } catch(Exception e) {e.printStackTrace();}
-		try { stringDoc = SVGReader.readSVG("textures/variable/literal/string.svg"); } catch(Exception e) {e.printStackTrace();}
-		try { booleanDoc = SVGReader.readSVG("textures/variable/literal/boolean.svg"); } catch(Exception e) {e.printStackTrace();}
-		Element[] cores = new Element[] {
-				numberDoc.getDocumentElement(),
-				stringDoc.getDocumentElement(),
-				booleanDoc.getDocumentElement()
-		};
-		for(Element c : cores) {
-			double height = Double.parseDouble(c.getAttribute("height").replaceAll("[^0-9.]", "")) + 1;
-			c.setAttribute("height", height + c.getAttribute("height").replaceAll("[0-9.]", ""));
-			String[] viewBox = c.getAttribute("viewBox").split(" ");
-			viewBox[3] = "" + height;
-			c.setAttribute("viewBox", String.join(" ", viewBox));
-			fillColor(c);
-		}
-		CONFIG_MAP = Map.of(
-			Number.class, new SVGConfig(numberDoc, 24, 13, 0),
-			Boolean.class, new SVGConfig(booleanDoc, 9.2229801, 7, 0),
-			String.class, new SVGConfig(stringDoc, 12, 5, 0)
-		);
-	}
-	
-	private static void fillColor(Element parent) {
+	private void fillColor(Element parent) {
 		NodeList nl = parent.getChildNodes();
 		String style = null;
 		for(int i = 0; i < nl.getLength(); i++)
 			if(nl.item(i) instanceof Element e) {
 				if((style = e.getAttribute("style")) != null)
-					e.setAttribute("style", style.replace("fill:#ffffff", "fill:#e97d00")
+					e.setAttribute("style", style.replace("fill:#ffffff", "fill:" + getBlock().getCategory().color)
 												 .replace("stroke:none", "stroke:#ffffff;stroke-opacity:1;stroke-dasharray:none"));
 				fillColor(e);
 			}
 	}
 	
-	public static final int FONT_WIDTH_PATH = 7;
-	public static final double FONT_WIDTH_RECT = 7.75;
 	private transient SVGConfig config = null;
 	private transient SVGDocument document = null;
+	private transient BridgeContext ctx = null;
+	private transient GraphicsNode gn = null;
+	private boolean updateSVG = true;
 	
 	@Override
 	public SVGDocument getRenderableSVG() {
-		boolean newDocument = false;
 		if(config == null) {
 			config = switch(getBlock().value()) {
-				case Number n -> CONFIG_MAP.get(Number.class);
-				case Boolean b -> CONFIG_MAP.get(Boolean.class);
-				default -> CONFIG_MAP.get(String.class);
+				case Number n -> SVGConfig.getConfig(IRenderable.VARIABLE_NUM);
+				case Boolean b -> SVGConfig.getConfig(IRenderable.VARIABLE_BOOL);
+				default -> SVGConfig.getConfig(IRenderable.VARIABLE_STR);
 			};
 			document = config.document();
-			newDocument = true;
+			fillColor(document.getDocumentElement());
+			SVGOMSVGElement root = (SVGOMSVGElement)document.getDocumentElement();
+			
+			SVGDocument text = addText(getBlock().getTitle());
+			double textWidth = SVGReader.build(text).getGraphicsNode(text.getDocumentElement()).getBounds().getWidth();
+			
+			SVGPathElement path = (SVGPathElement) document.getElementById("resize_path");
+			SVGOMRectElement rect = null;
+			if(path != null) {
+				String[] commands = path.getAttribute("d").split(" ");
+		        StringBuilder newD = new StringBuilder();
+		        String lastCommand = "";
+		        for (String command : commands) {
+		            if (command.matches("[MLHVCSQTAZmlhvcsqtaz]")) {
+		            	lastCommand = command;
+		                newD.append(command).append(" ");
+		            } else {
+		            	if(lastCommand.equals("h"))
+		            		newD.append(textWidth);
+		            	else if(lastCommand.toLowerCase().equals("m")) {
+		            		lastCommand = "";
+		            		newD.append(config.wOffset() + ",0");
+		            	} else
+		            		newD.append(command);
+		            	newD.append(" ");
+		            }
+		        }
+		        path.setAttribute("d", newD.toString().trim());
+			} else {
+				rect = (SVGOMRectElement)document.getElementById("resize_rect");
+				rect.setAttributeNS(null, "width", config.wOffset() + textWidth+ "");
+			}
+			Node child = document.importNode(text.getDocumentElement(), true);
+			((Element)child).setAttributeNS(null, "x", "0");
+			root.appendChild(child);
+			ctx = SVGReader.build(document);
+			Rectangle2D bb = ctx.getGraphicsNode(path == null?rect:path).getBounds();
+			root.setAttributeNS(null, "width", ""  + bb.getWidth());
+			root.setAttributeNS(null, "height", "" + bb.getHeight());
+			root.setAttributeNS(null, "viewBox", "0 0 " + (bb.getWidth() + 1) + " " + bb.getHeight());
+		} else if(updateSVG) {
+			
 		}
 		
-		return addText(getBlock().getTitle());
+		return document;
 	}
 }

@@ -27,7 +27,7 @@ public class InvocableClickable extends BlockClickable{
 		System.out.println(getBlock().toString().replaceAll(".*\\.", "") + " > " + (next==null?"null":next.getBlock().toString().replaceAll(".*\\.", "")));
 		this.next = next;
 		if(this.next == null) return this.next;//For some reason without the 'this' it's dead code
-		next.setPosition(getRenderer().getX(), getRenderer().getY() + getRenderer().getHeight());
+		next.setPosition(getRenderer().getX(), getRenderer().getY() + (int)getRenderer().getHeight());
 		next.prev = this;
 		if(getParent() == null)
 			updateHierarchy();
@@ -43,7 +43,7 @@ public class InvocableClickable extends BlockClickable{
 		System.out.println(toString() + " x:" + getRenderer().getX() + " y:" + y + " h:" + getRenderer().getHeight() + " next:" + (next==null?"null":next.toString()));
 		super.setPosition(x, y);
 		if(next != null)
-			next.setPosition(getRenderer().getX(), y + getRenderer().getHeight());
+			next.setPosition(getRenderer().getX(), y + (int)getRenderer().getHeight());
 	}
 	
 	private void updateHierarchy() {
@@ -90,7 +90,7 @@ public class InvocableClickable extends BlockClickable{
 			
 		} else if(next != null) { //Inside connector
 			System.out.println(this.getBlock().toString().replaceAll(".*\\.", "") + " -> " + next.getBlock().toString().replaceAll(".*\\.", ""));
-			next.onClick(x, y - getRenderer().getHeight());
+			next.onClick(x, y - (int)getRenderer().getHeight());
 		}
 	}
 	
@@ -109,7 +109,7 @@ public class InvocableClickable extends BlockClickable{
 		if(!append)
 			super.onHover(x, y, clicked);
 		else if(next != null)
-			next.onHover(x, y - getRenderer().getHeight(), clicked);
+			next.onHover(x, y - (int)getRenderer().getHeight(), clicked);
 	}
 	
 	@Override
@@ -119,14 +119,14 @@ public class InvocableClickable extends BlockClickable{
 	
 	public void update() {
 		if(this.next != null)
-			next.setPosition(getRenderer().getX(), getRenderer().getY() + getRenderer().getHeight());
+			next.setPosition(getRenderer().getX(), getRenderer().getY() + (int)getRenderer().getHeight());
 	}
 	
 	@Override
 	public void onDrag(int x, int y) {
 		super.onDrag(x, y);
 		if(next != null && super.clicked == null) {
-			next.onDrag0(x - cx , y - cy + getRenderer().getHeight());
+			next.onDrag0(x - cx , y - cy + (int)getRenderer().getHeight());
 		}
 		
 		
@@ -134,7 +134,7 @@ public class InvocableClickable extends BlockClickable{
 	protected void onDrag0(int x, int y) {
 		super.onDrag0(x, y);
 		if(next != null)
-			next.onDrag0(x, y  + getRenderer().getHeight());
+			next.onDrag0(x, y  + (int)getRenderer().getHeight());
 		
 	}
 	
