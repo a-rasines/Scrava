@@ -227,6 +227,7 @@ public class LiteralRenderer implements IRenderer {
 		        textElement.setAttributeNS(null, "x", ""+config.textXOffset());
 		        textElement.setAttributeNS(null, "y", String.valueOf(17));
 		        textElement.setAttributeNS(null, "font-size", String.valueOf(16));
+		        textElement.setAttributeNS(null, "font-weight", "bold");
 		        textElement.setAttributeNS(null, "font-family", "monospace");
 		        if(type.equals(IRenderable.VARIABLE_ENUM))
 		        	textElement.setAttributeNS(null, "fill", "white");	

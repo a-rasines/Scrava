@@ -327,6 +327,7 @@ public interface IRenderer extends Serializable {
 				        textElement.setAttributeNS(null, "y", String.valueOf(17));
 				        textElement.setAttributeNS(null, "id", divided[1]);
 				        textElement.setAttributeNS(null, "style", "fill:white");
+				        textElement.setAttributeNS(null, "font-weight", "bold");
 				        textElement.setAttributeNS(null, "font-size", String.valueOf(16));
 				        textElement.setAttributeNS(null, "font-family", "monospace");
 				        textElement.setTextContent(divided[1]);
@@ -342,6 +343,7 @@ public interface IRenderer extends Serializable {
 			        textElement.setAttributeNS(null, "font-size", String.valueOf(16));
 			        textElement.setAttributeNS(null, "style", "fill:white");
 			        textElement.setAttributeNS(null, "font-family", "monospace");
+			        textElement.setAttributeNS(null, "font-weight", "bold");
 			        textElement.setAttributeNS(null, "dx", "10");
 			        textElement.setAttributeNS(null, "id", part);
 			        textElement.setTextContent(part);
@@ -367,7 +369,6 @@ public interface IRenderer extends Serializable {
 						w = FONT_WIDTH_SVG *  te.getTextContent().length();
 						x0 = (te.getTextContent().length() - te.getTextContent().stripLeading().length()) * FONT_WIDTH_SVG;
 						System.out.println(x0 + " " + te.getTextContent().length() + " " + te.getTextContent().stripLeading().length());
-//						w += x0 + (te.getTextContent().length() - te.getTextContent().stripTrailing().length()) * FONT_WIDTH_SVG;
 					} else {
 						e.setAttributeNS(null, "id", "child_"+child);
 						((VariableHolder)getBlock()).getVariableAt(child).getRenderer().getClickable().setPosition((int)len, (int)bb.getY());
@@ -378,6 +379,7 @@ public interface IRenderer extends Serializable {
 					else
 						e.setAttributeNS(null, "x", ""+(x0 + len));
 					len += w;
+					h = Math.max(h, ctx.getGraphicsNode(e).getBounds().getHeight());
 				}
 			}
 			root.setAttributeNS(null, "width", len + "");
