@@ -2,16 +2,12 @@ package ui.renderers;
 
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 
 import org.apache.batik.anim.dom.SVGOMRectElement;
 import org.apache.batik.anim.dom.SVGOMSVGElement;
 import org.apache.batik.bridge.BridgeContext;
-import org.apache.batik.dom.util.DOMUtilities;
 import org.apache.batik.gvt.GraphicsNode;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -85,8 +81,14 @@ public class SimpleBlockRenderer implements DragableRenderer{
 	
 	@Override
 	public BufferedImage getRenderable() {
-		if(rendered(null, false) == null)
-			rendered(SVGReader.toBufferedImage(getRenderableSVG()), true);
+		if(rendered(null, false) == null) {
+			getRenderableSVG();
+			Element root = document.getDocumentElement();
+			root.setAttributeNS(null, "width", root.getAttribute("width") + "mm");
+			root.setAttributeNS(null, "height", root.getAttribute("height") + "mm");
+			rendered(SVGReader.toBufferedImage(document), true);
+			
+		}
 		return rendered(null, false);
 //		if(rendered(null, false) != null)
 //			return rendered(null, false);
@@ -290,7 +292,9 @@ public class SimpleBlockRenderer implements DragableRenderer{
 			root.setAttributeNS(null, "height", "" + bb.getHeight());
 			root.setAttributeNS(null, "viewBox", "0 0 " + (bb.getWidth() + 1) + " " + bb.getHeight());
 		} else if(updateSVG) {
-			
+			Element root = document.getDocumentElement();
+			root.setAttributeNS(null, "width", root.getAttribute("width").replaceAll("[^0-9.]", ""));
+			root.setAttributeNS(null, "height", root.getAttribute("height").replaceAll("[^0-9.]", ""));
 		}
 		
 		return document;

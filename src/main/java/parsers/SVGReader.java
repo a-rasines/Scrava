@@ -32,7 +32,9 @@ import org.w3c.dom.svg.SVGDocument;
 import org.w3c.dom.svg.SVGRect;
 
 import debug.DebugOut;
+import domain.blocks.conditional.bool.OrBlock;
 import domain.blocks.operators.RandomOperator;
+import ui.renderers.IRenderer;
 import ui.renderers.SimpleBlockRenderer;
 
 public class SVGReader {
@@ -64,14 +66,16 @@ public class SVGReader {
 //        JSVGCanvas canvas = new JSVGCanvas();
 //        frame.getContentPane().add(canvas, BorderLayout.CENTER);
 //        canvas.setSVGDocument(document);
-//        LiteralRenderer r = (LiteralRenderer) new NumberLiteral<Integer>(123450, null).getRenderer();
-//        LiteralRenderer r = (LiteralRenderer) new BooleanLiteral(true, null).getRenderer();
-//        LiteralRenderer r = (LiteralRenderer) new StringLiteral("123456789987654321", null).getRenderer();
-//        LiteralRenderer r = (LiteralRenderer) new EnumLiteral<Integer>(KeyEventBlock.KEY_MAP, null).getRenderer();
+//        IRenderer r = new NumberLiteral<Integer>(123450, null).getRenderer();
+//        IRenderer r = new BooleanLiteral(true, null).getRenderer();
+//        IRenderer r = new StringLiteral("123456789987654321", null).getRenderer();
+//        IRenderer r = new EnumLiteral<Integer>(KeyEventBlock.KEY_MAP, null).getRenderer();
 
-//        SimpleBlockRenderer r = (SimpleBlockRenderer) new AppendOperator().getRenderer();
-//        SimpleBlockRenderer r = (SimpleBlockRenderer) new AddOperator().getRenderer();
-        SimpleBlockRenderer r = (SimpleBlockRenderer) new RandomOperator().getRenderer();
+//        IRenderer r = new AppendOperator().getRenderer();
+//        IRenderer r = new AddOperator().getRenderer();
+//        IRenderer r = new RandomOperator().getRenderer();
+        IRenderer r = new OrBlock().getRenderer();
+        
         SVGDocument doc = r.getRenderableSVG();
         System.out.println(doc.hashCode());
         try (FileWriter writer = new FileWriter(new File(doc.hashCode() + ".svg"))) {

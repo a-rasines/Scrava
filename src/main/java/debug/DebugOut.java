@@ -6,8 +6,8 @@ import java.util.List;
 public class DebugOut extends PrintStream{
 	
 	public static final List<String> DEBUG_MUTED_FUNCTIONS = List.of(
-//			//block interaction
-			"addBlock",
+			//block interaction
+//			"addBlock",
 			"getBlockBundleIndex",
 			"moveTo",
 			"removeBlock",
@@ -17,13 +17,14 @@ public class DebugOut extends PrintStream{
 			
 			//event
 			"dispatchKeyEvent",
-			"mouseDragged",
+//			"mouseDragged",
 			"mousePressed",
 			"onClick",
 			"onDrag",
 			"onHover",
 			//"onHoverEnd",
 			
+			"addText",
 			"paintComponent",
 			"patch",
 			"renderText"

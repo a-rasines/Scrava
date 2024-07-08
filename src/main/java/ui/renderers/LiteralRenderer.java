@@ -241,7 +241,7 @@ public class LiteralRenderer implements IRenderer {
 	        Rectangle2D bb = ctx.getGraphicsNode(path == null?rect:path).getBounds();
 	        if(end != null)
 				end.setAttribute("transform", "translate("+ (bb.getWidth() - config.endOffset()) + ", 0)");
-			root.setAttributeNS(null, "width", ""  + bb.getWidth());
+			root.setAttributeNS(null, "width", ""  + (bb.getWidth() + 1.25));
 			root.setAttributeNS(null, "height", "" + bb.getHeight());
 			root.setAttributeNS(null, "viewBox", "0 0 " + bb.getWidth() + " " + bb.getHeight());
 

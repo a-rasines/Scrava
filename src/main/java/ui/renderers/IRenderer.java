@@ -361,7 +361,6 @@ public interface IRenderer extends Serializable {
 						System.out.println(ge.getClass());
 						continue;
 					}
-					System.out.println(bb.getX() + " " + bb.getY() + " " + bb.getWidth() + " " + bb.getHeight());
 					double w = bb.getWidth();
 					double x0 = 0;
 					if(e instanceof SVGOMTextElement te) {
