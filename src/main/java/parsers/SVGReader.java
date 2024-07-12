@@ -32,10 +32,10 @@ import org.w3c.dom.svg.SVGDocument;
 import org.w3c.dom.svg.SVGRect;
 
 import debug.DebugOut;
+import domain.blocks.conditional.bool.AndBlock;
 import domain.blocks.conditional.bool.OrBlock;
-import domain.blocks.operators.RandomOperator;
+import domain.values.BooleanLiteral;
 import ui.renderers.IRenderer;
-import ui.renderers.SimpleBlockRenderer;
 
 public class SVGReader {
 
@@ -74,7 +74,7 @@ public class SVGReader {
 //        IRenderer r = new AppendOperator().getRenderer();
 //        IRenderer r = new AddOperator().getRenderer();
 //        IRenderer r = new RandomOperator().getRenderer();
-        IRenderer r = new OrBlock().getRenderer();
+        IRenderer r = new OrBlock(new AndBlock(), new BooleanLiteral(true, null)).getRenderer();
         
         SVGDocument doc = r.getRenderableSVG();
         System.out.println(doc.hashCode());

@@ -284,13 +284,28 @@ public class SimpleBlockRenderer implements DragableRenderer{
 				rect.setAttributeNS(null, "width", config.wOffset() + textWidth+ "");
 			}
 			Node child = document.importNode(text.getDocumentElement(), true);
-			((Element)child).setAttributeNS(null, "x", config.textXOffset() + "");
-			root.appendChild(child);
+			float scale = 1.25f;
+			for(Node n = child.getFirstChild(); n != null; n = n.getNextSibling()) {
+				if(n instanceof SVGOMSVGElement e) {
+					Element p = e.getElementById("resize_rect");
+					if(p == null) p = e.getElementById("resize_path");
+					String transform = p.getAttribute("transform");
+					if(transform.length() > 0)
+						scale = Math.max(scale, 0.25f + Float.parseFloat(transform.replaceAll(".*scale\\( ?[0-9]* ?, ", "").replaceAll(" ?\\).*", "")));
+				}
+			}
+			
 			ctx = SVGReader.build(document);
 			Rectangle2D bb = ctx.getGraphicsNode(path == null?rect:path).getBounds();
-			root.setAttributeNS(null, "width", ""  + bb.getWidth());
-			root.setAttributeNS(null, "height", "" + bb.getHeight());
-			root.setAttributeNS(null, "viewBox", "0 0 " + (bb.getWidth() + 1) + " " + bb.getHeight());
+			((Element)child).setAttributeNS(null, "x", config.textXOffset() + "");
+			((Element)child).setAttributeNS(null, "y", bb.getHeight() * ((scale - 1) / 2) + "");
+			(path==null?rect:path).setAttributeNS(null, "transform", "scale( 1, " + scale + ")");
+			root.appendChild(child);
+			root.setAttributeNS(null, "width", ""  + (bb.getWidth() * scale));
+			root.setAttributeNS(null, "height", "" + (bb.getHeight() * scale));
+			root.setAttributeNS(null, "viewBox", "0 0 " + (bb.getWidth() * scale + 1) + " " + (bb.getHeight() * scale));
+			for(Valuable<?> c : getBlock().getAllVariables())
+				c.getRenderer().getClickable().move((int)config.textXOffset(), 0);
 		} else if(updateSVG) {
 			Element root = document.getDocumentElement();
 			root.setAttributeNS(null, "width", root.getAttribute("width").replaceAll("[^0-9.]", ""));

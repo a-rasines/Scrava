@@ -382,9 +382,9 @@ public interface IRenderer extends Serializable {
 					h = Math.max(h, ctx.getGraphicsNode(e).getBounds().getHeight());
 				}
 			}
-			root.setAttributeNS(null, "width", len + "");
+			root.setAttributeNS(null, "width", (len + 1.75) + "");
 			root.setAttributeNS(null, "height", h + "");
-			root.setAttributeNS(null, "viewBox", "0 0 " + (len+1.25) + " " + h);
+			root.setAttributeNS(null, "viewBox", "0 0 " + (len+1.75) + " " + h);
 			return document;
 		}
 	}
