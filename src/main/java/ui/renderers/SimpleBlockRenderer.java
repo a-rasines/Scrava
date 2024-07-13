@@ -272,7 +272,7 @@ public class SimpleBlockRenderer implements DragableRenderer{
 		            		newD.append(textWidth);
 		            	else if(lastCommand.toLowerCase().equals("m")) {
 		            		lastCommand = "";
-		            		newD.append(config.wOffset() + ",0");
+		            		newD.append(config.wOffset() - 1.75 + ",0");
 		            	} else
 		            		newD.append(command);
 		            	newD.append(" ");
@@ -284,7 +284,7 @@ public class SimpleBlockRenderer implements DragableRenderer{
 				rect.setAttributeNS(null, "width", config.wOffset() + textWidth+ "");
 			}
 			Node child = document.importNode(text.getDocumentElement(), true);
-			float scale = 1.25f;
+			float scale = 1.5f;
 			for(Node n = child.getFirstChild(); n != null; n = n.getNextSibling()) {
 				if(n instanceof SVGOMSVGElement e) {
 					Element p = e.getElementById("resize_rect");
@@ -301,9 +301,9 @@ public class SimpleBlockRenderer implements DragableRenderer{
 			((Element)child).setAttributeNS(null, "y", bb.getHeight() * ((scale - 1) / 2) + "");
 			(path==null?rect:path).setAttributeNS(null, "transform", "scale( 1, " + scale + ")");
 			root.appendChild(child);
-			root.setAttributeNS(null, "width", ""  + (bb.getWidth() * scale));
+			root.setAttributeNS(null, "width", ""  + (bb.getWidth() * scale + 0.5));
 			root.setAttributeNS(null, "height", "" + (bb.getHeight() * scale));
-			root.setAttributeNS(null, "viewBox", "0 0 " + (bb.getWidth() * scale + 1) + " " + (bb.getHeight() * scale));
+			root.setAttributeNS(null, "viewBox", "0 0 " + (bb.getWidth() * scale + 1) + " " + (bb.getHeight() * scale + 1));
 			for(Valuable<?> c : getBlock().getAllVariables())
 				c.getRenderer().getClickable().move((int)config.textXOffset(), 0);
 		} else if(updateSVG) {

@@ -75,6 +75,7 @@ public class SVGReader {
 //        IRenderer r = new AddOperator().getRenderer();
 //        IRenderer r = new RandomOperator().getRenderer();
         IRenderer r = new OrBlock(new AndBlock(), new BooleanLiteral(true, null)).getRenderer();
+//        IRenderer r = new OrBlock().getRenderer();
         
         SVGDocument doc = r.getRenderableSVG();
         System.out.println(doc.hashCode());

@@ -146,4 +146,9 @@ public abstract class OperatorBlock<T, R> implements SimpleRenderable<R> {
 		values = new Valuable[] {left, right};
 		return this;
 	}
+	
+	@Override
+	public String toString() {
+		return getClass().getSimpleName() + "@" + Integer.toHexString(hashCode());
+	}
 }

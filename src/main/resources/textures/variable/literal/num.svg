@@ -2,9 +2,9 @@
 <!-- Created with Inkscape (http://www.inkscape.org/) -->
 
 <svg
-   width="25.151501mm"
-   height="23.601208mm"
-   viewBox="0 0 2.5151501 23.601208"
+   width="25.2mm"
+   height="23.6mm"
+   viewBox="0 0 2.5 23.6"
    version="1.1"
    id="svg1"
    xmlns="http://www.w3.org/2000/svg"
@@ -14,12 +14,12 @@
   <g
      id="layer1">
     <rect
-       style="fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:1.021"
+       style="fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:1"
        id="resize_rect"
-       width="25.151501"
-       height="23.601208"
+       width="25.2"
+       height="23.6"
        x="1"
        y="0"
-       ry="11.800604" />
+       ry="11.8" />
   </g>
 </svg>

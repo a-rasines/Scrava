@@ -26,6 +26,7 @@ import org.w3c.dom.svg.SVGLocatable;
 import clickable.BlockClickable;
 import domain.models.interfaces.Clickable;
 import domain.models.interfaces.Translatable;
+import domain.models.interfaces.Valuable;
 import domain.models.interfaces.VariableHolder;
 import parsers.SVGReader;
 
@@ -269,62 +270,25 @@ public interface IRenderer extends Serializable {
 		@Override
 		public BlockClickable getClickable();
 		
-//		public default BufferedImage renderText(String text, int startX, int height) {
-//			int w = text.replaceAll("\\{\\{.*?}}", "").length() * FONT_WIDTH;
-//			for(IRenderer rend : getChildren())
-//				w += rend.getRenderable().getWidth();
-//			BufferedImage rendered = new BufferedImage(w, height, BufferedImage.TYPE_INT_ARGB);
-//			Graphics g = rendered.getGraphics();
-//			g.setFont(new Font( font.getName(), Font.PLAIN, 55 ));
-//			String[] parts = text.split("\\{\\{");
-//			int len = 0;
-//			int vari = 0;
-//			for(String part : parts) {		
-//				if(part.split(" ")[0].contains("}}")) {
-//					String[] divided = part.split("}}");
-//					IRenderer rend = getChildren().get(vari++);
-//					BufferedImage subblock = rend.getRenderable();
-//					rend.getClickable().setPosition(startX + len - 1, (int)((height- subblock.getHeight())/2));
-//					g.drawImage(subblock, len - 1, (int)((height- subblock.getHeight())/2) , null);
-//					if(BlockPanel.DEBUG_SHOW_HITBOXES) {
-//						g.setColor(Color.green);
-//						((Graphics2D)g).setStroke(new BasicStroke(2));
-//						Rect r = rend.getClickable().getPosition();
-//						g.drawRect(r.x + 1 - startX, r.y + 1, r.w - 2, r.h - 2);
-//						g.setColor(Color.white);
-//					}
-//					len += subblock.getWidth();
-//				
-//					if(divided.length == 2) {
-//						g.drawString(divided[1], len, height/2 + 20);
-//						len += divided[1].length() * FONT_WIDTH;
-//					}
-//					
-//				} else {
-//					g.drawString(part, len, height/2  + 20);
-//					len += part.length() * FONT_WIDTH;
-//				}
-//			}
-//			return rendered;
-//		}
-		
 		public default SVGDocument addText(String text) {
 	        SVGDocument document = (SVGDocument) SVGDOMImplementation.getDOMImplementation().createDocument(SVGDOMImplementation.SVG_NAMESPACE_URI, "svg", null);
 	        SVGOMSVGElement root = (SVGOMSVGElement)document.getDocumentElement();
 	        List<Element> elements = new LinkedList<>();
 	        String[] parts = text.split("\\{\\{");
 			int vari = 0;
+			double h = 0;
 			for(String part : parts) {
 				if(part.split(" ")[0].contains("}}")) {
 					String[] divided = part.split("}}");
 					IRenderer rend = getChildren().get(vari++);
 					SVGDocument doc = rend.getRenderableSVG();
 					Node child = document.importNode(doc.getDocumentElement(), true);
+					h = Math.max(h, Float.valueOf(((Element)child).getAttribute("viewBox").split(" ")[3]));
 					root.appendChild(child);
 					if(divided.length > 1 && divided[1].strip().length() > 0) {
 						SVGOMTextElement textElement = (SVGOMTextElement) document.createElementNS("http://www.w3.org/2000/svg", "text");
 
-				        textElement.setAttributeNS(null, "y", String.valueOf(17));
+//				        textElement.setAttributeNS(null, "y", String.valueOf(17));
 				        textElement.setAttributeNS(null, "id", divided[1]);
 				        textElement.setAttributeNS(null, "style", "fill:white");
 				        textElement.setAttributeNS(null, "font-weight", "bold");
@@ -339,7 +303,7 @@ public interface IRenderer extends Serializable {
 				} else if(!part.strip().equals("")){
 					SVGOMTextElement textElement = (SVGOMTextElement) document.createElementNS("http://www.w3.org/2000/svg", "text");
 
-			        textElement.setAttributeNS(null, "y", String.valueOf(17));
+//			        textElement.setAttributeNS(null, "y", String.valueOf(17));
 			        textElement.setAttributeNS(null, "font-size", String.valueOf(16));
 			        textElement.setAttributeNS(null, "style", "fill:white");
 			        textElement.setAttributeNS(null, "font-family", "monospace");
@@ -355,7 +319,7 @@ public interface IRenderer extends Serializable {
 			float len = 0;
 			int child = 0;
 			BridgeContext ctx = SVGReader.build(document);
-			double h = ctx.getGraphicsNode(root).getBounds().getHeight();
+			h = Math.max(h, ctx.getGraphicsNode(root).getBounds().getHeight());
 			for(Element e = root.getFirstElementChild(); e != null; e = (Element)e.getNextSibling()) {
 				if(e instanceof SVGLocatable ge) {
 					Rectangle2D bb = ctx.getGraphicsNode(e).getBounds();
@@ -370,14 +334,18 @@ public interface IRenderer extends Serializable {
 						x0 = (te.getTextContent().length() - te.getTextContent().stripLeading().length()) * FONT_WIDTH_SVG;
 						System.out.println(x0 + " " + te.getTextContent().length() + " " + te.getTextContent().stripLeading().length());
 					} else {
-						e.setAttributeNS(null, "id", "child_"+child);
-						((VariableHolder)getBlock()).getVariableAt(child).getRenderer().getClickable().setPosition((int)len, (int)bb.getY());
+						Valuable<?> ch = ((VariableHolder)getBlock()).getVariableAt(child);
+						e.setAttributeNS(null, "id", "child_"+child + "_" + ch.hashCode());
+						e.setAttributeNS(null, "block", ch.toString());
+						ch.getRenderer().getClickable().setPosition((int)len, (int)bb.getY());
+						child++;
 					}
 					System.out.println(ge.getClass() + " " + w + " " + len + " " + x0);
 					if((x0 + len) == 0)
 						e.removeAttribute("dx");
 					else
 						e.setAttributeNS(null, "x", ""+(x0 + len));
+					e.setAttributeNS(null, "y", Math.max(0, (h - bb.getHeight()) / 2) + "");
 					len += w;
 					h = Math.max(h, ctx.getGraphicsNode(e).getBounds().getHeight());
 				}
