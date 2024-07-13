@@ -2,6 +2,7 @@ package parsers;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileWriter;
@@ -28,7 +29,9 @@ import org.apache.batik.util.XMLResourceDescriptor;
 import org.w3c.dom.DOMImplementation;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 import org.w3c.dom.svg.SVGDocument;
+import org.w3c.dom.svg.SVGLocatable;
 import org.w3c.dom.svg.SVGRect;
 
 import debug.DebugOut;
@@ -180,4 +183,39 @@ public class SVGReader {
         }
         return clonedDocument;
 	}
+	
+	public static Rectangle2D getBoundingBox(Element svgElement) {
+        float minX = Float.MAX_VALUE;
+        float minY = Float.MAX_VALUE;
+        float maxX = -Float.MIN_VALUE + 1;
+        float maxY = -Float.MIN_VALUE + 1;
+
+        NodeList childNodes = svgElement.getChildNodes();
+
+        for (int i = 0; i < childNodes.getLength(); i++) {
+            Node node = childNodes.item(i);
+            System.out.println(node.getClass());
+            if (node instanceof SVGLocatable graphicsElement) {
+                SVGRect bbox = graphicsElement.getBBox();
+                if(bbox == null) continue;
+
+                float x = bbox.getX();
+                float y = bbox.getY();
+                float width = bbox.getWidth();
+                float height = bbox.getHeight();
+                System.out.println("x:" + x + " y:" + y + " w:" + width + " h:" + height);
+                minX = Math.min(minX, x);
+                minY = Math.min(minY, y);
+                maxX = Math.max(maxX, x + width);
+                maxY = Math.max(maxY, y + height);
+            }
+        }
+        System.out.println("minX: " + minX + " minY:" + minY + " maxX:" + maxX + " maxY:" + maxY);
+        if (minX == Float.MAX_VALUE || minY == Float.MAX_VALUE || maxX == -Float.MIN_VALUE || maxY == -Float.MIN_VALUE) {
+        	SVGRect bb = ((SVGLocatable)svgElement).getBBox();
+            return  new Rectangle2D.Float(bb.getX(), bb.getY(), bb.getWidth(), bb.getHeight());
+        } else {
+            return new Rectangle2D.Float(minX, minY, maxX - minX, maxY - minY);
+        }
+    }
 }

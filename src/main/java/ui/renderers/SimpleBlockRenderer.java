@@ -296,14 +296,16 @@ public class SimpleBlockRenderer implements DragableRenderer{
 			}
 			
 			ctx = SVGReader.build(document);
-			Rectangle2D bb = ctx.getGraphicsNode(path == null?rect:path).getBounds();
+			Rectangle2D bb = SVGReader.getBoundingBox((path == null?rect:path));
+			
 			((Element)child).setAttributeNS(null, "x", config.textXOffset() + "");
-			((Element)child).setAttributeNS(null, "y", bb.getHeight() * ((scale - 1) / 2) + "");
+			((Element)child).setAttributeNS(null, "y", "12.5%");//bb.getHeight() * ((scale - 1) / 2) + "");
+			
 			(path==null?rect:path).setAttributeNS(null, "transform", "scale( 1, " + scale + ")");
 			root.appendChild(child);
-			root.setAttributeNS(null, "width", ""  + (bb.getWidth() * scale + 0.5));
-			root.setAttributeNS(null, "height", "" + (bb.getHeight() * scale));
-			root.setAttributeNS(null, "viewBox", "0 0 " + (bb.getWidth() * scale + 1) + " " + (bb.getHeight() * scale + 1));
+			root.setAttributeNS(null, "width", ""  + Math.round((bb.getWidth() * scale + 0.5) * 100) / 100);
+			root.setAttributeNS(null, "height", "" +  Math.round((bb.getHeight() * scale) * 100) / 100);
+			root.setAttributeNS(null, "viewBox", "0 0 " + Math.round((bb.getWidth() * scale + 1) * 100) / 100 + " " + Math.round((bb.getHeight() * scale + 1) * 100) / 100);
 			for(Valuable<?> c : getBlock().getAllVariables())
 				c.getRenderer().getClickable().move((int)config.textXOffset(), 0);
 		} else if(updateSVG) {

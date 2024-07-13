@@ -322,11 +322,12 @@ public interface IRenderer extends Serializable {
 			h = Math.max(h, ctx.getGraphicsNode(root).getBounds().getHeight());
 			for(Element e = root.getFirstElementChild(); e != null; e = (Element)e.getNextSibling()) {
 				if(e instanceof SVGLocatable ge) {
-					Rectangle2D bb = ctx.getGraphicsNode(e).getBounds();
+					Rectangle2D bb = SVGReader.getBoundingBox(e);
 					if(bb == null) {
 						System.out.println(ge.getClass());
 						continue;
 					}
+					System.out.println(e.getClass().getSimpleName() + " " + bb.getHeight() + " " + h);
 					double w = bb.getWidth();
 					double x0 = 0;
 					if(e instanceof SVGOMTextElement te) {
@@ -345,14 +346,14 @@ public interface IRenderer extends Serializable {
 						e.removeAttribute("dx");
 					else
 						e.setAttributeNS(null, "x", ""+(x0 + len));
-					e.setAttributeNS(null, "y", Math.max(0, (h - bb.getHeight()) / 2) + "");
+					e.setAttributeNS(null, "y", e instanceof SVGOMTextElement? "50%" : Math.max(0, (h - bb.getHeight()) / 2) + "");
 					len += w;
 					h = Math.max(h, ctx.getGraphicsNode(e).getBounds().getHeight());
 				}
 			}
-			root.setAttributeNS(null, "width", (len + 1.75) + "");
+			root.setAttributeNS(null, "width", Math.round((len + 1.75) * 100) / 100 + "");
 			root.setAttributeNS(null, "height", h + "");
-			root.setAttributeNS(null, "viewBox", "0 0 " + (len+1.75) + " " + h);
+			root.setAttributeNS(null, "viewBox", "0 0 " + Math.round((len + 1.75) * 100) / 100 + " " + h);
 			return document;
 		}
 	}
