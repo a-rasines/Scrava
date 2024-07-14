@@ -7,12 +7,19 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.StringWriter;
 import java.net.URISyntaxException;
 
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.WindowConstants;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 
 import org.apache.batik.anim.dom.SAXSVGDocumentFactory;
 import org.apache.batik.anim.dom.SVGDOMImplementation;
@@ -56,8 +63,29 @@ public class SVGReader {
 	public static BridgeContext build(SVGDocument document) {
 		BridgeContext context = new BridgeContext(new UserAgentAdapter());
 		context.setDynamicState(BridgeContext.DYNAMIC);
-		new GVTBuilder().build(context, document);
+		try {
+			new GVTBuilder().build(context, document);
+		} catch(Exception e) {
+			try {
+				System.out.println(documentToString(document));
+			} catch (TransformerException e1) {
+				e1.printStackTrace();
+			}
+			throw e;
+		}
 		return context;
+	}
+	
+	public static String documentToString(SVGDocument document) throws TransformerException {
+		Transformer transformer = TransformerFactory.newInstance().newTransformer();
+        transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "no");
+        transformer.setOutputProperty(OutputKeys.METHOD, "xml");
+        transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+        transformer.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
+        
+        StringWriter writer = new StringWriter();
+        transformer.transform(new DOMSource(document), new StreamResult(writer));
+        return writer.getBuffer().toString();
 	}
 	public static void main(String[] args) throws URISyntaxException, IOException {
  //       SVGDocument document = new MoveXBlock(null).getRenderer().getRenderableSVG();

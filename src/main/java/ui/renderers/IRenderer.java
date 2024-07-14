@@ -20,6 +20,7 @@ import org.apache.batik.anim.dom.SVGOMTextElement;
 import org.apache.batik.bridge.BridgeContext;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 import org.w3c.dom.svg.SVGDocument;
 import org.w3c.dom.svg.SVGLocatable;
 
@@ -277,20 +278,30 @@ public interface IRenderer extends Serializable {
 	        String[] parts = text.split("\\{\\{");
 			int vari = 0;
 			double h = 0;
+			BridgeContext ctx = SVGReader.build(document);
 			for(String part : parts) {
 				if(part.split(" ")[0].contains("}}")) {
 					String[] divided = part.split("}}");
 					IRenderer rend = getChildren().get(vari++);
 					SVGDocument doc = rend.getRenderableSVG();
-					Node child = document.importNode(doc.getDocumentElement(), true);
-					h = Math.max(h, Float.valueOf(((Element)child).getAttribute("viewBox").split(" ")[3]));
-					root.appendChild(child);
+					Element newChild = document.createElementNS("http://www.w3.org/2000/svg", "g");
+					newChild.setAttribute("transform", doc.getDocumentElement().getAttribute("transform"));
+					NodeList nl = document.importNode(doc.getDocumentElement(), true).getChildNodes();
+					int len = nl.getLength(); //for some reason it decreases each iteration
+					for(int i = 0; i < len; i++) {
+						Node n = nl.item(0);
+						newChild.appendChild(n);
+					}
+					//child.setAttribute("style", child.getAttribute("style") + ";position:relative");
+					root.appendChild(newChild);
+					h = Math.max(h, SVGReader.getBoundingBox(newChild).getHeight());
 					if(divided.length > 1 && divided[1].strip().length() > 0) {
 						SVGOMTextElement textElement = (SVGOMTextElement) document.createElementNS("http://www.w3.org/2000/svg", "text");
-
-//				        textElement.setAttributeNS(null, "y", String.valueOf(17));
 				        textElement.setAttributeNS(null, "id", divided[1]);
-				        textElement.setAttributeNS(null, "style", "fill:white");
+				        textElement.setAttributeNS(null, "textAnchor", "middle");
+				        textElement.setAttributeNS(null, "dominant-baseline", "middle");
+//				        textElement.setAttributeNS(null, "y", "50%");
+				        textElement.setAttributeNS(null, "style", "fill:white; position:relative");
 				        textElement.setAttributeNS(null, "font-weight", "bold");
 				        textElement.setAttributeNS(null, "font-size", String.valueOf(16));
 				        textElement.setAttributeNS(null, "font-family", "monospace");
@@ -303,9 +314,10 @@ public interface IRenderer extends Serializable {
 				} else if(!part.strip().equals("")){
 					SVGOMTextElement textElement = (SVGOMTextElement) document.createElementNS("http://www.w3.org/2000/svg", "text");
 
-//			        textElement.setAttributeNS(null, "y", String.valueOf(17));
 			        textElement.setAttributeNS(null, "font-size", String.valueOf(16));
-			        textElement.setAttributeNS(null, "style", "fill:white");
+//			        textElement.setAttributeNS(null, "y", "50%");
+			        textElement.setAttributeNS(null, "textAnchor", "middle");
+			        textElement.setAttributeNS(null, "style", "fill:white; position:relative");
 			        textElement.setAttributeNS(null, "font-family", "monospace");
 			        textElement.setAttributeNS(null, "font-weight", "bold");
 			        textElement.setAttributeNS(null, "dx", "10");
@@ -318,8 +330,7 @@ public interface IRenderer extends Serializable {
 			}
 			float len = 0;
 			int child = 0;
-			BridgeContext ctx = SVGReader.build(document);
-			h = Math.max(h, ctx.getGraphicsNode(root).getBounds().getHeight());
+			h = Math.max(h, SVGReader.getBoundingBox(root).getHeight());
 			for(Element e = root.getFirstElementChild(); e != null; e = (Element)e.getNextSibling()) {
 				if(e instanceof SVGLocatable ge) {
 					Rectangle2D bb = SVGReader.getBoundingBox(e);
@@ -327,13 +338,11 @@ public interface IRenderer extends Serializable {
 						System.out.println(ge.getClass());
 						continue;
 					}
-					System.out.println(e.getClass().getSimpleName() + " " + bb.getHeight() + " " + h);
 					double w = bb.getWidth();
 					double x0 = 0;
 					if(e instanceof SVGOMTextElement te) {
 						w = FONT_WIDTH_SVG *  te.getTextContent().length();
 						x0 = (te.getTextContent().length() - te.getTextContent().stripLeading().length()) * FONT_WIDTH_SVG;
-						System.out.println(x0 + " " + te.getTextContent().length() + " " + te.getTextContent().stripLeading().length());
 					} else {
 						Valuable<?> ch = ((VariableHolder)getBlock()).getVariableAt(child);
 						e.setAttributeNS(null, "id", "child_"+child + "_" + ch.hashCode());
@@ -341,12 +350,22 @@ public interface IRenderer extends Serializable {
 						ch.getRenderer().getClickable().setPosition((int)len, (int)bb.getY());
 						child++;
 					}
-					System.out.println(ge.getClass() + " " + w + " " + len + " " + x0);
-					if((x0 + len) == 0)
-						e.removeAttribute("dx");
-					else
-						e.setAttributeNS(null, "x", ""+(x0 + len));
-					e.setAttributeNS(null, "y", e instanceof SVGOMTextElement? "50%" : Math.max(0, (h - bb.getHeight()) / 2) + "");
+					String[] transform = e.getAttribute("transform").split(" ");
+					transform: {
+						for(int i = 0; i < transform.length; i++)
+							if(transform[i].startsWith("translate")) {
+								if(!(e instanceof SVGOMTextElement))
+									transform[i] = "translate(" + (x0 + len) + ", "+ String.valueOf((h - bb.getHeight()) / 2) + ")";
+								else
+									transform[i] = "translate(" + (x0 + len) + ", " + String.valueOf(h / 2) + ")";
+								e.setAttribute("transform", String.join(" ", transform));
+								break transform;
+							}
+						if(!(e instanceof SVGOMTextElement))
+							e.setAttribute("transform", String.join(" ", transform) + "translate(" + (x0 + len) + ", "+ String.valueOf((h - bb.getHeight()) / 2) + ")");
+						else
+							e.setAttribute("transform", String.join(" ", transform) + "translate(" + (x0 + len) + ", " + String.valueOf(h / 2) + ")");
+					}
 					len += w;
 					h = Math.max(h, ctx.getGraphicsNode(e).getBounds().getHeight());
 				}
