@@ -9,15 +9,9 @@
    id="svg1"
    xmlns="http://www.w3.org/2000/svg"
    xmlns:svg="http://www.w3.org/2000/svg">
-  <defs
-     id="defs1" />
-  <g
-     id="layer1"
-   >
-    <path
-       id="resize_path"
-       style="fill:#ffffff;fill-opacity:1;stroke:#ffffff;stroke-width:1;stroke-dasharray:none;stroke-opacity:1"
-       d="M 0,0 l -1,0.7 -5.8,5.8 c -1.2,1.2 -1.9,3 -1.9,4.7 0,1.7 0.7,3.4 1.9,4.6 l 5.8,6 1,0.7 h 3 l 0.7,-0.7 5.8,-6 c 1.2,-1.2 1.9,-2.9 1.9,-4.6 0,-1.7 -0.7,-3.5 -1.9,-4.7 l -5.8,-5.8 -0.7,-0.7 z"
+   <path
+      id="resize_path"
+      style="fill:#ffffff;fill-opacity:1;stroke:#ffffff;stroke-width:1;stroke-dasharray:none;stroke-opacity:1"
+      d="M 0,0 l -1,0.7 -5.8,5.8 c -1.2,1.2 -1.9,3 -1.9,4.7 0,1.7 0.7,3.4 1.9,4.6 l 5.8,6 1,0.7 h 3 l 0.7,-0.7 5.8,-6 c 1.2,-1.2 1.9,-2.9 1.9,-4.6 0,-1.7 -0.7,-3.5 -1.9,-4.7 l -5.8,-5.8 -0.7,-0.7 z"
    />
-  </g>
 </svg>

@@ -9,18 +9,12 @@
    id="svg1"
    xmlns="http://www.w3.org/2000/svg"
    xmlns:svg="http://www.w3.org/2000/svg">
-  <defs
-     id="defs1" />
-  <g
-     id="layer1"
-   >
-    <rect
-       style="fill:#ffffff;fill-opacity:1;stroke-width:1;stroke-opacity:1"
-       id="resize_rect"
-       width="19.8"
-       height="23.6"
-       x="1"
-       y="0"
-       ry="5.3" />
-  </g>
+   <rect
+      style="fill:#ffffff;fill-opacity:1;stroke-width:1;stroke-opacity:1"
+      id="resize_rect"
+      width="19.8"
+      height="23.6"
+      x="1"
+      y="0"
+      ry="5.3" />
 </svg>
