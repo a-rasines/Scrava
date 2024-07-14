@@ -4,7 +4,6 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.FontFormatException;
 import java.awt.GraphicsEnvironment;
-import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
@@ -23,6 +22,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.w3c.dom.svg.SVGDocument;
 import org.w3c.dom.svg.SVGLocatable;
+import org.w3c.dom.svg.SVGRect;
 
 import clickable.BlockClickable;
 import domain.models.interfaces.Clickable;
@@ -333,7 +333,7 @@ public interface IRenderer extends Serializable {
 			h = Math.max(h, SVGReader.getBoundingBox(root).getHeight());
 			for(Element e = root.getFirstElementChild(); e != null; e = (Element)e.getNextSibling()) {
 				if(e instanceof SVGLocatable ge) {
-					Rectangle2D bb = SVGReader.getBoundingBox(e);
+					SVGRect bb = ge.getBBox();
 					if(bb == null) {
 						System.out.println(ge.getClass());
 						continue;
