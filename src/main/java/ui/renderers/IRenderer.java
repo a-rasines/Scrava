@@ -314,7 +314,7 @@ public interface IRenderer extends Serializable {
 
 			        textElement.setAttributeNS(null, "font-size", String.valueOf(16));
 			        textElement.setAttributeNS(null, "textAnchor", "middle");
-			        textElement.setAttributeNS(null, "dominant-baseline", "middle");
+			        textElement.setAttributeNS(null, "dy", "0.3em");
 			        textElement.setAttributeNS(null, "style", "fill:white; position:relative");
 			        textElement.setAttributeNS(null, "font-family", "monospace");
 			        textElement.setAttributeNS(null, "font-weight", "bold");
