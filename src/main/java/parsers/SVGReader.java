@@ -105,7 +105,7 @@ public class SVGReader {
 //        IRenderer r = new AppendOperator().getRenderer();
 //        IRenderer r = new AddOperator().getRenderer();
 //        IRenderer r = new RandomOperator().getRenderer();
-        IRenderer r = new OrBlock(new AndBlock(), new BooleanLiteral(true, null)).getRenderer();
+        IRenderer r = new OrBlock(new AndBlock(new OrBlock(), new BooleanLiteral(true, null)), new BooleanLiteral(true, null)).getRenderer();
 //        IRenderer r = new OrBlock().getRenderer();
         
         SVGDocument doc = r.getRenderableSVG();

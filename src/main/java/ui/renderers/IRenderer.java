@@ -297,10 +297,8 @@ public interface IRenderer extends Serializable {
 					h = Math.max(h, SVGReader.getBoundingBox(newChild).getHeight());
 					if(divided.length > 1 && divided[1].strip().length() > 0) {
 						SVGOMTextElement textElement = (SVGOMTextElement) document.createElementNS("http://www.w3.org/2000/svg", "text");
-				        textElement.setAttributeNS(null, "id", divided[1]);
 				        textElement.setAttributeNS(null, "textAnchor", "middle");
-				        textElement.setAttributeNS(null, "dominant-baseline", "middle");
-//				        textElement.setAttributeNS(null, "y", "50%");
+				        textElement.setAttributeNS(null, "dy", "0.3em");
 				        textElement.setAttributeNS(null, "style", "fill:white; position:relative");
 				        textElement.setAttributeNS(null, "font-weight", "bold");
 				        textElement.setAttributeNS(null, "font-size", String.valueOf(16));
@@ -315,13 +313,12 @@ public interface IRenderer extends Serializable {
 					SVGOMTextElement textElement = (SVGOMTextElement) document.createElementNS("http://www.w3.org/2000/svg", "text");
 
 			        textElement.setAttributeNS(null, "font-size", String.valueOf(16));
-//			        textElement.setAttributeNS(null, "y", "50%");
 			        textElement.setAttributeNS(null, "textAnchor", "middle");
+			        textElement.setAttributeNS(null, "dominant-baseline", "middle");
 			        textElement.setAttributeNS(null, "style", "fill:white; position:relative");
 			        textElement.setAttributeNS(null, "font-family", "monospace");
 			        textElement.setAttributeNS(null, "font-weight", "bold");
 			        textElement.setAttributeNS(null, "dx", "10");
-			        textElement.setAttributeNS(null, "id", part);
 			        textElement.setTextContent(part);
 
 			        root.appendChild(textElement);
@@ -345,9 +342,9 @@ public interface IRenderer extends Serializable {
 						x0 = (te.getTextContent().length() - te.getTextContent().stripLeading().length()) * FONT_WIDTH_SVG;
 					} else {
 						Valuable<?> ch = ((VariableHolder)getBlock()).getVariableAt(child);
-						e.setAttributeNS(null, "id", "child_"+child + "_" + ch.hashCode());
+						e.setAttributeNS(null, "id", getBlock().hashCode() + "_"+child);
 						e.setAttributeNS(null, "block", ch.toString());
-						ch.getRenderer().getClickable().setPosition((int)len, (int)bb.getY());
+						ch.getRenderer().getClickable().setPosition((int)bb.getX(), (int)bb.getY());
 						child++;
 					}
 					String[] transform = e.getAttribute("transform").split(" ");
