@@ -303,6 +303,7 @@ public interface IRenderer extends Serializable {
 					}
 				} else if(!part.strip().equals("")){
 					SVGOMTextElement textElement = textOf(document, part);
+					textElement.setAttributeNS(null, "dx", "10");
 			        root.appendChild(textElement);
 			        elements.add(textElement);
 				}
@@ -365,7 +366,6 @@ public interface IRenderer extends Serializable {
         textElement.setAttributeNS(null, "style", "fill:white; position:relative");
         textElement.setAttributeNS(null, "font-family", "monospace");
         textElement.setAttributeNS(null, "font-weight", "bold");
-        textElement.setAttributeNS(null, "dx", "10");
         textElement.setTextContent(str);
         return textElement;
 	}
