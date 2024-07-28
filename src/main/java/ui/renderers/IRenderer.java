@@ -296,31 +296,13 @@ public interface IRenderer extends Serializable {
 					root.appendChild(newChild);
 					h = Math.max(h, SVGReader.getBoundingBox(newChild).getHeight());
 					if(divided.length > 1 && divided[1].strip().length() > 0) {
-						SVGOMTextElement textElement = (SVGOMTextElement) document.createElementNS("http://www.w3.org/2000/svg", "text");
-				        textElement.setAttributeNS(null, "textAnchor", "middle");
-				        textElement.setAttributeNS(null, "dy", "0.3em");
-				        textElement.setAttributeNS(null, "style", "fill:white; position:relative");
-				        textElement.setAttributeNS(null, "font-weight", "bold");
-				        textElement.setAttributeNS(null, "font-size", String.valueOf(16));
-				        textElement.setAttributeNS(null, "font-family", "monospace");
-				        textElement.setTextContent(divided[1]);
-				        
+						SVGOMTextElement textElement = textOf(document, divided[1]);
 				        root.appendChild(textElement);
 				        elements.add(textElement);
 
 					}
 				} else if(!part.strip().equals("")){
-					SVGOMTextElement textElement = (SVGOMTextElement) document.createElementNS("http://www.w3.org/2000/svg", "text");
-
-			        textElement.setAttributeNS(null, "font-size", String.valueOf(16));
-			        textElement.setAttributeNS(null, "textAnchor", "middle");
-			        textElement.setAttributeNS(null, "dy", "0.3em");
-			        textElement.setAttributeNS(null, "style", "fill:white; position:relative");
-			        textElement.setAttributeNS(null, "font-family", "monospace");
-			        textElement.setAttributeNS(null, "font-weight", "bold");
-			        textElement.setAttributeNS(null, "dx", "10");
-			        textElement.setTextContent(part);
-
+					SVGOMTextElement textElement = textOf(document, part);
 			        root.appendChild(textElement);
 			        elements.add(textElement);
 				}
@@ -372,5 +354,19 @@ public interface IRenderer extends Serializable {
 			root.setAttributeNS(null, "viewBox", "0 0 " + Math.round((len + 1.75) * 100) / 100 + " " + h);
 			return document;
 		}
+	}
+	
+	private static SVGOMTextElement textOf(SVGDocument doc, String str) {
+		SVGOMTextElement textElement = (SVGOMTextElement) doc.createElementNS("http://www.w3.org/2000/svg", "text");
+
+        textElement.setAttributeNS(null, "font-size", String.valueOf(16));
+        textElement.setAttributeNS(null, "textAnchor", "middle");
+        textElement.setAttributeNS(null, "dy", "0.3em");
+        textElement.setAttributeNS(null, "style", "fill:white; position:relative");
+        textElement.setAttributeNS(null, "font-family", "monospace");
+        textElement.setAttributeNS(null, "font-weight", "bold");
+        textElement.setAttributeNS(null, "dx", "10");
+        textElement.setTextContent(str);
+        return textElement;
 	}
 }
