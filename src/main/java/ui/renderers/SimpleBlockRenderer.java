@@ -149,10 +149,19 @@ public class SimpleBlockRenderer implements DragableRenderer{
 	public void update() {
 		rendered(null, true);
 		updateSVG = true;
+		needsUpdate = true;
 		if(clickable.getParent() == null)
 			BlockPanel.INSTANCE.repaint();
 		else
 			clickable.getParent().getRenderer().update();
+	}
+	
+	private boolean needsUpdate = true;
+	@Override
+	public boolean needsUpdate() {
+		boolean temp = needsUpdate;
+		needsUpdate = false;
+		return temp;
 	}
 
 	
@@ -245,6 +254,7 @@ public class SimpleBlockRenderer implements DragableRenderer{
 	
 	@Override
 	public SVGDocument getRenderableSVG() {
+		needsUpdate = false;
 		if(config == null) {
 			config = switch(getBlock().value()) {
 				case Number n -> SVGConfig.getConfig(IRenderable.VARIABLE_NUM);
@@ -324,6 +334,22 @@ public class SimpleBlockRenderer implements DragableRenderer{
 			Element root = document.getDocumentElement();
 			root.setAttributeNS(null, "width", root.getAttribute("width").replaceAll("[^0-9.]", ""));
 			root.setAttributeNS(null, "height", root.getAttribute("height").replaceAll("[^0-9.]", ""));
+			List<IRenderer> children = block.getRenderer().getChildren();
+			int hashcode = block.hashCode();
+			for(int i = 0; i < children.size(); i++) {
+				IRenderer child = children.get(i);
+				SVGOMGElement element = (SVGOMGElement) document.getElementById(hashcode + "_" + i);
+				String hc = String.valueOf(child.hashCode());
+				if(!element.getAttribute("block").equals(hc))
+					element.setAttribute("block", hc);
+				if(child.needsUpdate()) {
+			        while (element.hasChildNodes()) {
+			            Node childElement = element.getFirstChild();
+			            element.removeChild(childElement);
+			        }
+			        IRenderer.insertBlockInsideElement(document, element, child);
+				}
+			}
 		}
 		
 		return document;

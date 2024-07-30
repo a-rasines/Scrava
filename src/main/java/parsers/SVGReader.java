@@ -42,10 +42,10 @@ import org.w3c.dom.svg.SVGLocatable;
 import org.w3c.dom.svg.SVGRect;
 
 import debug.DebugOut;
-import domain.blocks.conditional.bool.AndBlock;
-import domain.blocks.conditional.bool.OrBlock;
-import domain.values.BooleanLiteral;
+import domain.blocks.operators.AddOperator;
+import domain.values.NumberLiteral;
 import ui.renderers.IRenderer;
+import ui.renderers.IRenderer.IRenderable;
 
 public class SVGReader {
 
@@ -103,9 +103,12 @@ public class SVGReader {
 //        IRenderer r = new EnumLiteral<Integer>(KeyEventBlock.KEY_MAP, null).getRenderer();
 
 //        IRenderer r = new AppendOperator().getRenderer();
-//        IRenderer r = new AddOperator().getRenderer();
+        IRenderer r = new AddOperator().getRenderer();
+        NumberLiteral<Double> nl = new NumberLiteral<Double>(0., (IRenderable) r.getBlock());
+        ((AddOperator)r.getBlock()).setLeft(nl);
+        nl.setValue(10000., true);
 //        IRenderer r = new RandomOperator().getRenderer();
-        IRenderer r = new OrBlock(new AndBlock(new OrBlock(), new BooleanLiteral(true, null)), new BooleanLiteral(true, null)).getRenderer();
+//        IRenderer r = new OrBlock(new AndBlock(new OrBlock(), new BooleanLiteral(true, null)), new BooleanLiteral(true, null)).getRenderer();
 //        IRenderer r = new OrBlock().getRenderer();
         
         SVGDocument doc = r.getRenderableSVG();

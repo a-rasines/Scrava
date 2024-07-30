@@ -1,12 +1,7 @@
 package ui.renderers;
 
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.FontFormatException;
-import java.awt.GraphicsEnvironment;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.Serializable;
 import java.util.LinkedList;
 import java.util.List;
@@ -47,19 +42,6 @@ public interface IRenderer extends Serializable {
 		
 	}
 	
-	public static Font font = initFont();
-	private static Font initFont() {
-		 GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
-		    try (InputStream stream = ClassLoader.getSystemClassLoader().getResourceAsStream("fonts/monofonto rg.otf")) {
-	            Font font = Font.createFont(Font.TRUETYPE_FONT, stream);
-	            ge.registerFont(font);
-	            return font;
-	        } catch (FontFormatException | IOException ex) {
-	            ex.printStackTrace();
-	            return null;
-	        }
-	}
-	
 	/**
 	 * Gets the {@link java.awt.image.BufferedImage BufferedImage} of the texture in that relative path from the resources' folder
 	 * @param res path to the texture
@@ -74,104 +56,12 @@ public interface IRenderer extends Serializable {
 		}
 	}
 	
-	public default void background(BufferedImage rendered, int height, int start, int width) {
-		for(int y = 0; y < height; y++) {
-			int color;
-			try {
-				color = rendered.getRGB(start - 1, y);
-			} catch(ArrayIndexOutOfBoundsException e) {
-				throw e;
-			}
-			for(int x = 0; x < width; x++)
-				rendered.setRGB(x + start, y, color);
-				
-		} 
-	}
-	public default void background(BufferedImage rendered, int startX, int width, int startY, int height) {
-		for(int y = startY; y < height + startY; y++) {
-			int color;
-			try {
-				color = rendered.getRGB(startX - 1, y);
-			} catch(ArrayIndexOutOfBoundsException e) {
-				throw e;
-			}
-			for(int x = 0; x < width; x++)
-				rendered.setRGB(x + startX, y, color);
-				
-		} 
-	}
-	
-	public default void verticalBackground(BufferedImage rendered, int startX, int width, int startY, int height) {
-		for(int x = startX; x < startX + width; x++) {
-			int color;
-			try {
-				color = rendered.getRGB(x, startY - 1);
-			} catch(ArrayIndexOutOfBoundsException e) {
-				throw e;
-			}
-			for(int y = startY; y < startY + height; y++) {
-				rendered.setRGB(x, y, color);
-			}
-		} 
-	}
-	/**
-	 * Clones the top part to the bottom part in vertical mirror
-	 * @param rendered image where to paint the mirrored clone
-	 * @param startX x where the original starts (top)
-	 * @param startY y where the original starts (top)
-	 * @param width width of the mirror
-	 * @param height height of the mirror
-	 * @param objHeight y where the mirrored part starts (bottom)
-	 */
-	public default void verticalClone(BufferedImage rendered, int startX, int startY, int width, int height, int objHeight) {
-		for(int x = 0; x < width; x++)
-			for(int y = 0; y < height; y++)
-				try {
-					rendered.setRGB(startX + x, objHeight - startY - y, rendered.getRGB(startX + x, startY + y));
-				} catch(ArrayIndexOutOfBoundsException e) {
-					System.out.println("start    " + startX + " " + startY + 
-									   "\noffset     " + x + " " + y + 
-									   "\nrendered " + rendered.getWidth() + " " + objHeight +
-									   "\nsize     " + width + " " + height + 
-									   "\nset      " + (rendered.getWidth() - startX - x - 1) + " " + (rendered.getHeight() - startY - y - 1) + 
-									   "\nget      " + (startX + x) + " " + (startY + y));
-				}
-				
-	}
-	public default void leftClone(BufferedImage rendered, int startX, int startY, int width, int height, int objWidth) {
-		for(int x = 0; x < width; x++)
-			for(int y = 0; y < height; y++)
-				try {
-					rendered.setRGB(objWidth - startX - x - 1, startY + y, rendered.getRGB(startX + x, startY + y));
-				} catch(ArrayIndexOutOfBoundsException e) {
-					System.out.println("start    " + startX + " " + startY + 
-									   "\noffset     " + x + " " + y + 
-									   "\nrendered " + objWidth + " " + rendered.getHeight() +
-									   "\nsize     " + width + " " + height + 
-									   "\nset      " + (rendered.getWidth() - startX - x - 1) + " " + (rendered.getHeight() - startY - y - 1) + 
-									   "\nget      " + (startX + x) + " " + (startY + y));
-				}
-				
-	}
-	
-	public default BufferedImage replaceColor(BufferedImage bi, Color newColor) {
-		return replaceColor(bi, newColor.getRGB());
-	}
-	public default BufferedImage replaceColor(BufferedImage bi, int newColor) {
-		for(int x = 0; x < bi.getWidth(); x++)
-			for(int y = 0; y < bi.getHeight(); y++) {
-				if(bi.getRGB(x, y) != 0xffffffff && (bi.getRGB(x, y) & 0xff000000) == 0xff000000)
-					bi.setRGB(x, y, newColor);
-			}
-		return bi;
-	}
-	
 	public default BufferedImage clone(BufferedImage original) {
 		return new BufferedImage(original.getColorModel(), original.copyData(null), original.getColorModel().isAlphaPremultiplied(), null);
 	}
 	
 	/**
-	 * Returns the visual representation of the renderable made by hand
+	 * Returns the visual representation of the renderable as a BufferedImage
 	 * @return
 	 */
 	public BufferedImage getRenderable();
@@ -181,6 +71,12 @@ public interface IRenderer extends Serializable {
 	 * @return
 	 */
 	public SVGDocument getRenderableSVG();
+	
+	/**
+	 * If one, returns whether the parent should update the block inside them
+	 * @return
+	 */
+	public boolean needsUpdate();
 	
 	/**
 	 * Returns the rendered block
@@ -283,16 +179,8 @@ public interface IRenderer extends Serializable {
 				if(part.split(" ")[0].contains("}}")) {
 					String[] divided = part.split("}}");
 					IRenderer rend = getChildren().get(vari++);
-					SVGDocument doc = rend.getRenderableSVG();
 					Element newChild = document.createElementNS("http://www.w3.org/2000/svg", "g");
-					newChild.setAttribute("transform", doc.getDocumentElement().getAttribute("transform"));
-					NodeList nl = document.importNode(doc.getDocumentElement(), true).getChildNodes();
-					int len = nl.getLength(); //for some reason it decreases each iteration
-					for(int i = 0; i < len; i++) {
-						Node n = nl.item(0);
-						newChild.appendChild(n);
-					}
-					//child.setAttribute("style", child.getAttribute("style") + ";position:relative");
+					insertBlockInsideElement(document, newChild, rend);
 					root.appendChild(newChild);
 					h = Math.max(h, SVGReader.getBoundingBox(newChild).getHeight());
 					if(divided.length > 1 && divided[1].strip().length() > 0) {
@@ -325,8 +213,8 @@ public interface IRenderer extends Serializable {
 						x0 = (te.getTextContent().length() - te.getTextContent().stripLeading().length()) * FONT_WIDTH_SVG;
 					} else {
 						Valuable<?> ch = ((VariableHolder)getBlock()).getVariableAt(child);
-						e.setAttributeNS(null, "id", getBlock().hashCode() + "_"+child);
-						e.setAttributeNS(null, "block", ch.toString());
+						e.setAttributeNS(null, "id", getBlock().hashCode() + "_" + child);
+						e.setAttributeNS(null, "block", String.valueOf(ch.hashCode()));
 						ch.getRenderer().getClickable().setPosition((int)bb.getX(), (int)bb.getY());
 						child++;
 					}
@@ -354,6 +242,17 @@ public interface IRenderer extends Serializable {
 			root.setAttributeNS(null, "height", h + "");
 			root.setAttributeNS(null, "viewBox", "0 0 " + Math.round((len + 1.75) * 100) / 100 + " " + h);
 			return document;
+		}
+	}
+	
+	public static void insertBlockInsideElement(SVGDocument doc, Element e, IRenderer block) {
+		SVGDocument blockDoc = block.getRenderableSVG();
+		e.setAttribute("transform", blockDoc.getDocumentElement().getAttribute("transform"));
+		NodeList nl = doc.importNode(blockDoc.getDocumentElement(), true).getChildNodes();
+		int len = nl.getLength();
+		for(int i = 0; i < len; i++) {
+			Node n = nl.item(0);
+			e.appendChild(n);
 		}
 	}
 	

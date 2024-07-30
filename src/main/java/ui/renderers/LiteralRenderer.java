@@ -30,7 +30,6 @@ import domain.values.AbstractLiteral;
 import domain.values.BooleanLiteral;
 import domain.values.EnumLiteral;
 import parsers.SVGReader;
-import ui.components.BlockPanel;
 import ui.domain.SVGConfig;
 
 public class LiteralRenderer implements IRenderer {
@@ -101,12 +100,18 @@ public class LiteralRenderer implements IRenderer {
 	@Override
 	public void update() {
 		rendered = null;
+		needsUpdate = true;
 		updateSVG = true;
-		if(clickable.getParent() == null)
-			BlockPanel.INSTANCE.repaint();
-		else
-			clickable.getParent().getRenderer().update();
+		clickable.getParent().getRenderer().update();
 		
+	}
+	
+	private boolean needsUpdate = true;
+	@Override
+	public boolean needsUpdate() {
+		boolean temp = needsUpdate;
+		needsUpdate = false;
+		return temp;
 	}
 
 	@Override
@@ -179,6 +184,7 @@ public class LiteralRenderer implements IRenderer {
 	@Override
 	public SVGDocument getRenderableSVG() {
 		if(document == null || updateSVG) {
+			needsUpdate = false;
 			updateSVG = false;
 			boolean isNewDocument = false;
 			if(document == null) {

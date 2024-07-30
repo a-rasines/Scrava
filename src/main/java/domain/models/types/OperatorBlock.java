@@ -4,7 +4,7 @@ import java.util.Set;
 
 import domain.models.interfaces.Valuable;
 import domain.values.AbstractLiteral;
-import ui.renderers.IRenderer;
+import ui.renderers.IRenderer.DragableRenderer;
 import ui.renderers.LiteralRenderer.LiteralRenderable;
 import ui.renderers.SimpleBlockRenderer;
 import ui.renderers.SimpleBlockRenderer.SimpleRenderable;
@@ -13,7 +13,7 @@ public abstract class OperatorBlock<T, R> implements SimpleRenderable<R> {
 	
 	private SimpleBlockRenderer sbr;
 	@Override
-	public IRenderer getRenderer() {
+	public DragableRenderer getRenderer() {
 		return sbr;
 	}
 
@@ -31,14 +31,14 @@ public abstract class OperatorBlock<T, R> implements SimpleRenderable<R> {
 		this.values = new Valuable[]{left, right};
 		this.defs = new Valuable[]{left, right};
 	}
-	public final OperatorBlock<T, R> setLeft(Valuable<T> v) {
+	public final OperatorBlock<T, R> setLeft(Valuable<? extends T> v) {
 		if(v == this)
 			throw new IllegalArgumentException("Block cannot contain itself");
 		this.values[0] = v;
 		return this;
 	}
 	
-	public final OperatorBlock<T, R> setRight(Valuable<T> v) {
+	public final OperatorBlock<T, R> setRight(Valuable<? extends T> v) {
 		this.values[1] = v;
 		return this;
 	}
