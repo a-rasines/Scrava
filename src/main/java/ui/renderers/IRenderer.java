@@ -11,7 +11,7 @@ import javax.imageio.ImageIO;
 import org.apache.batik.anim.dom.SVGDOMImplementation;
 import org.apache.batik.anim.dom.SVGOMSVGElement;
 import org.apache.batik.anim.dom.SVGOMTextElement;
-import org.apache.batik.bridge.BridgeContext;
+import org.apache.batik.dom.AbstractElement;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -174,75 +174,81 @@ public interface IRenderer extends Serializable {
 	        String[] parts = text.split("\\{\\{");
 			int vari = 0;
 			double h = 0;
-			BridgeContext ctx = SVGReader.build(document);
+			SVGReader.build(document);
 			for(String part : parts) {
 				if(part.split(" ")[0].contains("}}")) {
 					String[] divided = part.split("}}");
 					IRenderer rend = getChildren().get(vari++);
 					Element newChild = document.createElementNS("http://www.w3.org/2000/svg", "g");
-					insertBlockInsideElement(document, newChild, rend);
+					IRenderer.insertBlockInsideElement(document, newChild, rend);
 					root.appendChild(newChild);
 					h = Math.max(h, SVGReader.getBoundingBox(newChild).getHeight());
 					if(divided.length > 1 && divided[1].strip().length() > 0) {
-						SVGOMTextElement textElement = textOf(document, divided[1]);
+						SVGOMTextElement textElement = IRenderer.textOf(document, divided[1]);
 				        root.appendChild(textElement);
 				        elements.add(textElement);
 
 					}
 				} else if(!part.strip().equals("")){
-					SVGOMTextElement textElement = textOf(document, part);
+					SVGOMTextElement textElement = IRenderer.textOf(document, part);
 					textElement.setAttributeNS(null, "dx", "10");
 			        root.appendChild(textElement);
 			        elements.add(textElement);
 				}
 			}
-			float len = 0;
-			int child = 0;
 			h = Math.max(h, SVGReader.getBoundingBox(root).getHeight());
-			for(Element e = root.getFirstElementChild(); e != null; e = (Element)e.getNextSibling()) {
-				if(e instanceof SVGLocatable ge) {
-					SVGRect bb = ge.getBBox();
-					if(bb == null) {
-						System.out.println(ge.getClass());
-						continue;
-					}
-					double w = bb.getWidth();
-					double x0 = 0;
-					if(e instanceof SVGOMTextElement te) {
-						w = FONT_WIDTH_SVG *  te.getTextContent().length();
-						x0 = (te.getTextContent().length() - te.getTextContent().stripLeading().length()) * FONT_WIDTH_SVG;
-					} else {
-						Valuable<?> ch = ((VariableHolder)getBlock()).getVariableAt(child);
-						e.setAttributeNS(null, "id", getBlock().hashCode() + "_" + child);
-						e.setAttributeNS(null, "block", String.valueOf(ch.hashCode()));
-						ch.getRenderer().getClickable().setPosition((int)bb.getX(), (int)bb.getY());
-						child++;
-					}
-					String[] transform = e.getAttribute("transform").split(" ");
-					transform: {
-						for(int i = 0; i < transform.length; i++)
-							if(transform[i].startsWith("translate")) {
-								if(!(e instanceof SVGOMTextElement))
-									transform[i] = "translate(" + (x0 + len) + ", "+ String.valueOf((h - bb.getHeight()) / 2) + ")";
-								else
-									transform[i] = "translate(" + (x0 + len) + ", " + String.valueOf(h / 2) + ")";
-								e.setAttribute("transform", String.join(" ", transform));
-								break transform;
-							}
-						if(!(e instanceof SVGOMTextElement))
-							e.setAttribute("transform", String.join(" ", transform) + "translate(" + (x0 + len) + ", "+ String.valueOf((h - bb.getHeight()) / 2) + ")");
-						else
-							e.setAttribute("transform", String.join(" ", transform) + "translate(" + (x0 + len) + ", " + String.valueOf(h / 2) + ")");
-					}
-					len += w;
-					h = Math.max(h, ctx.getGraphicsNode(e).getBounds().getHeight());
-				}
-			}
-			root.setAttributeNS(null, "width", Math.round((len + 1.75) * 100) / 100 + "");
-			root.setAttributeNS(null, "height", h + "");
-			root.setAttributeNS(null, "viewBox", "0 0 " + Math.round((len + 1.75) * 100) / 100 + " " + h);
+			assemble(root, h);
 			return document;
 		}
+	}
+	
+	public default void assemble(AbstractElement root, double h) {
+		float len = 0;
+		int child = 0;
+		for(Element e = root.getFirstElementChild(); e != null; e = (Element)e.getNextSibling()) {
+			if(e instanceof SVGLocatable ge) {
+				SVGRect bb = ge.getBBox();
+				if(bb == null) {
+					System.out.println(ge.getClass());
+					continue;
+				}
+				double w = bb.getWidth();
+				double x0 = 0;
+				if(e instanceof SVGOMTextElement te) {
+					w = FONT_WIDTH_SVG *  te.getTextContent().length();
+					x0 = (te.getTextContent().length() - te.getTextContent().stripLeading().length()) * FONT_WIDTH_SVG;
+				} else {
+					Valuable<?> ch = ((VariableHolder)getBlock()).getVariableAt(child);
+					e.setAttributeNS(null, "id", getBlock().hashCode() + "_" + child);
+					e.setAttributeNS(null, "block", String.valueOf(ch.hashCode()));
+					ch.getRenderer().getClickable().setPosition((int)bb.getX(), (int)bb.getY());
+					child++;
+				}
+				String[] transform = e.getAttribute("transform").split(" ");
+				transform: {
+					for(int i = 0; i < transform.length; i++)
+						if(transform[i].startsWith("translate")) {
+							if(!(e instanceof SVGOMTextElement))
+								transform[i] = "translate(" + (x0 + len) + ","+ String.valueOf((h - bb.getHeight()) / 2) + ")";
+							else
+								transform[i] = "translate(" + (x0 + len) + "," + String.valueOf(h / 2) + ")";
+							e.setAttribute("transform", String.join(" ", transform));
+							break transform;
+						}
+					if(!(e instanceof SVGOMTextElement))
+						e.setAttribute("transform", String.join(" ", transform) + "translate(" + (x0 + len) + ","+ String.valueOf((h - bb.getHeight()) / 2) + ")");
+					else
+						e.setAttribute("transform", String.join(" ", transform) + "translate(" + (x0 + len) + "," + String.valueOf(h / 2) + ")");
+				}
+				len += w;
+				if(e instanceof SVGLocatable l)
+					h = Math.max(h, l.getBBox().getHeight());
+				
+			}
+		}
+		root.setAttributeNS(null, "width", Math.round((len + 1.75) * 100) / 100 + "");
+		root.setAttributeNS(null, "height", h + "");
+		root.setAttributeNS(null, "viewBox", "0 0 " + Math.round((len + 1.75) * 100) / 100 + " " + h);
 	}
 	
 	public static void insertBlockInsideElement(SVGDocument doc, Element e, IRenderer block) {

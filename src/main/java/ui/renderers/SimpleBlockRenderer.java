@@ -264,6 +264,7 @@ public class SimpleBlockRenderer implements DragableRenderer{
 			document = config.document();
 			fillColor(document.getDocumentElement());
 			SVGOMSVGElement root = (SVGOMSVGElement)document.getDocumentElement();
+			int hashcode = getBlock().hashCode();
 			
 			SVGDocument text = addText(getBlock().getTitle());
 			double textWidth = SVGReader.build(text).getGraphicsNode(text.getDocumentElement()).getBounds().getWidth();
@@ -271,6 +272,7 @@ public class SimpleBlockRenderer implements DragableRenderer{
 			SVGPathElement path = (SVGPathElement) document.getElementById("resize_path");
 			SVGOMRectElement rect = null;
 			if(path != null) {
+				path.setAttribute("id", "resize_path_" + hashcode);
 				String[] commands = path.getAttribute("d").split(" ");
 		        StringBuilder newD = new StringBuilder();
 		        String lastCommand = "";
@@ -292,11 +294,13 @@ public class SimpleBlockRenderer implements DragableRenderer{
 		        path.setAttribute("d", newD.toString().trim());
 			} else {
 				rect = (SVGOMRectElement)document.getElementById("resize_rect");
+				rect.setAttribute("id", "resize_rect_" + hashcode);
 				rect.setAttributeNS(null, "width", config.wOffset() + textWidth+ "");
 			}
 			
 			Element newChild = document.createElementNS("http://www.w3.org/2000/svg", "g");
 			newChild.setAttribute("transform", text.getDocumentElement().getAttribute("transform"));
+			newChild.setAttribute("id", "text_" + hashcode);
 			NodeList nl = document.importNode(text.getDocumentElement(), true).getChildNodes();
 			int len = nl.getLength(); //for some reason it decreases each iteration
 			for(int i = 0; i < len; i++) {
@@ -309,12 +313,12 @@ public class SimpleBlockRenderer implements DragableRenderer{
 					nl = e.getChildNodes();
 					int i = 0;
 					Node p = nl.item(i++);
-					while(!(p instanceof Element pE) || !pE.getAttribute("id").equals("resize_rect") && !pE.getAttribute("id").equals("resize_path")) {
+					while(!(p instanceof Element pE) || !pE.getAttribute("id").startsWith("resize_rect") && !pE.getAttribute("id").startsWith("resize_path")) {
 						p = nl.item(i++);
 					}
 					String transform = ((Element)p).getAttribute("transform");
 					if(transform.length() > 0)
-						scale = Math.max(scale, 0.5f + Float.parseFloat(transform.replaceAll(".*scale\\( ?[0-9]* ?, ", "").replaceAll(" ?\\).*", "")));
+						scale = Math.max(scale, 0.5f + Float.parseFloat(transform.replaceAll(".*scale\\( ?[0-9]* ?, ?", "").replaceAll(" ?\\).*", "")));
 				}
 			}
 			
@@ -322,9 +326,9 @@ public class SimpleBlockRenderer implements DragableRenderer{
 			Rectangle2D bb = SVGReader.getBoundingBox((path == null?rect:path));
 			
 			
-			(path==null?rect:path).setAttributeNS(null, "transform", "scale( 1, " + scale + ")");
+			(path==null?rect:path).setAttributeNS(null, "transform", "scale(1," + scale + ")");
 			root.appendChild(newChild);
-			newChild.setAttributeNS(null, "transform", "translate(" + config.textXOffset() + ", " + (bb.getHeight() * scale - SVGReader.getBoundingBox(newChild).getHeight()) / 2 + ")");
+			newChild.setAttributeNS(null, "transform", "translate(" + config.textXOffset() + "," + (bb.getHeight() * scale - SVGReader.getBoundingBox(newChild).getHeight()) / 2 + ")");
 			root.setAttributeNS(null, "width", ""  + Math.round(bb.getWidth() * scale * 100) / 100);
 			root.setAttributeNS(null, "height", "" +  Math.round(bb.getHeight() * scale * 100) / 100);
 			root.setAttributeNS(null, "viewBox", "0 0 " + Math.round(bb.getWidth() * scale * 100) / 100 + " " + Math.round(bb.getHeight() * scale * 100) / 100);
@@ -348,6 +352,7 @@ public class SimpleBlockRenderer implements DragableRenderer{
 			            element.removeChild(childElement);
 			        }
 			        IRenderer.insertBlockInsideElement(document, element, child);
+			        assemble((SVGOMGElement)document.getElementById("text_" + hashcode), 0);
 				}
 			}
 		}

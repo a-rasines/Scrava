@@ -71,6 +71,7 @@ public abstract class AbstractLiteral<T> implements LiteralRenderer.LiteralRende
 		this.value = (T)object;
 		if(update)
 			this.initialValue = (T)object;
+		getRenderer().update();
 	}
 	
 	
