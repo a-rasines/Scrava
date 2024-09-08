@@ -42,7 +42,7 @@ public class BlockSelectorPanel implements MouseListener, MouseWheelListener {
 			b = 0xff;
 		this.selected = page;
 		background = new Color(0xff000000 | r | g | b);
-		BlockPanel.INSTANCE.BOTON_VARIABLES.setVisible(page == BlockSection.VARIABLE);
+		BlockPanel.INSTANCE.BOTON_VARIABLES.setVisible(false);//page == BlockSection.VARIABLE);
 		update();
 	}
 	public void update() {

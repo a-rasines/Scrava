@@ -1,12 +1,7 @@
 package ui.domain;
 
-import java.util.List;
 import java.util.function.Supplier;
 
-import domain.blocks.capsule.IfBlock;
-import domain.blocks.capsule.IfElseBlock;
-import domain.blocks.capsule.RepeatBlock;
-import domain.blocks.capsule.WhileBlock;
 import domain.blocks.conditional.BiggerOrEqualThanBlock;
 import domain.blocks.conditional.BiggerThanBlock;
 import domain.blocks.conditional.EqualsBlock;
@@ -14,17 +9,6 @@ import domain.blocks.conditional.SmallerOrEqualThanBlock;
 import domain.blocks.conditional.SmallerThanBlock;
 import domain.blocks.conditional.bool.AndBlock;
 import domain.blocks.conditional.bool.OrBlock;
-import domain.blocks.event.OnKeyPressEventBlock;
-import domain.blocks.event.OnStartEventBlock;
-import domain.blocks.invocable.WaitBlock;
-import domain.blocks.invocable.looks.SetTextureBlock;
-import domain.blocks.invocable.movement.MoveBlock;
-import domain.blocks.invocable.movement.MoveToBlock;
-import domain.blocks.invocable.movement.MoveXBlock;
-import domain.blocks.invocable.movement.MoveXToBlock;
-import domain.blocks.invocable.movement.MoveYBlock;
-import domain.blocks.invocable.movement.MoveYToBlock;
-import domain.blocks.invocable.movement.RotateBlock;
 import domain.blocks.operators.AddOperator;
 import domain.blocks.operators.AppendOperator;
 import domain.blocks.operators.DivideOperator;
@@ -33,50 +17,48 @@ import domain.blocks.operators.MinOperator;
 import domain.blocks.operators.ModulusOperator;
 import domain.blocks.operators.MultiplyOperator;
 import domain.blocks.operators.RandomOperator;
-import domain.blocks.operators.SetValueBlock;
 import domain.blocks.operators.SubstractOperator;
 import domain.blocks.operators.parser.StringToDecimalNumberParser;
 import domain.blocks.operators.parser.StringToIntegerNumberParser;
-import domain.values.IVariable;
 import ui.renderers.IRenderer;
 
 public enum BlockSection {
-	MOVEMENT(0xff16cbff, new IRenderer[] {
-		new MoveBlock(null).getRenderer(),
-		new MoveXBlock(null).getRenderer(),
-		new MoveYBlock(null).getRenderer(),
-					
-		new MoveToBlock(null).getRenderer(),
-		new MoveXToBlock(null).getRenderer(),
-		new MoveYToBlock(null).getRenderer(),
-		
-		new RotateBlock(null).getRenderer(),
-			
-	}),
-	LOOKS(0xffdf61c5, new IRenderer[] {
-		new SetTextureBlock(null).getRenderer(),
-	}),
-	CONTROL(0xffffda22, new IRenderer[] {
-		new IfBlock().getRenderer(),
-		new IfElseBlock().getRenderer(),
-		new WhileBlock().getRenderer(),
-		new RepeatBlock().getRenderer(),
-		new WaitBlock().getRenderer(),
-	}),
+//	MOVEMENT(0xff16cbff, new IRenderer[] {
+//		new MoveBlock(null).getRenderer(),
+//		new MoveXBlock(null).getRenderer(),
+//		new MoveYBlock(null).getRenderer(),
+//					
+//		new MoveToBlock(null).getRenderer(),
+//		new MoveXToBlock(null).getRenderer(),
+//		new MoveYToBlock(null).getRenderer(),
+//		
+//		new RotateBlock(null).getRenderer(),
+//			
+//	}),
+//	LOOKS(0xffdf61c5, new IRenderer[] {
+//		new SetTextureBlock(null).getRenderer(),
+//	}),
+//	CONTROL(0xffffda22, new IRenderer[] {
+//		new IfBlock().getRenderer(),
+//		new IfElseBlock().getRenderer(),
+//		new WhileBlock().getRenderer(),
+//		new RepeatBlock().getRenderer(),
+//		new WaitBlock().getRenderer(),
+//	}),
+//	
+//	EVENT(0xffe97d00, new IRenderer[] {
+//		new OnStartEventBlock().getRenderer(),
+//		new OnKeyPressEventBlock().getRenderer()
+//	}),
 	
-	EVENT(0xffe97d00, new IRenderer[] {
-		new OnStartEventBlock().getRenderer(),
-		new OnKeyPressEventBlock().getRenderer()
-	}),
-	
-	VARIABLE(0xffe97d00, () -> {
-		List<IVariable<?>> variables = IVariable.getVisibleVariables();
-		IRenderer[] output = new IRenderer[variables.size() + 1];
-		output[0] = new SetValueBlock(null).getRenderer();
-		for(int i = 0; i < variables.size(); i++)
-			output[i + 1] = variables.get(i).getRenderer();
-		return output;
-	}),
+//	VARIABLE(0xffe97d00, () -> {
+//		List<IVariable<?>> variables = IVariable.getVisibleVariables();
+//		IRenderer[] output = new IRenderer[variables.size() + 1];
+//		output[0] = new SetValueBlock(null).getRenderer();
+//		for(int i = 0; i < variables.size(); i++)
+//			output[i + 1] = variables.get(i).getRenderer();
+//		return output;
+//	}),
 	OPERATOR(0xff4ca742, new IRenderer[] {
 		new BiggerOrEqualThanBlock().getRenderer(),
 		new BiggerThanBlock().getRenderer(),

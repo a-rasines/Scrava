@@ -8,13 +8,10 @@ import java.util.List;
 
 import javax.imageio.ImageIO;
 
-import org.apache.batik.anim.dom.SVGDOMImplementation;
-import org.apache.batik.anim.dom.SVGOMSVGElement;
 import org.apache.batik.anim.dom.SVGOMTextElement;
 import org.apache.batik.dom.AbstractElement;
+import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 import org.w3c.dom.svg.SVGDocument;
 import org.w3c.dom.svg.SVGLocatable;
 import org.w3c.dom.svg.SVGRect;
@@ -70,13 +67,7 @@ public interface IRenderer extends Serializable {
 	 * Returns the visual representation of the renderable using an SVG document
 	 * @return
 	 */
-	public SVGDocument getRenderableSVG();
-	
-	/**
-	 * If one, returns whether the parent should update the block inside them
-	 * @return
-	 */
-	public boolean needsUpdate();
+	public Element getRenderableSVG();
 	
 	/**
 	 * Returns the rendered block
@@ -167,41 +158,42 @@ public interface IRenderer extends Serializable {
 		@Override
 		public BlockClickable getClickable();
 		
-		public default SVGDocument addText(String text) {
-	        SVGDocument document = (SVGDocument) SVGDOMImplementation.getDOMImplementation().createDocument(SVGDOMImplementation.SVG_NAMESPACE_URI, "svg", null);
-	        SVGOMSVGElement root = (SVGOMSVGElement)document.getDocumentElement();
+		public default void addText(String text, AbstractElement parent) {
 	        List<Element> elements = new LinkedList<>();
 	        String[] parts = text.split("\\{\\{");
 			int vari = 0;
 			double h = 0;
-			SVGReader.build(document);
 			for(String part : parts) {
 				if(part.split(" ")[0].contains("}}")) {
 					String[] divided = part.split("}}");
 					IRenderer rend = getChildren().get(vari++);
-					Element newChild = document.createElementNS("http://www.w3.org/2000/svg", "g");
-					IRenderer.insertBlockInsideElement(document, newChild, rend);
-					root.appendChild(newChild);
+					Element newChild = parent.getOwnerDocument().createElementNS("http://www.w3.org/2000/svg", "g");
+					IRenderer.insertBlockInsideElement(newChild, rend);
+					parent.appendChild(newChild);
 					h = Math.max(h, SVGReader.getBoundingBox(newChild).getHeight());
 					if(divided.length > 1 && divided[1].strip().length() > 0) {
-						SVGOMTextElement textElement = IRenderer.textOf(document, divided[1]);
-				        root.appendChild(textElement);
+						SVGOMTextElement textElement = IRenderer.textOf(parent.getOwnerDocument(), divided[1]);
+						parent.appendChild(textElement);
 				        elements.add(textElement);
 
 					}
 				} else if(!part.strip().equals("")){
-					SVGOMTextElement textElement = IRenderer.textOf(document, part);
+					SVGOMTextElement textElement = IRenderer.textOf(parent.getOwnerDocument(), part);
 					textElement.setAttributeNS(null, "dx", "10");
-			        root.appendChild(textElement);
+			        parent.appendChild(textElement);
 			        elements.add(textElement);
 				}
 			}
-			h = Math.max(h, SVGReader.getBoundingBox(root).getHeight());
-			assemble(root, h);
-			return document;
+			h = Math.max(h, SVGReader.getBoundingBox(parent).getHeight());
+			assemble(parent, h);
 		}
 	}
 	
+	/**
+	 * Corrects the position of the elements in the root element by putting them in horizontal layout
+	 * @param root the parent node
+	 * @param h the height of the block (to center them vertically)
+	 */
 	public default void assemble(AbstractElement root, double h) {
 		float len = 0;
 		int child = 0;
@@ -251,18 +243,12 @@ public interface IRenderer extends Serializable {
 		root.setAttributeNS(null, "viewBox", "0 0 " + Math.round((len + 1.75) * 100) / 100 + " " + h);
 	}
 	
-	public static void insertBlockInsideElement(SVGDocument doc, Element e, IRenderer block) {
-		SVGDocument blockDoc = block.getRenderableSVG();
-		e.setAttribute("transform", blockDoc.getDocumentElement().getAttribute("transform"));
-		NodeList nl = doc.importNode(blockDoc.getDocumentElement(), true).getChildNodes();
-		int len = nl.getLength();
-		for(int i = 0; i < len; i++) {
-			Node n = nl.item(0);
-			e.appendChild(n);
-		}
+	public static void insertBlockInsideElement(Element parent, IRenderer block) {
+		parent.getOwnerDocument().importNode(block.getRenderableSVG(), true);
+		parent.appendChild(block.getRenderableSVG());
 	}
 	
-	private static SVGOMTextElement textOf(SVGDocument doc, String str) {
+	private static SVGOMTextElement textOf(Document doc, String str) {
 		SVGOMTextElement textElement = (SVGOMTextElement) doc.createElementNS("http://www.w3.org/2000/svg", "text");
 
         textElement.setAttributeNS(null, "font-size", String.valueOf(16));

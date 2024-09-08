@@ -71,6 +71,7 @@ public class ProjectFrame extends JFrame implements WindowFocusListener {
 	}
 	
 	private ProjectFrame() {
+		
 		JButton startButton = new JButton("Start");
 		JButton tickButton = new JButton("Tick");
 		JButton endButton = new JButton("End");

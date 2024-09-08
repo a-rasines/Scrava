@@ -22,6 +22,11 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JLayeredPane;
 
+import org.apache.batik.anim.dom.SVGDOMImplementation;
+import org.w3c.dom.Element;
+import org.w3c.dom.svg.SVGDocument;
+import org.w3c.dom.svg.SVGElement;
+
 import clickable.BlockClickable;
 import clickable.InvocableClickable;
 import domain.models.interfaces.Clickable.Rect;
@@ -60,8 +65,13 @@ public class BlockPanel extends JLayeredPane {
 	private JLabel clickedLabel = new JLabel("");
 	public static BlockPanel INSTANCE = new BlockPanel();
 	
+	private final SVGDocument DOCUMENT;
+	
 	public void changeSprite() {
 		blocks = SpritePanel.getSprite().getBlocks();
+		Element docElement = DOCUMENT.getDocumentElement();
+		while(docElement.hasChildNodes())
+			docElement.removeChild(docElement.getFirstChild());
 		repaint();
 	}
 	
@@ -133,6 +143,7 @@ public class BlockPanel extends JLayeredPane {
 	
 	private BlockPanel() {
 		super();
+		DOCUMENT = (SVGDocument) SVGDOMImplementation.getDOMImplementation().createDocument(SVGDOMImplementation.SVG_NAMESPACE_URI, "svg", null);
 		setMinimumSize(new Dimension(400, 100));
 		clickedLabel.setOpaque(false);
 		clickedLabel.setDoubleBuffered(true);

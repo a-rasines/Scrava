@@ -14,13 +14,12 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.WindowConstants;
 
-import org.apache.batik.anim.dom.SVGOMRectElement;
 import org.apache.batik.anim.dom.SVGOMSVGElement;
 import org.apache.batik.bridge.BridgeContext;
 import org.apache.batik.gvt.GraphicsNode;
 import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
 import org.w3c.dom.svg.SVGDocument;
-import org.w3c.dom.svg.SVGPathElement;
 
 import clickable.BlockClickable;
 import clickable.LiteralClickable;
@@ -67,7 +66,7 @@ public class LiteralRenderer implements IRenderer {
 	private String type;
 	private transient BufferedImage rendered = null;
 	private boolean updateSVG = true;
-	private transient SVGDocument document = null;
+	private transient Element element = null;
 	private transient SVGConfig config = null;
 	private transient BridgeContext ctx = null;
 	private transient GraphicsNode gn = null;
@@ -85,7 +84,7 @@ public class LiteralRenderer implements IRenderer {
 	@Override
 	public BufferedImage getRenderable() {
 		if(rendered == null) {
-			SVGDocument doc = getRenderableSVG();
+			SVGDocument doc = (SVGDocument) getRenderableSVG().getOwnerDocument();
 			BufferedImage bi = SVGReader.toBufferedImage(doc);
 			return rendered = bi;
 		}else
@@ -100,18 +99,9 @@ public class LiteralRenderer implements IRenderer {
 	@Override
 	public void update() {
 		rendered = null;
-		needsUpdate = true;
 		updateSVG = true;
 		clickable.getParent().getRenderer().update();
 		
-	}
-	
-	private boolean needsUpdate = true;
-	@Override
-	public boolean needsUpdate() {
-		boolean temp = needsUpdate;
-		needsUpdate = false;
-		return temp;
 	}
 
 	@Override
@@ -157,7 +147,7 @@ public class LiteralRenderer implements IRenderer {
 	public double getHeight() {
 		if(gn == null) {
 			getRenderableSVG();
-			gn = ctx.getGraphicsNode(document.getDocumentElement());
+			gn = ctx.getGraphicsNode(element);
 		}
 		return gn.getBounds().getHeight();
 	}
@@ -166,7 +156,7 @@ public class LiteralRenderer implements IRenderer {
 	public double getWidth() {
 		if(gn == null) {
 			getRenderableSVG();
-			gn = ctx.getGraphicsNode(document.getDocumentElement());
+			gn = ctx.getGraphicsNode(element);
 		}
 		return gn.getBounds().getWidth();
 	}
@@ -180,29 +170,51 @@ public class LiteralRenderer implements IRenderer {
 //	}
 	
 	
-	
+	private transient boolean isRect = false;
 	@Override
-	public SVGDocument getRenderableSVG() {
-		if(document == null || updateSVG) {
-			needsUpdate = false;
-			updateSVG = false;
-			boolean isNewDocument = false;
-			if(document == null) {
-				config = SVGConfig.getConfig(type);
-				document = config.document();
-				ctx = SVGReader.build(document);
-				isNewDocument = true;
-			}
-			SVGOMSVGElement root = (SVGOMSVGElement)document.getDocumentElement();
-			String value = getBlock().value().toString();
-			if(type.equals(IRenderable.VARIABLE_ENUM))
-				value = ((EnumLiteral<?>)getBlock()).name();
+	public Element getRenderableSVG() {
+		if(updateSVG) {
 			
-			SVGPathElement path = (SVGPathElement) document.getElementById("resize_path");
-			SVGOMRectElement rect = null;
+		} else if (element == null) {
+			////////////////////////////////////////////////////////////////
+			//							INITIAL CONFIG
+			////////////////////////////////////////////////////////////////
+			config = SVGConfig.getConfig(type);
+			SVGDocument document = config.document();
+			ctx = SVGReader.build(document);
+			SVGOMSVGElement root = (SVGOMSVGElement)document.getDocumentElement();
+			element = document.createElementNS("http://www.w3.org/2000/svg", "g");
+			element.setAttribute("id", getBlock().hashCode() + "_root");
+			document.importNode(element, true);
+			NodeList nl = root.getChildNodes();
+			
+			////////////////////////////////////////////////////////////////
+			//							PREPARE FOR PORTABILITY
+			////////////////////////////////////////////////////////////////
+			for(;nl.getLength() > 0;)
+				element.appendChild(nl.item(0));
+			root.appendChild(element);
+			
+			////////////////////////////////////////////////////////////////
+			//							INSERT CONTENT
+			////////////////////////////////////////////////////////////////
+			String value = type.equals(IRenderable.VARIABLE_ENUM)? ((EnumLiteral<?>)getBlock()).name() : getBlock().value().toString();
+			Element elem = document.getElementById("resize_path");
 			Element end = null;
-			if(path != null) {
-				String[] commands = path.getAttribute("d").split(" ");
+			isRect = elem == null;
+			
+			////////////////////////////////////////////////////////////////
+			//							ADAPT SIZE OF CONTAINER
+			////////////////////////////////////////////////////////////////
+			if(isRect) {
+				
+				elem = document.getElementById("resize_rect");
+				elem.setAttributeNS(null, "width", config.wOffset() + value.length() * FONT_WIDTH_SVG + "");
+				end = document.getElementById("end");
+				
+			} else {
+				
+				String[] commands = elem.getAttribute("d").split(" ");
 		        StringBuilder newD = new StringBuilder();
 		        String lastCommand = "";
 		        for (String command : commands) {
@@ -220,39 +232,104 @@ public class LiteralRenderer implements IRenderer {
 		            	newD.append(" ");
 		            }
 		        }
-		        path.setAttribute("d", newD.toString().trim());
-			} else {
-				rect = (SVGOMRectElement)document.getElementById("resize_rect");
-				rect.setAttributeNS(null, "width", config.wOffset() + value.length() * FONT_WIDTH_SVG + "");
-				end = document.getElementById("end");
+		        elem.setAttribute("d", newD.toString().trim());
 			}
-	        Element textElement;
-	        if(isNewDocument) {
-		        textElement = document.createElementNS("http://www.w3.org/2000/svg", "text");
-		        
-		        textElement.setAttributeNS(null, "x", ""+config.textXOffset());
-		        textElement.setAttributeNS(null, "y", String.valueOf(17));
-		        textElement.setAttributeNS(null, "font-size", String.valueOf(16));
-		        textElement.setAttributeNS(null, "font-weight", "bold");
-		        textElement.setAttributeNS(null, "font-family", "monospace");
-		        if(type.equals(IRenderable.VARIABLE_ENUM))
-		        	textElement.setAttributeNS(null, "fill", "white");	
-		        textElement.setTextContent(value);
-		
-		        root.appendChild(textElement);
-			} else {
-				textElement = (Element) document.getElementsByTagName("text").item(0);
-				textElement.setAttributeNS(null, "x", ""+config.textXOffset());
-				textElement.setTextContent(value);
-			}
-	        Rectangle2D bb = ctx.getGraphicsNode(path == null?rect:path).getBounds();
+			
+			////////////////////////////////////////////////////////////////
+			//							INSERT TEXT
+			////////////////////////////////////////////////////////////////
+			
+			Element textElement;
+	        textElement = document.createElementNS("http://www.w3.org/2000/svg", "text");
+	        
+	        textElement.setAttributeNS(null, "x", ""+config.textXOffset());
+	        textElement.setAttributeNS(null, "y", String.valueOf(17));
+	        textElement.setAttributeNS(null, "font-size", String.valueOf(16));
+	        textElement.setAttributeNS(null, "font-weight", "bold");
+	        textElement.setAttributeNS(null, "font-family", "monospace");
+	        if(type.equals(IRenderable.VARIABLE_ENUM))
+	        	textElement.setAttributeNS(null, "fill", "white");	
+	        textElement.setTextContent(value);
+	
+	        element.appendChild(textElement);
+	        Rectangle2D bb = ctx.getGraphicsNode(elem).getBounds();
 	        if(end != null)
 				end.setAttribute("transform", "translate("+ (bb.getWidth() - config.endOffset()) + ", 0)");
-			root.setAttributeNS(null, "width", ""  + (bb.getWidth() + 1.25));
-			root.setAttributeNS(null, "height", "" + bb.getHeight());
-			root.setAttributeNS(null, "viewBox", "0 0 " + bb.getWidth() + " " + bb.getHeight());
-
+	        element.setAttributeNS(null, "width", ""  + (bb.getWidth() + 1.25));
+	        element.setAttributeNS(null, "height", "" + bb.getHeight());
+	        element.setAttributeNS(null, "viewBox", "0 0 " + bb.getWidth() + " " + bb.getHeight());
 		}
-		return document;
+		return element;
+		
+//		if(element == null || updateSVG) {
+//			needsUpdate = false;
+//			updateSVG = false;
+//			boolean isNewDocument = false;
+//			if(element == null) {
+//				config = SVGConfig.getConfig(type);
+//				SVGDocument document = config.document();
+//				ctx = SVGReader.build(document);
+//				isNewDocument = true;
+//			}
+//			SVGOMSVGElement root = (SVGOMSVGElement)document.getDocumentElement();
+//			String value = getBlock().value().toString();
+//			if(type.equals(IRenderable.VARIABLE_ENUM))
+//				value = ((EnumLiteral<?>)getBlock()).name();
+//			SVGPathElement path = (SVGPathElement) document.getElementById("resize_path");
+//			SVGOMRectElement rect = null;
+//			Element end = null;
+//			if(path != null) {
+//				String[] commands = path.getAttribute("d").split(" ");
+//		        StringBuilder newD = new StringBuilder();
+//		        String lastCommand = "";
+//		        for (String command : commands) {
+//		            if (command.matches("[MLHVCSQTAZmlhvcsqtaz]")) {
+//		            	lastCommand = command;
+//		                newD.append(command).append(" ");
+//		            } else {
+//		            	if(lastCommand.equals("h"))
+//		            		newD.append(value.length() * FONT_WIDTH_SVG);
+//		            	else if(lastCommand.toLowerCase().equals("m")) {
+//		            		lastCommand = "";
+//		            		newD.append(config.wOffset() + ",0");
+//		            	} else
+//		            		newD.append(command);
+//		            	newD.append(" ");
+//		            }
+//		        }
+//		        path.setAttribute("d", newD.toString().trim());
+//			} else {
+//				rect = (SVGOMRectElement)document.getElementById("resize_rect");
+//				rect.setAttributeNS(null, "width", config.wOffset() + value.length() * FONT_WIDTH_SVG + "");
+//				end = document.getElementById("end");
+//			}
+//	        Element textElement;
+//	        if(isNewDocument) {
+//		        textElement = document.createElementNS("http://www.w3.org/2000/svg", "text");
+//		        
+//		        textElement.setAttributeNS(null, "x", ""+config.textXOffset());
+//		        textElement.setAttributeNS(null, "y", String.valueOf(17));
+//		        textElement.setAttributeNS(null, "font-size", String.valueOf(16));
+//		        textElement.setAttributeNS(null, "font-weight", "bold");
+//		        textElement.setAttributeNS(null, "font-family", "monospace");
+//		        if(type.equals(IRenderable.VARIABLE_ENUM))
+//		        	textElement.setAttributeNS(null, "fill", "white");	
+//		        textElement.setTextContent(value);
+//		
+//		        root.appendChild(textElement);
+//			} else {
+//				textElement = (Element) document.getElementsByTagName("text").item(0);
+//				textElement.setAttributeNS(null, "x", ""+config.textXOffset());
+//				textElement.setTextContent(value);
+//			}
+//	        Rectangle2D bb = ctx.getGraphicsNode(path == null?rect:path).getBounds();
+//	        if(end != null)
+//				end.setAttribute("transform", "translate("+ (bb.getWidth() - config.endOffset()) + ", 0)");
+//			root.setAttributeNS(null, "width", ""  + (bb.getWidth() + 1.25));
+//			root.setAttributeNS(null, "height", "" + bb.getHeight());
+//			root.setAttributeNS(null, "viewBox", "0 0 " + bb.getWidth() + " " + bb.getHeight());
+//
+//		}
+//		return document;
 	}
 }
