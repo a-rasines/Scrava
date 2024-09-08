@@ -65,7 +65,7 @@ public class LiteralRenderer implements IRenderer {
 	private final LiteralClickable clickable;
 	private String type;
 	private transient BufferedImage rendered = null;
-	private boolean updateSVG = true;
+	private boolean updateSVG = false;
 	private transient Element element = null;
 	private transient SVGConfig config = null;
 	private transient BridgeContext ctx = null;
@@ -147,6 +147,8 @@ public class LiteralRenderer implements IRenderer {
 	public double getHeight() {
 		if(gn == null) {
 			getRenderableSVG();
+			if(ctx == null)
+				getRenderable();
 			gn = ctx.getGraphicsNode(element);
 		}
 		return gn.getBounds().getHeight();
@@ -156,6 +158,8 @@ public class LiteralRenderer implements IRenderer {
 	public double getWidth() {
 		if(gn == null) {
 			getRenderableSVG();
+			if(ctx == null)
+				getRenderable();
 			gn = ctx.getGraphicsNode(element);
 		}
 		return gn.getBounds().getWidth();
@@ -176,6 +180,7 @@ public class LiteralRenderer implements IRenderer {
 		if(updateSVG) {
 			
 		} else if (element == null) {
+			System.out.println("a");
 			////////////////////////////////////////////////////////////////
 			//							INITIAL CONFIG
 			////////////////////////////////////////////////////////////////
@@ -184,6 +189,7 @@ public class LiteralRenderer implements IRenderer {
 			ctx = SVGReader.build(document);
 			SVGOMSVGElement root = (SVGOMSVGElement)document.getDocumentElement();
 			element = document.createElementNS("http://www.w3.org/2000/svg", "g");
+			System.out.println(element);
 			element.setAttribute("id", getBlock().hashCode() + "_root");
 			document.importNode(element, true);
 			NodeList nl = root.getChildNodes();

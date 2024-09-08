@@ -11,7 +11,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.net.URISyntaxException;
-import java.util.Random;
 
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
@@ -45,7 +44,6 @@ import org.w3c.dom.svg.SVGLocatable;
 import org.w3c.dom.svg.SVGRect;
 
 import debug.DebugOut;
-import domain.blocks.operators.AddOperator;
 import domain.values.NumberLiteral;
 import ui.renderers.IRenderer;
 
@@ -99,28 +97,27 @@ public class SVGReader {
 //        JSVGCanvas canvas = new JSVGCanvas();
 //        frame.getContentPane().add(canvas, BorderLayout.CENTER);
 //        canvas.setSVGDocument(document);
-//        IRenderer r = new NumberLiteral<Integer>(123450, null).getRenderer();
+        IRenderer r = new NumberLiteral<Integer>(123450, null).getRenderer();
 //        IRenderer r = new BooleanLiteral(true, null).getRenderer();
 //        IRenderer r = new StringLiteral("123456789987654321", null).getRenderer();
 //        IRenderer r = new EnumLiteral<Integer>(KeyEventBlock.KEY_MAP, null).getRenderer();
 
 //        IRenderer r = new AppendOperator().getRenderer();
-        AddOperator ao = new AddOperator();
-        NumberLiteral<Double> nl = new NumberLiteral<Double>(0., ao);
-        ao.setLeft(nl);
-        AddOperator pao = new AddOperator();
-        pao.setLeft(ao);
+//        AddOperator ao = new AddOperator();
+//        NumberLiteral<Double> nl = new NumberLiteral<Double>(0., ao);
+//        ao.setLeft(nl);
+//        AddOperator pao = new AddOperator();
+//        pao.setLeft(ao);
+//        
+//        IRenderer r = pao.getRenderer();
         
-        IRenderer r = pao.getRenderer();
-        r.getRenderableSVG();
-        
-        nl.setValue(10000., true);
+//        nl.setValue(10000., true);
         
 //        IRenderer r = new RandomOperator().getRenderer();
 //        IRenderer r = new OrBlock(new AndBlock(new OrBlock(), new BooleanLiteral(true, null)), new BooleanLiteral(true, null)).getRenderer();
 //        IRenderer r = new OrBlock().getRenderer();
         
-        SVGDocument doc = r.getRenderableSVG();
+        SVGDocument doc = (SVGDocument)r.getRenderableSVG().getOwnerDocument();
         System.out.println(doc.hashCode());
         try (FileWriter writer = new FileWriter(new File(doc.hashCode() + ".svg"))) {
             DOMUtilities.writeDocument(doc, writer);
@@ -140,9 +137,8 @@ public class SVGReader {
         frame.addMouseListener(new MouseAdapter() {
         	@Override
         	public void mouseClicked(MouseEvent e) {
-        		System.out.println("a");
-        		nl.setValue(new Random().nextDouble(), true);
-        		SVGDocument doc = r.getRenderableSVG();
+//        		nl.setValue(new Random().nextDouble(), true);
+        		SVGDocument doc = (SVGDocument)r.getRenderableSVG().getOwnerDocument();
         		BufferedImage bi = SVGReader.toBufferedImage(doc);
                 Graphics g = bi.getGraphics();
                 g.setColor(Color.blue);
