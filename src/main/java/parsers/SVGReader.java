@@ -36,6 +36,7 @@ import org.apache.batik.transcoder.TranscoderOutput;
 import org.apache.batik.transcoder.image.ImageTranscoder;
 import org.apache.batik.util.XMLResourceDescriptor;
 import org.w3c.dom.DOMImplementation;
+import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -58,16 +59,16 @@ public class SVGReader {
 	}
 	/**
 	 * Builds the document to be able to extract metadata from elements
-	 * @param document
+	 * @param doc
 	 */
-	public static BridgeContext build(SVGDocument document) {
+	public static BridgeContext build(Document doc) {
 		BridgeContext context = new BridgeContext(new UserAgentAdapter());
 		context.setDynamicState(BridgeContext.DYNAMIC);
 		try {
-			new GVTBuilder().build(context, document);
+			new GVTBuilder().build(context, doc);
 		} catch(Exception e) {
 			try {
-				System.out.println(documentToString(document));
+				System.out.println(documentToString(doc));
 			} catch (TransformerException e1) {
 				e1.printStackTrace();
 			}
@@ -76,7 +77,7 @@ public class SVGReader {
 		return context;
 	}
 	
-	public static String documentToString(SVGDocument document) throws TransformerException {
+	public static String documentToString(Document doc) throws TransformerException {
 		Transformer transformer = TransformerFactory.newInstance().newTransformer();
         transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "no");
         transformer.setOutputProperty(OutputKeys.METHOD, "xml");
@@ -84,7 +85,7 @@ public class SVGReader {
         transformer.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
         
         StringWriter writer = new StringWriter();
-        transformer.transform(new DOMSource(document), new StreamResult(writer));
+        transformer.transform(new DOMSource(doc), new StreamResult(writer));
         return writer.getBuffer().toString();
 	}
 	public static void main(String[] args) throws URISyntaxException, IOException {
@@ -97,7 +98,8 @@ public class SVGReader {
 //        JSVGCanvas canvas = new JSVGCanvas();
 //        frame.getContentPane().add(canvas, BorderLayout.CENTER);
 //        canvas.setSVGDocument(document);
-        IRenderer r = new NumberLiteral<Integer>(123450, null).getRenderer();
+        NumberLiteral<Integer> nl = new NumberLiteral<Integer>(123450, null);
+        IRenderer r = nl.getRenderer();
 //        IRenderer r = new BooleanLiteral(true, null).getRenderer();
 //        IRenderer r = new StringLiteral("123456789987654321", null).getRenderer();
 //        IRenderer r = new EnumLiteral<Integer>(KeyEventBlock.KEY_MAP, null).getRenderer();
@@ -116,13 +118,21 @@ public class SVGReader {
 //        IRenderer r = new RandomOperator().getRenderer();
 //        IRenderer r = new OrBlock(new AndBlock(new OrBlock(), new BooleanLiteral(true, null)), new BooleanLiteral(true, null)).getRenderer();
 //        IRenderer r = new OrBlock().getRenderer();
-        
-        SVGDocument doc = (SVGDocument)r.getRenderableSVG().getOwnerDocument();
+        SVGDocument doc = (SVGDocument) SVGDOMImplementation.getDOMImplementation().createDocument(SVGDOMImplementation.SVG_NAMESPACE_URI, "svg", null);
+        Node n = r.toDocument(doc).getRenderableSVG();
+        doc.getDocumentElement().appendChild(n);
         System.out.println(doc.hashCode());
         try (FileWriter writer = new FileWriter(new File(doc.hashCode() + ".svg"))) {
             DOMUtilities.writeDocument(doc, writer);
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+        nl.setValue(220, true);
+        System.out.println(doc.hashCode());
+        try (FileWriter writer = new FileWriter(new File(doc.hashCode() + ".svg"))) {
+            DOMUtilities.writeDocument(doc, writer);
+        } catch (IOException ex) {
+            ex.printStackTrace();
         }
         
         BufferedImage bi = SVGReader.toBufferedImage(doc);

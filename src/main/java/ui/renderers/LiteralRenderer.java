@@ -17,6 +17,7 @@ import javax.swing.WindowConstants;
 import org.apache.batik.anim.dom.SVGOMSVGElement;
 import org.apache.batik.bridge.BridgeContext;
 import org.apache.batik.gvt.GraphicsNode;
+import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.w3c.dom.svg.SVGDocument;
@@ -25,6 +26,7 @@ import clickable.BlockClickable;
 import clickable.LiteralClickable;
 import domain.models.interfaces.Clickable;
 import domain.models.interfaces.Valuable;
+import domain.models.interfaces.VariableHolder;
 import domain.values.AbstractLiteral;
 import domain.values.BooleanLiteral;
 import domain.values.EnumLiteral;
@@ -100,7 +102,9 @@ public class LiteralRenderer implements IRenderer {
 	public void update() {
 		rendered = null;
 		updateSVG = true;
-		clickable.getParent().getRenderer().update();
+		if(clickable.getParent() != null)
+			clickable.getParent().getRenderer().update();
+		getRenderableSVG();
 		
 	}
 
@@ -141,6 +145,9 @@ public class LiteralRenderer implements IRenderer {
 	@Override
 	public void delete() {
 		System.out.println("delete " + getBlock());
+		if(getClickable().getParent() != null)
+			((VariableHolder)getClickable().getParent().getBlock()).removeVariable(getBlock());
+		element.getParentNode().removeChild(element);
 	}
 
 	@Override
@@ -164,107 +171,162 @@ public class LiteralRenderer implements IRenderer {
 		}
 		return gn.getBounds().getWidth();
 	}
-
-//	@Override
-//	public void patch(int x, int y, int h, int w, BufferedImage bi) {
-//		rendered = null;
-//		Rect r = clickable.getPosition();
-//		clickable.getParent().getRenderer().patch(r.x, r.y, r.y + r.h, r.w, getRenderable());
-		
-//	}
+	
+	@Override
+	public LiteralRenderer toDocument(SVGDocument doc) {
+		if(element == null) getRenderableSVG();
+		element = (Element)doc.importNode(element, true);
+		return this;
+	}
 	
 	
 	private transient boolean isRect = false;
+	protected void generateSVG() {
+		////////////////////////////////////////////////////////////////
+		//							INITIAL CONFIG
+		////////////////////////////////////////////////////////////////
+		config = SVGConfig.getConfig(type);
+		SVGDocument document = config.document();
+		ctx = SVGReader.build(document);
+		SVGOMSVGElement root = (SVGOMSVGElement)document.getDocumentElement();
+		element = document.createElementNS("http://www.w3.org/2000/svg", "g");
+		System.out.println(element);
+		element.setAttribute("id", getBlock().hashCode() + "_root");
+		document.importNode(element, true);
+		NodeList nl = root.getChildNodes();
+		int blockHashCode = getBlock().hashCode();
+		
+		////////////////////////////////////////////////////////////////
+		//							PREPARE FOR PORTABILITY
+		////////////////////////////////////////////////////////////////
+		for(;nl.getLength() > 0;)
+			element.appendChild(nl.item(0));
+		root.appendChild(element);
+		
+		////////////////////////////////////////////////////////////////
+		//							INSERT CONTENT
+		////////////////////////////////////////////////////////////////
+		String value = type.equals(IRenderable.VARIABLE_ENUM)? ((EnumLiteral<?>)getBlock()).name() : getBlock().value().toString();
+		Element elem = document.getElementById("resize_path");
+		Element end = null;
+		isRect = elem == null;
+		
+		////////////////////////////////////////////////////////////////
+		//							ADAPT SIZE OF CONTAINER
+		////////////////////////////////////////////////////////////////
+		if(isRect) {
+		
+			elem = document.getElementById("resize_rect");
+			elem.setAttribute("id", blockHashCode + "_resize_rect");
+			elem.setAttributeNS(null, "width", config.wOffset() + value.length() * FONT_WIDTH_SVG + "");
+			end = document.getElementById("end");
+			if(end != null)
+				end.setAttribute("id", blockHashCode + "_end");
+		
+		} else {
+			
+			elem.setAttribute("id", blockHashCode + "_resize_path");
+			String[] commands = elem.getAttribute("d").split(" ");
+			StringBuilder newD = new StringBuilder();
+			String lastCommand = "";
+			for (String command : commands) {
+				if (command.matches("[MLHVCSQTAZmlhvcsqtaz]")) {
+					lastCommand = command;
+					newD.append(command).append(" ");
+				} else {
+					if(lastCommand.equals("h"))
+						newD.append(value.length() * FONT_WIDTH_SVG);
+					else if (lastCommand.toLowerCase().equals("m")) {
+						lastCommand = "";
+						newD.append(config.wOffset() + ",0");
+					} else
+						newD.append(command);
+					newD.append(" ");
+				}
+			}
+			elem.setAttribute("d", newD.toString().trim());
+		}
+
+		////////////////////////////////////////////////////////////////
+		// INSERT TEXT
+		////////////////////////////////////////////////////////////////
+
+		Element textElement;
+		textElement = document.createElementNS("http://www.w3.org/2000/svg", "text");
+
+		textElement.setAttributeNS(null, "x", "" + config.textXOffset());
+		textElement.setAttributeNS(null, "y", String.valueOf(17));
+		textElement.setAttributeNS(null, "font-size", String.valueOf(16));
+		textElement.setAttributeNS(null, "font-weight", "bold");
+		textElement.setAttributeNS(null, "font-family", "monospace");
+		textElement.setAttribute("id", blockHashCode + "_text");
+		if (type.equals(IRenderable.VARIABLE_ENUM))
+			textElement.setAttributeNS(null, "fill", "white");
+		textElement.setTextContent(value);
+
+		element.appendChild(textElement);
+		Rectangle2D bb = ctx.getGraphicsNode(elem).getBounds();
+		if (end != null)
+			end.setAttribute("transform", "translate(" + (bb.getWidth() - config.endOffset()) + ", 0)");
+		element.setAttributeNS(null, "width", "" + (bb.getWidth() + 1.25));
+		element.setAttributeNS(null, "height", "" + bb.getHeight());
+		element.setAttributeNS(null, "viewBox", "0 0 " + bb.getWidth() + " " + bb.getHeight());
+	}
+	
+	protected void updateSVG() {
+		String value = type.equals(IRenderable.VARIABLE_ENUM)? ((EnumLiteral<?>)getBlock()).name() : getBlock().value().toString();
+		Element elem;
+		Element end = null;
+		Document doc = element.getOwnerDocument();
+		int blockHashCode = getBlock().hashCode();
+		
+		if(isRect) {
+			System.out.println(blockHashCode + "_resize_rect");
+			System.out.println(doc.toString());
+			elem = doc.getElementById(blockHashCode + "_resize_rect");
+			elem.setAttributeNS(null, "width", config.wOffset() + value.length() * FONT_WIDTH_SVG + "");
+			end = doc.getElementById(blockHashCode + "_end");
+		
+		} else {
+			
+			elem = doc.getElementById(blockHashCode + "_resize_path");
+			String[] commands = elem.getAttribute("d").split(" ");
+			StringBuilder newD = new StringBuilder();
+			String lastCommand = "";
+			for (String command : commands) {
+				if (command.matches("[MLHVCSQTAZmlhvcsqtaz]")) {
+					lastCommand = command;
+					newD.append(command).append(" ");
+				} else {
+					if(lastCommand.equals("h"))
+						newD.append(value.length() * FONT_WIDTH_SVG);
+					else if (lastCommand.toLowerCase().equals("m")) {
+						lastCommand = "";
+						newD.append(config.wOffset() + ",0");
+					} else
+						newD.append(command);
+					newD.append(" ");
+				}
+			}
+			elem.setAttribute("d", newD.toString().trim());
+		}
+		doc.getElementById(blockHashCode + "_text").setTextContent(value);
+		if(ctx.getGraphicsNode(elem) == null)
+			ctx = SVGReader.build(doc);
+		Rectangle2D bb = ctx.getGraphicsNode(elem).getBounds();
+		if (end != null)
+			end.setAttribute("transform", "translate(" + (bb.getWidth() - config.endOffset()) + ", 0)");
+		element.setAttributeNS(null, "width", "" + (bb.getWidth() + 1.25));
+		element.setAttributeNS(null, "height", "" + bb.getHeight());
+		element.setAttributeNS(null, "viewBox", "0 0 " + bb.getWidth() + " " + bb.getHeight());
+	}
+	
 	@Override
 	public Element getRenderableSVG() {
 		if(updateSVG) {
-			
-		} else if (element == null) {
-			System.out.println("a");
-			////////////////////////////////////////////////////////////////
-			//							INITIAL CONFIG
-			////////////////////////////////////////////////////////////////
-			config = SVGConfig.getConfig(type);
-			SVGDocument document = config.document();
-			ctx = SVGReader.build(document);
-			SVGOMSVGElement root = (SVGOMSVGElement)document.getDocumentElement();
-			element = document.createElementNS("http://www.w3.org/2000/svg", "g");
-			System.out.println(element);
-			element.setAttribute("id", getBlock().hashCode() + "_root");
-			document.importNode(element, true);
-			NodeList nl = root.getChildNodes();
-			
-			////////////////////////////////////////////////////////////////
-			//							PREPARE FOR PORTABILITY
-			////////////////////////////////////////////////////////////////
-			for(;nl.getLength() > 0;)
-				element.appendChild(nl.item(0));
-			root.appendChild(element);
-			
-			////////////////////////////////////////////////////////////////
-			//							INSERT CONTENT
-			////////////////////////////////////////////////////////////////
-			String value = type.equals(IRenderable.VARIABLE_ENUM)? ((EnumLiteral<?>)getBlock()).name() : getBlock().value().toString();
-			Element elem = document.getElementById("resize_path");
-			Element end = null;
-			isRect = elem == null;
-			
-			////////////////////////////////////////////////////////////////
-			//							ADAPT SIZE OF CONTAINER
-			////////////////////////////////////////////////////////////////
-			if(isRect) {
-				
-				elem = document.getElementById("resize_rect");
-				elem.setAttributeNS(null, "width", config.wOffset() + value.length() * FONT_WIDTH_SVG + "");
-				end = document.getElementById("end");
-				
-			} else {
-				
-				String[] commands = elem.getAttribute("d").split(" ");
-		        StringBuilder newD = new StringBuilder();
-		        String lastCommand = "";
-		        for (String command : commands) {
-		            if (command.matches("[MLHVCSQTAZmlhvcsqtaz]")) {
-		            	lastCommand = command;
-		                newD.append(command).append(" ");
-		            } else {
-		            	if(lastCommand.equals("h"))
-		            		newD.append(value.length() * FONT_WIDTH_SVG);
-		            	else if(lastCommand.toLowerCase().equals("m")) {
-		            		lastCommand = "";
-		            		newD.append(config.wOffset() + ",0");
-		            	} else
-		            		newD.append(command);
-		            	newD.append(" ");
-		            }
-		        }
-		        elem.setAttribute("d", newD.toString().trim());
-			}
-			
-			////////////////////////////////////////////////////////////////
-			//							INSERT TEXT
-			////////////////////////////////////////////////////////////////
-			
-			Element textElement;
-	        textElement = document.createElementNS("http://www.w3.org/2000/svg", "text");
-	        
-	        textElement.setAttributeNS(null, "x", ""+config.textXOffset());
-	        textElement.setAttributeNS(null, "y", String.valueOf(17));
-	        textElement.setAttributeNS(null, "font-size", String.valueOf(16));
-	        textElement.setAttributeNS(null, "font-weight", "bold");
-	        textElement.setAttributeNS(null, "font-family", "monospace");
-	        if(type.equals(IRenderable.VARIABLE_ENUM))
-	        	textElement.setAttributeNS(null, "fill", "white");	
-	        textElement.setTextContent(value);
-	
-	        element.appendChild(textElement);
-	        Rectangle2D bb = ctx.getGraphicsNode(elem).getBounds();
-	        if(end != null)
-				end.setAttribute("transform", "translate("+ (bb.getWidth() - config.endOffset()) + ", 0)");
-	        element.setAttributeNS(null, "width", ""  + (bb.getWidth() + 1.25));
-	        element.setAttributeNS(null, "height", "" + bb.getHeight());
-	        element.setAttributeNS(null, "viewBox", "0 0 " + bb.getWidth() + " " + bb.getHeight());
-		}
+			updateSVG();
+		} else if (element == null)
+			generateSVG();
 		return element;
 		
 //		if(element == null || updateSVG) {

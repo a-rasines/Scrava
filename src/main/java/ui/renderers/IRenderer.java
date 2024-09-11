@@ -70,6 +70,14 @@ public interface IRenderer extends Serializable {
 	public Element getRenderableSVG();
 	
 	/**
+	 * Moves the SVG renderable (got using {@link IRenderer#getRenderableSVG()}) to the {@link org.w3c.dom.svg.SVGDocument SVGDocument} specified. <br>
+	 * <b>Important:</b> It does not append it to the document, it only registers the document as the new owner
+	 * @param doc the document the element will be part of
+	 * @return itself
+	 */
+	public IRenderer toDocument(SVGDocument doc);
+	
+	/**
 	 * Returns the rendered block
 	 * @return
 	 */
