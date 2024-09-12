@@ -14,12 +14,10 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.WindowConstants;
 
-import org.apache.batik.anim.dom.SVGOMSVGElement;
 import org.apache.batik.bridge.BridgeContext;
 import org.apache.batik.gvt.GraphicsNode;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
 import org.w3c.dom.svg.SVGDocument;
 
 import clickable.BlockClickable;
@@ -154,8 +152,6 @@ public class LiteralRenderer implements IRenderer {
 	public double getHeight() {
 		if(gn == null) {
 			getRenderableSVG();
-			if(ctx == null)
-				getRenderable();
 			gn = ctx.getGraphicsNode(element);
 		}
 		return gn.getBounds().getHeight();
@@ -165,8 +161,6 @@ public class LiteralRenderer implements IRenderer {
 	public double getWidth() {
 		if(gn == null) {
 			getRenderableSVG();
-			if(ctx == null)
-				getRenderable();
 			gn = ctx.getGraphicsNode(element);
 		}
 		return gn.getBounds().getWidth();
@@ -175,6 +169,7 @@ public class LiteralRenderer implements IRenderer {
 	@Override
 	public LiteralRenderer toDocument(SVGDocument doc) {
 		if(element == null) getRenderableSVG();
+		ctx = SVGReader.build(doc);
 		element = (Element)doc.importNode(element, true);
 		return this;
 	}
@@ -188,20 +183,9 @@ public class LiteralRenderer implements IRenderer {
 		config = SVGConfig.getConfig(type);
 		SVGDocument document = config.document();
 		ctx = SVGReader.build(document);
-		SVGOMSVGElement root = (SVGOMSVGElement)document.getDocumentElement();
-		element = document.createElementNS("http://www.w3.org/2000/svg", "g");
-		System.out.println(element);
-		element.setAttribute("id", getBlock().hashCode() + "_root");
-		document.importNode(element, true);
-		NodeList nl = root.getChildNodes();
+		element = setupSVG(document);
 		int blockHashCode = getBlock().hashCode();
 		
-		////////////////////////////////////////////////////////////////
-		//							PREPARE FOR PORTABILITY
-		////////////////////////////////////////////////////////////////
-		for(;nl.getLength() > 0;)
-			element.appendChild(nl.item(0));
-		root.appendChild(element);
 		
 		////////////////////////////////////////////////////////////////
 		//							INSERT CONTENT

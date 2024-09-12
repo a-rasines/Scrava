@@ -8,10 +8,14 @@ import java.util.List;
 
 import javax.imageio.ImageIO;
 
+import org.apache.batik.anim.dom.SVGOMGElement;
+import org.apache.batik.anim.dom.SVGOMSVGElement;
 import org.apache.batik.anim.dom.SVGOMTextElement;
 import org.apache.batik.dom.AbstractElement;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 import org.w3c.dom.svg.SVGDocument;
 import org.w3c.dom.svg.SVGLocatable;
 import org.w3c.dom.svg.SVGRect;
@@ -175,10 +179,12 @@ public interface IRenderer extends Serializable {
 				if(part.split(" ")[0].contains("}}")) {
 					String[] divided = part.split("}}");
 					IRenderer rend = getChildren().get(vari++);
-					Element newChild = parent.getOwnerDocument().createElementNS("http://www.w3.org/2000/svg", "g");
+					SVGOMGElement newChild = (SVGOMGElement)parent.getOwnerDocument().createElementNS("http://www.w3.org/2000/svg", "g");
 					IRenderer.insertBlockInsideElement(newChild, rend);
 					parent.appendChild(newChild);
-					h = Math.max(h, SVGReader.getBoundingBox(newChild).getHeight());
+					if(newChild.getBBox() == null)
+						SVGReader.build(newChild.getOwnerDocument());
+					h = Math.max(h, newChild.getBBox().getHeight());
 					if(divided.length > 1 && divided[1].strip().length() > 0) {
 						SVGOMTextElement textElement = IRenderer.textOf(parent.getOwnerDocument(), divided[1]);
 						parent.appendChild(textElement);
@@ -252,8 +258,23 @@ public interface IRenderer extends Serializable {
 	}
 	
 	public static void insertBlockInsideElement(Element parent, IRenderer block) {
-		parent.getOwnerDocument().importNode(block.getRenderableSVG(), true);
-		parent.appendChild(block.getRenderableSVG());
+		Node nn = parent.getOwnerDocument().importNode(block.getRenderableSVG(), true);
+		parent.appendChild(nn);
+	}
+	
+	public default Element setupSVG(Document doc) {
+		SVGOMSVGElement root = (SVGOMSVGElement)doc.getDocumentElement();
+		Element element = doc.createElementNS("http://www.w3.org/2000/svg", "g");
+		System.out.println(element);
+		element.setAttribute("id", getBlock().hashCode() + "_root");
+		doc.importNode(element, true);
+		NodeList nl = root.getChildNodes();
+		
+		for(;nl.getLength() > 0;)
+			element.appendChild(nl.item(0));
+		root.appendChild(element);
+		
+		return element;
 	}
 	
 	private static SVGOMTextElement textOf(Document doc, String str) {

@@ -45,7 +45,7 @@ import org.w3c.dom.svg.SVGLocatable;
 import org.w3c.dom.svg.SVGRect;
 
 import debug.DebugOut;
-import domain.values.NumberLiteral;
+import domain.blocks.operators.AppendOperator;
 import ui.renderers.IRenderer;
 
 public class SVGReader {
@@ -98,13 +98,13 @@ public class SVGReader {
 //        JSVGCanvas canvas = new JSVGCanvas();
 //        frame.getContentPane().add(canvas, BorderLayout.CENTER);
 //        canvas.setSVGDocument(document);
-        NumberLiteral<Integer> nl = new NumberLiteral<Integer>(123450, null);
-        IRenderer r = nl.getRenderer();
+//        NumberLiteral<Integer> nl = new NumberLiteral<Integer>(123450, null);
+//        IRenderer r = nl.getRenderer();
 //        IRenderer r = new BooleanLiteral(true, null).getRenderer();
 //        IRenderer r = new StringLiteral("123456789987654321", null).getRenderer();
 //        IRenderer r = new EnumLiteral<Integer>(KeyEventBlock.KEY_MAP, null).getRenderer();
 
-//        IRenderer r = new AppendOperator().getRenderer();
+        IRenderer r = new AppendOperator().getRenderer();
 //        AddOperator ao = new AddOperator();
 //        NumberLiteral<Double> nl = new NumberLiteral<Double>(0., ao);
 //        ao.setLeft(nl);
@@ -127,7 +127,7 @@ public class SVGReader {
         } catch (IOException ex) {
             ex.printStackTrace();
         }
-        nl.setValue(220, true);
+//        nl.setValue(220, true);
         System.out.println(doc.hashCode());
         try (FileWriter writer = new FileWriter(new File(doc.hashCode() + ".svg"))) {
             DOMUtilities.writeDocument(doc, writer);
@@ -162,7 +162,7 @@ public class SVGReader {
         frame.setVisible(true);
     }
 
-	public static BufferedImage toBufferedImage(SVGDocument document) {
+	public static BufferedImage toBufferedImage(Document document) {
 		BufferedImageTranscoder imageTranscoder = new BufferedImageTranscoder();
 		try {
 			TranscoderInput input = new TranscoderInput(document);
@@ -245,6 +245,7 @@ public class SVGReader {
         return clonedDocument;
 	}
 	
+	@Deprecated
 	public static Rectangle2D getBoundingBox(Element svgElement) {
         float minX = Float.MAX_VALUE;
         float minY = Float.MAX_VALUE;
