@@ -8,7 +8,7 @@ import java.util.List;
 
 import javax.imageio.ImageIO;
 
-import org.apache.batik.anim.dom.SVGOMGElement;
+import org.apache.batik.anim.dom.SVGOMRectElement;
 import org.apache.batik.anim.dom.SVGOMSVGElement;
 import org.apache.batik.anim.dom.SVGOMTextElement;
 import org.apache.batik.dom.AbstractElement;
@@ -179,12 +179,14 @@ public interface IRenderer extends Serializable {
 				if(part.split(" ")[0].contains("}}")) {
 					String[] divided = part.split("}}");
 					IRenderer rend = getChildren().get(vari++);
-					SVGOMGElement newChild = (SVGOMGElement)parent.getOwnerDocument().createElementNS("http://www.w3.org/2000/svg", "g");
-					IRenderer.insertBlockInsideElement(newChild, rend);
-					parent.appendChild(newChild);
-					if(newChild.getBBox() == null)
-						SVGReader.build(newChild.getOwnerDocument());
-					h = Math.max(h, newChild.getBBox().getHeight());
+//					SVGOMGElement newChild = (SVGOMGElement)parent.getOwnerDocument().createElementNS("http://www.w3.org/2000/svg", "g");
+					IRenderer.insertBlockInsideElement(parent, rend);
+//					parent.appendChild(newChild);
+					if(parent instanceof SVGLocatable l) {
+						if (l.getBBox() == null)
+							SVGReader.build(parent.getOwnerDocument());
+						h = Math.max(h, l.getBBox().getHeight());
+					}
 					if(divided.length > 1 && divided[1].strip().length() > 0) {
 						SVGOMTextElement textElement = IRenderer.textOf(parent.getOwnerDocument(), divided[1]);
 						parent.appendChild(textElement);
@@ -198,7 +200,9 @@ public interface IRenderer extends Serializable {
 			        elements.add(textElement);
 				}
 			}
-			h = Math.max(h, SVGReader.getBoundingBox(parent).getHeight());
+			if(parent instanceof SVGLocatable l) {
+				h = Math.max(h, l.getBBox().getHeight());
+			}
 			assemble(parent, h);
 		}
 	}
@@ -211,21 +215,24 @@ public interface IRenderer extends Serializable {
 	public default void assemble(AbstractElement root, double h) {
 		float len = 0;
 		int child = 0;
+		Element background = null;
 		for(Element e = root.getFirstElementChild(); e != null; e = (Element)e.getNextSibling()) {
+			System.out.println(e);
+			if(e.getAttribute("id").startsWith("resize_")) {
+				background = e;
+				continue;
+			}
 			if(e instanceof SVGLocatable ge) {
 				SVGRect bb = ge.getBBox();
-				if(bb == null) {
-					System.out.println(ge.getClass());
+				if(bb == null)
 					continue;
-				}
 				double w = bb.getWidth();
 				double x0 = 0;
 				if(e instanceof SVGOMTextElement te) {
 					w = FONT_WIDTH_SVG *  te.getTextContent().length();
 					x0 = (te.getTextContent().length() - te.getTextContent().stripLeading().length()) * FONT_WIDTH_SVG;
-				} else {
+				} else if(e.getAttribute("id").strip().endsWith("_root")){
 					Valuable<?> ch = ((VariableHolder)getBlock()).getVariableAt(child);
-					e.setAttributeNS(null, "id", getBlock().hashCode() + "_" + child);
 					e.setAttributeNS(null, "block", String.valueOf(ch.hashCode()));
 					ch.getRenderer().getClickable().setPosition((int)bb.getX(), (int)bb.getY());
 					child++;
@@ -252,9 +259,8 @@ public interface IRenderer extends Serializable {
 				
 			}
 		}
-		root.setAttributeNS(null, "width", Math.round((len + 1.75) * 100) / 100 + "");
-		root.setAttributeNS(null, "height", h + "");
-		root.setAttributeNS(null, "viewBox", "0 0 " + Math.round((len + 1.75) * 100) / 100 + " " + h);
+		background.setAttributeNS(null, "width", String.valueOf(Math.round((len + 7.5) * 100) / 100));
+		background.setAttributeNS(null, "height", h + "");
 	}
 	
 	public static void insertBlockInsideElement(Element parent, IRenderer block) {
