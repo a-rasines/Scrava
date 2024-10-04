@@ -2,9 +2,15 @@ package domain.models.types;
 
 import java.util.Set;
 
+import org.apache.batik.anim.dom.SVGOMGElement;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+
 import domain.models.interfaces.Valuable;
 import domain.values.AbstractLiteral;
 import ui.renderers.IRenderer.DragableRenderer;
+import ui.renderers.IRenderer.IRenderable;
 import ui.renderers.LiteralRenderer.LiteralRenderable;
 import ui.renderers.SimpleBlockRenderer;
 import ui.renderers.SimpleBlockRenderer.SimpleRenderable;
@@ -102,10 +108,10 @@ public abstract class OperatorBlock<T, R> implements SimpleRenderable<R> {
 	@Override
 	public LiteralRenderable<?> removeVariable(Valuable<?> v) {
 		if(values[0].equals(v)) {
-			values[0] = defs[0];
+			setVariableAt(0, v);
 			return (LiteralRenderable<T>)values[0];
 		} else if (values[1].equals(v)) {
-			values[1] = defs[1];
+			setVariableAt(0, v);
 			return (LiteralRenderable<T>)values[1];
 		}
 		return null;
@@ -113,28 +119,42 @@ public abstract class OperatorBlock<T, R> implements SimpleRenderable<R> {
 	@Override
 	public void removeVariableAt(int i) {
 		if (i == 0)
-			values[0] = defs[0];
+			setVariableAt(0, defs[0]);
 		else
-			values[1] = defs[1];
+			setVariableAt(1, defs[1]);
 	}
 	
-	@SuppressWarnings("unchecked")
 	@Override
 	public void replaceVariable(Valuable<?> old, Valuable<?> newValue) {
 		if(values[0].equals(old)) {
-			values[0] = (Valuable<T>)newValue;
+			setVariableAt(0, newValue);
 		} else if (values[1].equals(old)) {
-			values[1] = (Valuable<T>)newValue;
+			setVariableAt(1, newValue);
 		}
 		
 	}
 	@SuppressWarnings("unchecked")
 	@Override
 	public void setVariableAt(int i, Valuable<?> v) {
-		if(i == 0)
-			values[0] = (Valuable<? extends T>) v;
-		else
-			values[1] = (Valuable<? extends T>) v;
+		// Backend variable change
+		IRenderable original = values[i];
+		values[i] = (Valuable<? extends T>) v;
+		
+		//Frontend variable change
+		Element documentElement = getRenderer().getRenderableSVG().getOwnerDocument().getDocumentElement();
+		NodeList nl = getRenderer().getRenderableSVG().getChildNodes();
+		for(int j = 0; j < nl.getLength(); j++) {
+			Node n = nl.item(j);
+			if(n instanceof SVGOMGElement g) {
+				nl = g.getChildNodes();
+				for(j = 0; j < nl.getLength(); j++)
+					if((n = nl.item(j)) instanceof Element e && e.getAttribute("id").equals(original.hashCode() + "_root")) {
+						documentElement.appendChild(e);
+						g.appendChild(v.getRenderer().getRenderableSVG());
+						return;
+					}
+			}
+		}
 	}
 	
 	@Override
@@ -143,8 +163,26 @@ public abstract class OperatorBlock<T, R> implements SimpleRenderable<R> {
 	}
 	
 	public OperatorBlock<T, R>setValues(Valuable<? extends T> left, Valuable<? extends T> right) {
+		// Backend variable change
 		values = new Valuable[] {left, right};
-		return this;
+		
+		//Frontend variable change
+		Element documentElement = getRenderer().getRenderableSVG().getOwnerDocument().getDocumentElement();
+		NodeList nl = getRenderer().getRenderableSVG().getChildNodes();
+		for(int j = 0; j < nl.getLength(); j++) {
+			Node n = nl.item(j);
+			if(n instanceof SVGOMGElement g) {
+				nl = g.getChildNodes();
+				for(j = 0; j < nl.getLength(); j++) {
+					if((n = nl.item(j)) instanceof Element e && e.getAttribute("id").endsWith("_root"))
+						documentElement.appendChild(e);
+				}
+				g.appendChild(left.getRenderer().getRenderableSVG());
+				g.appendChild(right.getRenderer().getRenderableSVG());
+				return this;
+			}
+		}
+		return null;
 	}
 	
 	@Override

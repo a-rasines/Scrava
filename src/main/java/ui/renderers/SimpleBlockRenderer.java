@@ -4,6 +4,7 @@ import java.awt.image.BufferedImage;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.apache.batik.anim.dom.SVGOMGElement;
 import org.apache.batik.bridge.BridgeContext;
 import org.apache.batik.dom.AbstractElement;
 import org.apache.batik.gvt.GraphicsNode;
@@ -256,10 +257,19 @@ public class SimpleBlockRenderer implements DragableRenderer{
 		SVGDocument document = config.document();
 		element = setupSVG(document);
 		fillColor(element);
-		addText(getBlock().getTitle(), (AbstractElement) element);
+		Element contentElement = document.createElementNS("http://www.w3.org/2000/svg", "g");
+		contentElement.setAttribute("id", getBlock().hashCode() + "_content_group");
+		element.appendChild(contentElement);
+		addText(getBlock().getTitle(), (AbstractElement) contentElement);
+		Element background = document.getElementById("resize_rect");
+		background.setAttribute("width", contentElement.getAttribute("width"));
+		background.setAttribute("height", contentElement.getAttribute("height"));
+		background.setAttribute("id", getBlock().hashCode() + "_resize_rect");
 	}
 	private void updateSVG() {
 		updateSVG = false;
+		SVGOMGElement contentElement = (SVGOMGElement) element.getOwnerDocument().getElementById(getBlock().hashCode() + "_content_group");
+		assemble(contentElement, contentElement.getBBox().getHeight());
 	}
 	
 	@Override
@@ -268,109 +278,6 @@ public class SimpleBlockRenderer implements DragableRenderer{
 			generateSVG();
 		else if(updateSVG)
 			updateSVG();
-//		if(config == null) {
-//			config = switch(getBlock().value()) {
-//				case Number n -> SVGConfig.getConfig(IRenderable.VARIABLE_NUM);
-//				case Boolean b -> SVGConfig.getConfig(IRenderable.VARIABLE_BOOL);
-//				default -> SVGConfig.getConfig(IRenderable.VARIABLE_STR);
-//			};
-//			document = config.document();
-//			fillColor(document.getDocumentElement());
-//			SVGOMSVGElement root = (SVGOMSVGElement)document.getDocumentElement();
-//			int hashcode = getBlock().hashCode();
-//			
-//			SVGDocument text = addText(getBlock().getTitle());
-//			double textWidth = SVGReader.build(text).getGraphicsNode(text.getDocumentElement()).getBounds().getWidth();
-//			
-//			SVGPathElement path = (SVGPathElement) document.getElementById("resize_path");
-//			SVGOMRectElement rect = null;
-//			if(path != null) {
-//				path.setAttribute("id", "resize_path_" + hashcode);
-//				String[] commands = path.getAttribute("d").split(" ");
-//		        StringBuilder newD = new StringBuilder();
-//		        String lastCommand = "";
-//		        for (String command : commands) {
-//		            if (command.matches("[MLHVCSQTAZmlhvcsqtaz]")) {
-//		            	lastCommand = command;
-//		                newD.append(command).append(" ");
-//		            } else {
-//		            	if(lastCommand.equals("h"))
-//		            		newD.append(textWidth);
-//		            	else if(lastCommand.toLowerCase().equals("m")) {
-//		            		lastCommand = "";
-//		            		newD.append(config.wOffset() - 1.75 + ",0");
-//		            	} else
-//		            		newD.append(command);
-//		            	newD.append(" ");
-//		            }
-//		        }
-//		        path.setAttribute("d", newD.toString().trim());
-//			} else {
-//				rect = (SVGOMRectElement)document.getElementById("resize_rect");
-//				rect.setAttribute("id", "resize_rect_" + hashcode);
-//				rect.setAttributeNS(null, "width", config.wOffset() + textWidth+ "");
-//			}
-//			
-//			Element newChild = document.createElementNS("http://www.w3.org/2000/svg", "g");
-//			newChild.setAttribute("transform", text.getDocumentElement().getAttribute("transform"));
-//			newChild.setAttribute("id", "text_" + hashcode);
-//			NodeList nl = document.importNode(text.getDocumentElement(), true).getChildNodes();
-//			int len = nl.getLength(); //for some reason it decreases each iteration
-//			for(int i = 0; i < len; i++) {
-//				Node n = nl.item(0);
-//				newChild.appendChild(n);
-//			}
-//			float scale = 1.5f;
-//			for(Node n = newChild.getFirstChild(); n != null; n = n.getNextSibling()) {
-//				if(n instanceof SVGOMGElement e) {
-//					nl = e.getChildNodes();
-//					int i = 0;
-//					Node p = nl.item(i++);
-//					while(!(p instanceof Element pE) || !pE.getAttribute("id").startsWith("resize_rect") && !pE.getAttribute("id").startsWith("resize_path")) {
-//						p = nl.item(i++);
-//					}
-//					String transform = ((Element)p).getAttribute("transform");
-//					if(transform.length() > 0)
-//						scale = Math.max(scale, 0.5f + Float.parseFloat(transform.replaceAll(".*scale\\( ?[0-9]* ?, ?", "").replaceAll(" ?\\).*", "")));
-//				}
-//			}
-//			
-//			ctx = SVGReader.build(document);
-//			Rectangle2D bb = SVGReader.getBoundingBox((path == null?rect:path));
-//			
-//			
-//			(path==null?rect:path).setAttributeNS(null, "transform", "scale(1," + scale + ")");
-//			root.appendChild(newChild);
-//			newChild.setAttributeNS(null, "transform", "translate(" + config.textXOffset() + "," + (bb.getHeight() * scale - SVGReader.getBoundingBox(newChild).getHeight()) / 2 + ")");
-//			root.setAttributeNS(null, "width", ""  + Math.round(bb.getWidth() * scale * 100) / 100);
-//			root.setAttributeNS(null, "height", "" +  Math.round(bb.getHeight() * scale * 100) / 100);
-//			root.setAttributeNS(null, "viewBox", "0 0 " + Math.round(bb.getWidth() * scale * 100) / 100 + " " + Math.round(bb.getHeight() * scale * 100) / 100);
-//			for(Valuable<?> c : getBlock().getAllVariables())
-//				c.getRenderer().getClickable().move((int)config.textXOffset(), 0);
-//		} else if(updateSVG) {
-//			Element root = document.getDocumentElement();
-//			root.setAttributeNS(null, "width", root.getAttribute("width").replaceAll("[^0-9.]", ""));
-//			root.setAttributeNS(null, "height", root.getAttribute("height").replaceAll("[^0-9.]", ""));
-//			List<IRenderer> children = block.getRenderer().getChildren();
-//			int hashcode = block.hashCode();
-//			for(int i = 0; i < children.size(); i++) {
-//				IRenderer child = children.get(i);
-//				SVGOMGElement element = (SVGOMGElement) document.getElementById(hashcode + "_" + i);
-//				String hc = String.valueOf(child.hashCode());
-//				if(!element.getAttribute("block").equals(hc))
-//					element.setAttribute("block", hc);
-//				if(child.needsUpdate()) {
-//			        while (element.hasChildNodes()) {
-//			            Node childElement = element.getFirstChild();
-//			            element.removeChild(childElement);
-//			        }
-//			        IRenderer.insertBlockInsideElement(document, element, child);
-//			        assemble((SVGOMGElement)document.getElementById("text_" + hashcode), 0);
-//				}
-//			}
-//		}
-//		
-//		return document;
 		return element;
 	}
 }

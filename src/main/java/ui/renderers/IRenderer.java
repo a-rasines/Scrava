@@ -8,7 +8,6 @@ import java.util.List;
 
 import javax.imageio.ImageIO;
 
-import org.apache.batik.anim.dom.SVGOMRectElement;
 import org.apache.batik.anim.dom.SVGOMSVGElement;
 import org.apache.batik.anim.dom.SVGOMTextElement;
 import org.apache.batik.dom.AbstractElement;
@@ -215,13 +214,8 @@ public interface IRenderer extends Serializable {
 	public default void assemble(AbstractElement root, double h) {
 		float len = 0;
 		int child = 0;
-		Element background = null;
 		for(Element e = root.getFirstElementChild(); e != null; e = (Element)e.getNextSibling()) {
 			System.out.println(e);
-			if(e.getAttribute("id").startsWith("resize_")) {
-				background = e;
-				continue;
-			}
 			if(e instanceof SVGLocatable ge) {
 				SVGRect bb = ge.getBBox();
 				if(bb == null)
@@ -231,7 +225,7 @@ public interface IRenderer extends Serializable {
 				if(e instanceof SVGOMTextElement te) {
 					w = FONT_WIDTH_SVG *  te.getTextContent().length();
 					x0 = (te.getTextContent().length() - te.getTextContent().stripLeading().length()) * FONT_WIDTH_SVG;
-				} else if(e.getAttribute("id").strip().endsWith("_root")){
+				} else {
 					Valuable<?> ch = ((VariableHolder)getBlock()).getVariableAt(child);
 					e.setAttributeNS(null, "block", String.valueOf(ch.hashCode()));
 					ch.getRenderer().getClickable().setPosition((int)bb.getX(), (int)bb.getY());
@@ -259,8 +253,8 @@ public interface IRenderer extends Serializable {
 				
 			}
 		}
-		background.setAttributeNS(null, "width", String.valueOf(Math.round((len + 7.5) * 100) / 100));
-		background.setAttributeNS(null, "height", h + "");
+		root.setAttributeNS(null, "width", String.valueOf(Math.round((len + 7.5) * 100) / 100));
+		root.setAttributeNS(null, "height", h + "");
 	}
 	
 	public static void insertBlockInsideElement(Element parent, IRenderer block) {
