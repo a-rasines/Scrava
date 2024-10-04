@@ -149,8 +149,8 @@ public abstract class OperatorBlock<T, R> implements SimpleRenderable<R> {
 				nl = g.getChildNodes();
 				for(j = 0; j < nl.getLength(); j++)
 					if((n = nl.item(j)) instanceof Element e && e.getAttribute("id").equals(original.hashCode() + "_root")) {
+						g.insertBefore(v.getRenderer().getRenderableSVG(), e);
 						documentElement.appendChild(e);
-						g.appendChild(v.getRenderer().getRenderableSVG());
 						return;
 					}
 			}
@@ -165,6 +165,7 @@ public abstract class OperatorBlock<T, R> implements SimpleRenderable<R> {
 	public OperatorBlock<T, R>setValues(Valuable<? extends T> left, Valuable<? extends T> right) {
 		// Backend variable change
 		values = new Valuable[] {left, right};
+		int child = 0;
 		
 		//Frontend variable change
 		Element documentElement = getRenderer().getRenderableSVG().getOwnerDocument().getDocumentElement();
@@ -174,11 +175,12 @@ public abstract class OperatorBlock<T, R> implements SimpleRenderable<R> {
 			if(n instanceof SVGOMGElement g) {
 				nl = g.getChildNodes();
 				for(j = 0; j < nl.getLength(); j++) {
-					if((n = nl.item(j)) instanceof Element e && e.getAttribute("id").endsWith("_root"))
+					if((n = nl.item(j)) instanceof Element e && e.getAttribute("id").endsWith("_root")) {
+						g.insertBefore((child == 0?left:right).getRenderer().getRenderableSVG(), e);
+						child++;
 						documentElement.appendChild(e);
+					}
 				}
-				g.appendChild(left.getRenderer().getRenderableSVG());
-				g.appendChild(right.getRenderer().getRenderableSVG());
 				return this;
 			}
 		}
