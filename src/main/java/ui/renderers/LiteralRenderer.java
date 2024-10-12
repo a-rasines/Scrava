@@ -171,6 +171,7 @@ public class LiteralRenderer implements IRenderer {
 		if(element == null) getRenderableSVG();
 		ctx = SVGReader.build(doc);
 		element = (Element)doc.importNode(element, true);
+		doc.getDocumentElement().appendChild(element);
 		return this;
 	}
 	
@@ -258,6 +259,7 @@ public class LiteralRenderer implements IRenderer {
 	}
 	
 	protected void updateSVG() {
+		System.out.println("Update SVG");
 		String value = type.equals(IRenderable.VARIABLE_ENUM)? ((EnumLiteral<?>)getBlock()).name() : getBlock().value().toString();
 		Element elem;
 		Element end = null;

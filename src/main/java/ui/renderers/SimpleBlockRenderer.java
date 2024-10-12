@@ -1,12 +1,16 @@
 package ui.renderers;
 
 import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 
 import org.apache.batik.anim.dom.SVGOMGElement;
 import org.apache.batik.bridge.BridgeContext;
 import org.apache.batik.dom.AbstractElement;
+import org.apache.batik.dom.util.DOMUtilities;
 import org.apache.batik.gvt.GraphicsNode;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -145,9 +149,9 @@ public class SimpleBlockRenderer implements DragableRenderer{
 	public void update() {
 		rendered(null, true);
 		updateSVG = true;
-		if(clickable.getParent() == null)
-			BlockPanel.INSTANCE.repaint();
-		else
+//		if(clickable.getParent() == null)
+//			BlockPanel.INSTANCE.repaint();
+		/*else*/ if(clickable.getParent() != null)
 			clickable.getParent().getRenderer().update();
 	}
 	
@@ -204,23 +208,6 @@ public class SimpleBlockRenderer implements DragableRenderer{
 			rend.delete();
 		
 	}
-//	@Override
-//	public void patch(int x, int y, int h, int w, BufferedImage bi) {
-//		BufferedImage rend =  rendered(null, false);
-//		System.out.println("x:"+x+" h:"+h+" w:"+w);
-//		background(rend, h, x, w);
-//		Graphics2D g = (Graphics2D) rend.getGraphics();
-//		g.drawImage(bi, x, y, null);
-//		g.setColor(Color.green);
-//		g.setStroke(new BasicStroke(2));
-//		g.drawRect(x + 1, y + 1, w - 2, h - 2);
-//		rendered(rend, true);
-//		if(clickable.getParent() != null) {
-//			Rect r = clickable.getPosition();
-//			clickable.getParent().getRenderer().patch(r.x, r.y, r.h + r.y, r.w, getRenderable());
-//		} else
-//			BlockPanel.INSTANCE.repaint();
-//	}
 	
 	private void fillColor(Element parent) {
 		NodeList nl = parent.getChildNodes();
@@ -244,6 +231,7 @@ public class SimpleBlockRenderer implements DragableRenderer{
 	public SimpleBlockRenderer toDocument(SVGDocument doc) {
 		if(element == null) getRenderableSVG();
 		element = (Element)doc.importNode(element, true);
+		doc.getDocumentElement().appendChild(element);
 		ctx = SVGReader.build(doc);
 		return this;
 	}
@@ -259,9 +247,11 @@ public class SimpleBlockRenderer implements DragableRenderer{
 		fillColor(element);
 		Element contentElement = document.createElementNS("http://www.w3.org/2000/svg", "g");
 		contentElement.setAttribute("id", getBlock().hashCode() + "_content_group");
+		System.out.println(contentElement.getAttribute("id"));
 		element.appendChild(contentElement);
 		addText(getBlock().getTitle(), (AbstractElement) contentElement);
 		Element background = document.getElementById("resize_rect");
+		System.out.println(background);
 		background.setAttribute("width", contentElement.getAttribute("width"));
 		background.setAttribute("height", contentElement.getAttribute("height"));
 		background.setAttribute("id", getBlock().hashCode() + "_resize_rect");

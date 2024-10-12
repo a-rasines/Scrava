@@ -24,15 +24,14 @@ public abstract class OperatorBlock<T, R> implements SimpleRenderable<R> {
 	}
 
 	private static final long serialVersionUID = 1979700927393729000L;
-	@SuppressWarnings("rawtypes")
-	protected Valuable[] values;
-	@SuppressWarnings("rawtypes")
-	protected Valuable[] defs;
+	protected Valuable<? extends T>[] values;
+	protected Valuable<? extends T>[] defs;
 	
 	protected OperatorBlock() {
 		sbr = new SimpleBlockRenderer(this);
 	}
 	
+	@SuppressWarnings("unchecked")
 	protected void setup(Valuable<? extends T> left, Valuable<? extends T> right) {
 		this.values = new Valuable[]{left, right};
 		this.defs = new Valuable[]{left, right};
@@ -63,7 +62,6 @@ public abstract class OperatorBlock<T, R> implements SimpleRenderable<R> {
 	
 	public abstract R value(Valuable<? extends T> left, Valuable<? extends T> right);
 	
-	@SuppressWarnings("unchecked")
 	@Override
 	public final R value() {
 		return (R) value(values[0], values[1]);
@@ -71,7 +69,6 @@ public abstract class OperatorBlock<T, R> implements SimpleRenderable<R> {
 	
 	public abstract String getCode(Valuable<? extends T> left, Valuable<? extends T> right);
 	
-	@SuppressWarnings("unchecked")
 	public final String getCode() {
 		return getCode(values[0], values[1]);
 	}
@@ -87,20 +84,19 @@ public abstract class OperatorBlock<T, R> implements SimpleRenderable<R> {
 	}
 	
 	@Override
-	public final Valuable<?> getVariableAt(int q) {
+	public final Valuable<? extends T> getVariableAt(int q) {
 		return values[q];
 	}
 	@Override
-	public Valuable<?>[] getAllVariables() {
+	public Valuable<? extends T>[] getAllVariables() {
 		return values;
 	}
 	
-	@SuppressWarnings("unchecked")
-	public Valuable<T> getLeft() {
+	public Valuable<? extends T> getLeft() {
 		return values[0];
 	}
-	@SuppressWarnings("unchecked")
-	public Valuable<T> getRight() {
+	
+	public Valuable<? extends T> getRight() {
 		return values[1];
 	}
 	
@@ -162,6 +158,7 @@ public abstract class OperatorBlock<T, R> implements SimpleRenderable<R> {
 		for(Valuable<?> v : values) v.reset();
 	}
 	
+	@SuppressWarnings("unchecked")
 	public OperatorBlock<T, R>setValues(Valuable<? extends T> left, Valuable<? extends T> right) {
 		// Backend variable change
 		values = new Valuable[] {left, right};

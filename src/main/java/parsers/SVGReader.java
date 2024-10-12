@@ -46,6 +46,7 @@ import org.w3c.dom.svg.SVGRect;
 
 import debug.DebugOut;
 import domain.blocks.operators.AppendOperator;
+import domain.values.AbstractLiteral;
 import ui.renderers.IRenderer;
 
 public class SVGReader {
@@ -98,13 +99,20 @@ public class SVGReader {
 //        JSVGCanvas canvas = new JSVGCanvas();
 //        frame.getContentPane().add(canvas, BorderLayout.CENTER);
 //        canvas.setSVGDocument(document);
+        
 //        NumberLiteral<Integer> nl = new NumberLiteral<Integer>(123450, null);
 //        IRenderer r = nl.getRenderer();
+//        nl.setValue(10000., true);
+        
 //        IRenderer r = new BooleanLiteral(true, null).getRenderer();
 //        IRenderer r = new StringLiteral("123456789987654321", null).getRenderer();
 //        IRenderer r = new EnumLiteral<Integer>(KeyEventBlock.KEY_MAP, null).getRenderer();
-
-        IRenderer r = new AppendOperator().getRenderer();
+        
+        AppendOperator ao = new AppendOperator();
+        IRenderer r = ao.getRenderer();
+        r.getRenderableSVG();
+        ((AbstractLiteral<?>)ao.getLeft()).setValue("AAA");
+        
 //        AddOperator ao = new AddOperator();
 //        NumberLiteral<Double> nl = new NumberLiteral<Double>(0., ao);
 //        ao.setLeft(nl);
@@ -112,8 +120,6 @@ public class SVGReader {
 //        pao.setLeft(ao);
 //        
 //        IRenderer r = pao.getRenderer();
-        
-//        nl.setValue(10000., true);
         
 //        IRenderer r = new RandomOperator().getRenderer();
 //        IRenderer r = new OrBlock(new AndBlock(new OrBlock(), new BooleanLiteral(true, null)), new BooleanLiteral(true, null)).getRenderer();
