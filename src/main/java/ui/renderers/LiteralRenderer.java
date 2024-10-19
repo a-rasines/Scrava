@@ -167,12 +167,18 @@ public class LiteralRenderer implements IRenderer {
 	}
 	
 	@Override
-	public LiteralRenderer toDocument(SVGDocument doc) {
+	public LiteralRenderer toDocument(Document doc) {
 		if(element == null) getRenderableSVG();
 		ctx = SVGReader.build(doc);
 		element = (Element)doc.importNode(element, true);
 		doc.getDocumentElement().appendChild(element);
 		return this;
+	}
+	
+	@Override
+	public void synchronize(Document doc) {
+		System.out.println("Literal to " + doc);
+		element = doc.getElementById(getBlock().hashCode() + "_root");
 	}
 	
 	

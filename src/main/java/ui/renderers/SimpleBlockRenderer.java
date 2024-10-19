@@ -1,17 +1,14 @@
 package ui.renderers;
 
 import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 
 import org.apache.batik.anim.dom.SVGOMGElement;
 import org.apache.batik.bridge.BridgeContext;
 import org.apache.batik.dom.AbstractElement;
-import org.apache.batik.dom.util.DOMUtilities;
 import org.apache.batik.gvt.GraphicsNode;
+import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.w3c.dom.svg.SVGDocument;
@@ -228,12 +225,21 @@ public class SimpleBlockRenderer implements DragableRenderer{
 	private boolean updateSVG = false;
 	
 	@Override
-	public SimpleBlockRenderer toDocument(SVGDocument doc) {
+	public SimpleBlockRenderer toDocument(Document doc) {
 		if(element == null) getRenderableSVG();
 		element = (Element)doc.importNode(element, true);
 		doc.getDocumentElement().appendChild(element);
 		ctx = SVGReader.build(doc);
+		for(IRenderer child : getChildren())
+			child.synchronize(doc);
 		return this;
+	}
+	
+	@Override
+	public void synchronize(Document doc) {
+		element = doc.getElementById(getBlock().hashCode() + "_root");
+		for(IRenderer child : getChildren())
+			child.synchronize(doc);
 	}
 	
 	private void generateSVG() {

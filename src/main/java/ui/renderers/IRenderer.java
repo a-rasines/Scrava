@@ -13,9 +13,7 @@ import org.apache.batik.anim.dom.SVGOMTextElement;
 import org.apache.batik.dom.AbstractElement;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-import org.w3c.dom.svg.SVGDocument;
 import org.w3c.dom.svg.SVGLocatable;
 import org.w3c.dom.svg.SVGRect;
 
@@ -73,12 +71,17 @@ public interface IRenderer extends Serializable {
 	public Element getRenderableSVG();
 	
 	/**
+	 * Gets it's element from the document so when parent changes document, changes still apply on the correct element
+	 * @param doc
+	 */
+	public void synchronize(Document doc);
+	/**
 	 * Moves the SVG renderable (got using {@link IRenderer#getRenderableSVG()}) to the {@link org.w3c.dom.svg.SVGDocument SVGDocument} specified. <br>
 	 * <b>Important:</b> It does not append it to the document, it only registers the document as the new owner
-	 * @param doc the document the element will be part of
+	 * @param document the document the element will be part of
 	 * @return itself
 	 */
-	public IRenderer toDocument(SVGDocument doc);
+	public IRenderer toDocument(Document document);
 	
 	/**
 	 * Returns the rendered block
@@ -179,7 +182,8 @@ public interface IRenderer extends Serializable {
 					String[] divided = part.split("}}");
 					IRenderer rend = getChildren().get(vari++);
 //					SVGOMGElement newChild = (SVGOMGElement)parent.getOwnerDocument().createElementNS("http://www.w3.org/2000/svg", "g");
-					IRenderer.insertBlockInsideElement(parent, rend);
+					rend.toDocument(parent.getOwnerDocument());
+					parent.appendChild(rend.getRenderableSVG());
 //					parent.appendChild(newChild);
 					if(parent instanceof SVGLocatable l) {
 						if (l.getBBox() == null)
@@ -255,11 +259,6 @@ public interface IRenderer extends Serializable {
 		}
 		root.setAttributeNS(null, "width", String.valueOf(Math.round((len + 7.5) * 100) / 100));
 		root.setAttributeNS(null, "height", h + "");
-	}
-	
-	public static void insertBlockInsideElement(Element parent, IRenderer block) {
-		Node nn = parent.getOwnerDocument().importNode(block.getRenderableSVG(), true);
-		parent.appendChild(nn);
 	}
 	
 	public default Element setupSVG(Document doc) {
