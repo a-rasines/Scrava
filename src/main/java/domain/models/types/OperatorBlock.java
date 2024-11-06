@@ -147,6 +147,7 @@ public abstract class OperatorBlock<T, R> implements SimpleRenderable<R> {
 					if((n = nl.item(j)) instanceof Element e && e.getAttribute("id").equals(original.hashCode() + "_root")) {
 						g.insertBefore(v.getRenderer().getRenderableSVG(), e);
 						documentElement.appendChild(e);
+						getRenderer().updateSVG();
 						return;
 					}
 			}

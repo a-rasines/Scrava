@@ -8,6 +8,7 @@ import java.util.List;
 
 import javax.imageio.ImageIO;
 
+import org.apache.batik.anim.dom.SVGOMGElement;
 import org.apache.batik.anim.dom.SVGOMSVGElement;
 import org.apache.batik.anim.dom.SVGOMTextElement;
 import org.apache.batik.dom.AbstractElement;
@@ -113,13 +114,25 @@ public interface IRenderer extends Serializable {
 	 */
 	public List<IRenderer> getChildren();
 	
+	/**
+	 * Returns the mouse event manager fpr the block associated with this renderer
+	 * @return
+	 */
 	public Clickable getClickable();
 	
+	/**
+	 * Completely removes the block
+	 */
 	public void delete();
+	
+	/**
+	 * Updates the SVG representation of the block without updating the visor
+	 */
+	public void updateSVG();
 	
 	public static interface DragableRenderer extends IRenderer{
 		
-		public static final double SUBSCALE = 1.25;
+		public static final float SUBSCALE = 1.4f;
 		/**
 		 * Gets the local x position of the rendered object
 		 * @return
@@ -172,6 +185,11 @@ public interface IRenderer extends Serializable {
 		@Override
 		public BlockClickable getClickable();
 		
+		/**
+		 * Adds the text component to the block using the custom placeholders "{{vartype}}" to indicate where to put the children inside  
+		 * @param text The text with placeholders to insert
+		 * @param parent The container where the text will go
+		 */
 		public default void addText(String text, AbstractElement parent) {
 	        List<Element> elements = new LinkedList<>();
 	        String[] parts = text.split("\\{\\{");
@@ -181,10 +199,8 @@ public interface IRenderer extends Serializable {
 				if(part.split(" ")[0].contains("}}")) {
 					String[] divided = part.split("}}");
 					IRenderer rend = getChildren().get(vari++);
-//					SVGOMGElement newChild = (SVGOMGElement)parent.getOwnerDocument().createElementNS("http://www.w3.org/2000/svg", "g");
 					rend.toDocument(parent.getOwnerDocument());
 					parent.appendChild(rend.getRenderableSVG());
-//					parent.appendChild(newChild);
 					if(parent instanceof SVGLocatable l) {
 						if (l.getBBox() == null)
 							SVGReader.build(parent.getOwnerDocument());
@@ -207,6 +223,40 @@ public interface IRenderer extends Serializable {
 				h = Math.max(h, l.getBBox().getHeight());
 			}
 			assemble(parent, h);
+		}
+	}
+	
+	/**
+	 * Adds the text component to the block using the custom placeholders "{{vartype}}" to indicate where to put the children inside.
+	 * <br> This one does not move children to their gap
+	 * @param text The text with placeholders to insert
+	 * @param parent The container where the text will go
+	 */
+	public default void addTextWOAssemble(String text, AbstractElement parent) {
+        List<Element> elements = new LinkedList<>();
+        String[] parts = text.split("\\{\\{");
+		int vari = 0;
+		for(String part : parts) {
+			if(part.split(" ")[0].contains("}}")) {
+				String[] divided = part.split("}}");
+				IRenderer rend = getChildren().get(vari++);
+				rend.toDocument(parent.getOwnerDocument());
+				parent.appendChild(rend.getRenderableSVG());
+				if(parent instanceof SVGLocatable l)
+					if (l.getBBox() == null)
+						SVGReader.build(parent.getOwnerDocument());
+				if(divided.length > 1 && divided[1].strip().length() > 0) {
+					SVGOMTextElement textElement = IRenderer.textOf(parent.getOwnerDocument(), divided[1]);
+					parent.appendChild(textElement);
+			        elements.add(textElement);
+
+				}
+			} else if(!part.strip().equals("")){
+				SVGOMTextElement textElement = IRenderer.textOf(parent.getOwnerDocument(), part);
+				textElement.setAttributeNS(null, "dx", "10");
+		        parent.appendChild(textElement);
+		        elements.add(textElement);
+			}
 		}
 	}
 	
@@ -261,9 +311,9 @@ public interface IRenderer extends Serializable {
 		root.setAttributeNS(null, "height", h + "");
 	}
 	
-	public default Element setupSVG(Document doc) {
+	public default SVGOMGElement setupSVG(Document doc) {
 		SVGOMSVGElement root = (SVGOMSVGElement)doc.getDocumentElement();
-		Element element = doc.createElementNS("http://www.w3.org/2000/svg", "g");
+		SVGOMGElement element = (SVGOMGElement)doc.createElementNS("http://www.w3.org/2000/svg", "g");
 		System.out.println(element);
 		element.setAttribute("id", getBlock().hashCode() + "_root");
 		doc.importNode(element, true);

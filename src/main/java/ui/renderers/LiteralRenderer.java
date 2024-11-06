@@ -264,7 +264,7 @@ public class LiteralRenderer implements IRenderer {
 		element.setAttributeNS(null, "viewBox", "0 0 " + bb.getWidth() + " " + bb.getHeight());
 	}
 	
-	protected void updateSVG() {
+	public void updateSVG() {
 		System.out.println("Update SVG");
 		String value = type.equals(IRenderable.VARIABLE_ENUM)? ((EnumLiteral<?>)getBlock()).name() : getBlock().value().toString();
 		Element elem;

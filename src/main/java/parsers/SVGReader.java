@@ -45,8 +45,8 @@ import org.w3c.dom.svg.SVGLocatable;
 import org.w3c.dom.svg.SVGRect;
 
 import debug.DebugOut;
+import domain.blocks.operators.AddOperator;
 import domain.blocks.operators.AppendOperator;
-import domain.values.AbstractLiteral;
 import ui.renderers.IRenderer;
 
 public class SVGReader {
@@ -111,7 +111,8 @@ public class SVGReader {
         AppendOperator ao = new AppendOperator();
         IRenderer r = ao.getRenderer();
         r.getRenderableSVG();
-        ((AbstractLiteral<?>)ao.getLeft()).setValue("AAA");
+        //((AbstractLiteral<?>)ao.getLeft()).setValue("AAA");
+        ao.setLeft(new AddOperator());
         
 //        AddOperator ao = new AddOperator();
 //        NumberLiteral<Double> nl = new NumberLiteral<Double>(0., ao);
@@ -142,12 +143,7 @@ public class SVGReader {
         }
         
         BufferedImage bi = SVGReader.toBufferedImage(doc);
-        Graphics g = bi.getGraphics();
-        g.setColor(Color.blue);
         build(doc);
-        SVGRect bbox = ((SVGOMSVGElement) doc.getDocumentElement()).getBBox();
-        g.drawRect((int)bbox.getX(), (int)bbox.getY(), (int)bbox.getWidth(), (int)bbox.getHeight());
-        g.drawLine((int)(bbox.getWidth()/2), 0, (int)(bbox.getWidth()/2), (int)bbox.getHeight());
         JLabel label = new JLabel(new ImageIcon(bi)); 
         frame.add(label, BorderLayout.CENTER);
         frame.addMouseListener(new MouseAdapter() {

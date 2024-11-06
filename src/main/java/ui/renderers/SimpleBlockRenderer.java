@@ -5,13 +5,16 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.apache.batik.anim.dom.SVGOMGElement;
+import org.apache.batik.anim.dom.SVGOMRectElement;
 import org.apache.batik.bridge.BridgeContext;
 import org.apache.batik.dom.AbstractElement;
 import org.apache.batik.gvt.GraphicsNode;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.w3c.dom.svg.SVGDocument;
+import org.w3c.dom.svg.SVGLocatable;
 
 import clickable.BlockClickable;
 import domain.models.interfaces.Valuable;
@@ -219,7 +222,7 @@ public class SimpleBlockRenderer implements DragableRenderer{
 	}
 	
 	private transient SVGConfig config = null;
-	private transient Element element = null;
+	private transient SVGOMGElement element = null;
 	private transient BridgeContext ctx = null;
 	private transient GraphicsNode gn = null;
 	private boolean updateSVG = false;
@@ -227,7 +230,7 @@ public class SimpleBlockRenderer implements DragableRenderer{
 	@Override
 	public SimpleBlockRenderer toDocument(Document doc) {
 		if(element == null) getRenderableSVG();
-		element = (Element)doc.importNode(element, true);
+		element = (SVGOMGElement)doc.importNode(element, true);
 		doc.getDocumentElement().appendChild(element);
 		ctx = SVGReader.build(doc);
 		for(IRenderer child : getChildren())
@@ -237,7 +240,7 @@ public class SimpleBlockRenderer implements DragableRenderer{
 	
 	@Override
 	public void synchronize(Document doc) {
-		element = doc.getElementById(getBlock().hashCode() + "_root");
+		element = (SVGOMGElement)doc.getElementById(getBlock().hashCode() + "_root");
 		for(IRenderer child : getChildren())
 			child.synchronize(doc);
 	}
@@ -251,21 +254,37 @@ public class SimpleBlockRenderer implements DragableRenderer{
 		SVGDocument document = config.document();
 		element = setupSVG(document);
 		fillColor(element);
-		Element contentElement = document.createElementNS("http://www.w3.org/2000/svg", "g");
+		SVGOMGElement contentElement = (SVGOMGElement)document.createElementNS("http://www.w3.org/2000/svg", "g");
 		contentElement.setAttribute("id", getBlock().hashCode() + "_content_group");
 		System.out.println(contentElement.getAttribute("id"));
 		element.appendChild(contentElement);
-		addText(getBlock().getTitle(), (AbstractElement) contentElement);
-		Element background = document.getElementById("resize_rect");
+		addTextWOAssemble(getBlock().getTitle(), (AbstractElement) contentElement);
+		SVGOMRectElement background = (SVGOMRectElement) document.getElementById("resize_rect");
 		System.out.println(background);
+		float maxHeight = 0;
+		for(Node n = contentElement.getFirstElementChild(); n != null; n = n.getNextSibling())
+			if(n instanceof SVGLocatable e) 
+				maxHeight = Math.max(e.getBBox().getHeight(), maxHeight);
+		maxHeight = maxHeight * SUBSCALE;
+		assemble(contentElement, maxHeight);
 		background.setAttribute("width", contentElement.getAttribute("width"));
-		background.setAttribute("height", contentElement.getAttribute("height"));
+		background.setAttribute("height", String.valueOf(maxHeight));
 		background.setAttribute("id", getBlock().hashCode() + "_resize_rect");
 	}
-	private void updateSVG() {
+	public void updateSVG() {
 		updateSVG = false;
-		SVGOMGElement contentElement = (SVGOMGElement) element.getOwnerDocument().getElementById(getBlock().hashCode() + "_content_group");
-		assemble(contentElement, contentElement.getBBox().getHeight());
+		Document document = element.getOwnerDocument();
+		SVGOMGElement contentElement = (SVGOMGElement) document.getElementById(getBlock().hashCode() + "_content_group");
+		float maxHeight = 0;
+		for(Node n = contentElement.getFirstElementChild(); n != null; n = n.getNextSibling())
+			if(n instanceof SVGLocatable e) 
+				maxHeight = Math.max(e.getBBox().getHeight(), maxHeight);
+		maxHeight = maxHeight * SUBSCALE;
+		assemble(contentElement, maxHeight);
+		SVGOMRectElement background = (SVGOMRectElement) document.getElementById(getBlock().hashCode() + "_resize_rect");
+		System.out.println(background);
+		background.setAttribute("width", contentElement.getAttribute("width"));
+		background.setAttribute("height", String.valueOf(maxHeight));
 	}
 	
 	@Override
