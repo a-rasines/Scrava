@@ -39,12 +39,14 @@ public abstract class OperatorBlock<T, R> implements SimpleRenderable<R> {
 	public final OperatorBlock<T, R> setLeft(Valuable<? extends T> v) {
 		if(v == this)
 			throw new IllegalArgumentException("Block cannot contain itself");
-		this.values[0] = v;
+		setVariableAt(0, v);
 		return this;
 	}
 	
 	public final OperatorBlock<T, R> setRight(Valuable<? extends T> v) {
-		this.values[1] = v;
+		if(v == this)
+			throw new IllegalArgumentException("Block cannot contain itself");
+		setVariableAt(1, v);
 		return this;
 	}
 	
@@ -138,15 +140,17 @@ public abstract class OperatorBlock<T, R> implements SimpleRenderable<R> {
 		
 		//Frontend variable change
 		Element documentElement = getRenderer().getRenderableSVG().getOwnerDocument().getDocumentElement();
-		NodeList nl = getRenderer().getRenderableSVG().getChildNodes();
-		for(int j = 0; j < nl.getLength(); j++) {
-			Node n = nl.item(j);
-			if(n instanceof SVGOMGElement g) {
-				nl = g.getChildNodes();
-				for(j = 0; j < nl.getLength(); j++)
-					if((n = nl.item(j)) instanceof Element e && e.getAttribute("id").equals(original.hashCode() + "_root")) {
-						g.insertBefore(v.getRenderer().getRenderableSVG(), e);
-						documentElement.appendChild(e);
+		NodeList thisChildNodeList = getRenderer().getRenderableSVG().getChildNodes();
+		v.getRenderer().toDocument(getRenderer().getRenderableSVG().getOwnerDocument());
+		
+		for(int j = 0; j < thisChildNodeList.getLength(); j++) {
+			Node thisChildNode = thisChildNodeList.item(j);
+			if(thisChildNode instanceof SVGOMGElement childGElement) {
+				thisChildNodeList = childGElement.getChildNodes();
+				for(j = 0; j < thisChildNodeList.getLength(); j++)
+					if((thisChildNode = thisChildNodeList.item(j)) instanceof Element thisChildElement && thisChildElement.getAttribute("id").equals(original.hashCode() + "_root")) {
+						childGElement.insertBefore(v.getRenderer().getRenderableSVG(), thisChildElement);
+						documentElement.appendChild(thisChildElement);
 						getRenderer().updateSVG();
 						return;
 					}
