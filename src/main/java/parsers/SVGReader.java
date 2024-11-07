@@ -45,7 +45,7 @@ import org.w3c.dom.svg.SVGLocatable;
 import org.w3c.dom.svg.SVGRect;
 
 import debug.DebugOut;
-import domain.blocks.operators.AddOperator;
+import domain.blocks.operators.MaxOperator;
 import ui.renderers.IRenderer;
 import ui.renderers.IRenderer.IRenderable;
 
@@ -108,18 +108,14 @@ public class SVGReader {
 //        IRenderer r = new StringLiteral("123456789987654321", null).getRenderer();
 //        IRenderer r = new EnumLiteral<Integer>(KeyEventBlock.KEY_MAP, null).getRenderer();
         
-        IRenderable ao = new AddOperator();
+        //IRenderable ao = new AddOperator();
+        //IRenderable ao = new AppendOperator();
+        IRenderable ao = new MaxOperator();
         IRenderer r = ao.getRenderer();
         r.getRenderableSVG();
         //((AbstractLiteral<?>)ao.getLeft()).setValue("AAA");
         //ao.setLeft(new AddOperator());
         
-//        AddOperator ao = new AddOperator();
-//        NumberLiteral<Double> nl = new NumberLiteral<Double>(0., ao);
-//        ao.setLeft(nl);
-//        AddOperator pao = new AddOperator();
-//        pao.setLeft(ao);
-//        
 //        IRenderer r = pao.getRenderer();
         
 //        IRenderer r = new RandomOperator().getRenderer();

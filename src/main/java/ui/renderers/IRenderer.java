@@ -289,16 +289,20 @@ public interface IRenderer extends Serializable {
 				transform: {
 					for(int i = 0; i < transform.length; i++)
 						if(transform[i].startsWith("translate")) {
-							if(!(e instanceof SVGOMTextElement))
+							if(!(e instanceof SVGOMTextElement)) {
+								if(len == 0)
+									len = 10;
 								transform[i] = "translate(" + (x0 + len) + ","+ String.valueOf((h - bb.getHeight()) / 2) + ")";
-							else
+							} else 
 								transform[i] = "translate(" + (x0 + len) + "," + String.valueOf(h / 2) + ")";
 							e.setAttribute("transform", String.join(" ", transform));
 							break transform;
 						}
-					if(!(e instanceof SVGOMTextElement))
+					if(!(e instanceof SVGOMTextElement)) {
+						if(len == 0)
+							len = 10;
 						e.setAttribute("transform", String.join(" ", transform) + "translate(" + (x0 + len) + ","+ String.valueOf((h - bb.getHeight()) / 2) + ")");
-					else
+					} else
 						e.setAttribute("transform", String.join(" ", transform) + "translate(" + (x0 + len) + "," + String.valueOf(h / 2) + ")");
 				}
 				len += w;
