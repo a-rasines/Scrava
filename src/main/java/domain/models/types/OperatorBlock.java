@@ -8,6 +8,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import domain.models.interfaces.Valuable;
+import domain.util.Pair;
 import domain.values.AbstractLiteral;
 import ui.renderers.IRenderer.DragableRenderer;
 import ui.renderers.IRenderer.IRenderable;
@@ -24,17 +25,16 @@ public abstract class OperatorBlock<T, R> implements SimpleRenderable<R> {
 	}
 
 	private static final long serialVersionUID = 1979700927393729000L;
-	protected Valuable<? extends T>[] values;
-	protected Valuable<? extends T>[] defs;
+	protected Pair<Valuable<? extends T>> values;
+	protected Pair<Valuable<? extends T>> defs;
 	
 	protected OperatorBlock() {
 		sbr = new SimpleBlockRenderer(this);
 	}
 	
-	@SuppressWarnings("unchecked")
 	protected void setup(Valuable<? extends T> left, Valuable<? extends T> right) {
-		this.values = new Valuable[]{left, right};
-		this.defs = new Valuable[]{left, right};
+		this.values = new Pair<>(left, right);
+		this.defs = this.values.clone();
 	}
 	public final OperatorBlock<T, R> setLeft(Valuable<? extends T> v) {
 		if(v == this)
@@ -51,14 +51,14 @@ public abstract class OperatorBlock<T, R> implements SimpleRenderable<R> {
 	}
 	
 	public boolean isAplicable(Valuable<?> a) {
-		return checkVariable(values[0], a)
-			   && checkVariable(values[1], a)
-			   || values[0]  == null && values[1] == null;
+		return checkVariable(values.getLeft(), a)
+			   && checkVariable(values.getRight(), a)
+			   || values.getLeft()  == null && values.getRight() == null;
 	}
 	
 	private boolean checkVariable(Valuable<?> th, Valuable<?> in) {
 		return th != null 
-				&& (values[0].value().getClass().isInstance(in.value()) ||
+				&& (values.getLeft().value().getClass().isInstance(in.value()) ||
 				   th instanceof AbstractLiteral<?> && ((AbstractLiteral<?>)th).isEmpty()); 
 	}
 	
@@ -66,13 +66,13 @@ public abstract class OperatorBlock<T, R> implements SimpleRenderable<R> {
 	
 	@Override
 	public final R value() {
-		return (R) value(values[0], values[1]);
+		return (R) value(values.getLeft(), values.getRight());
 	}
 	
 	public abstract String getCode(Valuable<? extends T> left, Valuable<? extends T> right);
 	
 	public final String getCode() {
-		return getCode(values[0], values[1]);
+		return getCode(values.getLeft(), values.getRight());
 	}
 	@Override
 	public BlockCategory getCategory() {
@@ -81,62 +81,51 @@ public abstract class OperatorBlock<T, R> implements SimpleRenderable<R> {
 
 	@Override
 	public void getImports(Set<String> imports) {
-		values[0].getImports(imports);
-		values[1].getImports(imports);
+		for (Valuable<? extends T> v : values)
+			v.getImports(imports);
 	}
 	
 	@Override
 	public final Valuable<? extends T> getVariableAt(int q) {
-		return values[q];
+		return values.get(q);
 	}
 	@Override
-	public Valuable<? extends T>[] getAllVariables() {
-		return values;
+	public Iterable<Valuable<? extends T>> getAllVariables() {
+		return values.clone();
 	}
 	
 	public Valuable<? extends T> getLeft() {
-		return values[0];
+		return values.getLeft();
 	}
 	
 	public Valuable<? extends T> getRight() {
-		return values[1];
+		return values.getRight();
 	}
 	
 	@SuppressWarnings("unchecked")
 	@Override
 	public LiteralRenderable<?> removeVariable(Valuable<?> v) {
-		if(values[0].equals(v)) {
-			setVariableAt(0, v);
-			return (LiteralRenderable<T>)values[0];
-		} else if (values[1].equals(v)) {
-			setVariableAt(0, v);
-			return (LiteralRenderable<T>)values[1];
-		}
-		return null;
+		int index = values.indexOf((Valuable<? extends T>)v);
+		setVariableAt(index, defs.get(index));
+		return (LiteralRenderable<?>) values.get(index);
 	}
 	@Override
 	public void removeVariableAt(int i) {
-		if (i == 0)
-			setVariableAt(0, defs[0]);
-		else
-			setVariableAt(1, defs[1]);
+		setVariableAt(i, defs.get(i));
 	}
 	
+	@SuppressWarnings("unchecked")
 	@Override
 	public void replaceVariable(Valuable<?> old, Valuable<?> newValue) {
-		if(values[0].equals(old)) {
-			setVariableAt(0, newValue);
-		} else if (values[1].equals(old)) {
-			setVariableAt(1, newValue);
-		}
-		
+		setVariableAt(values.indexOf((Valuable<? extends T>)old), newValue);		
 	}
 	@SuppressWarnings("unchecked")
 	@Override
 	public void setVariableAt(int i, Valuable<?> v) {
 		// Backend variable change
-		IRenderable original = values[i];
-		values[i] = (Valuable<? extends T>) v;
+		
+		IRenderable original = values.get(i);
+		values.setAt(i, (Valuable<? extends T>) v);
 		
 		//Frontend variable change
 		Element documentElement = getRenderer().getRenderableSVG().getOwnerDocument().getDocumentElement();
@@ -163,10 +152,9 @@ public abstract class OperatorBlock<T, R> implements SimpleRenderable<R> {
 		for(Valuable<?> v : values) v.reset();
 	}
 	
-	@SuppressWarnings("unchecked")
 	public OperatorBlock<T, R>setValues(Valuable<? extends T> left, Valuable<? extends T> right) {
 		// Backend variable change
-		values = new Valuable[] {left, right};
+		values = new Pair<Valuable<? extends T>>(left, right);
 		int child = 0;
 		
 		//Frontend variable change

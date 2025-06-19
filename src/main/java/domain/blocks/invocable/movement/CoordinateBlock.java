@@ -1,5 +1,6 @@
 package domain.blocks.invocable.movement;
 
+import java.util.List;
 import java.util.Set;
 
 import domain.Sprite;
@@ -50,8 +51,8 @@ public abstract class CoordinateBlock extends FunctionBlock {
 	}
 	
 	@Override
-	public Valuable<?>[] getAllVariables() {
-		return new Valuable<?>[] {x, y};
+	public List<? extends Valuable<?>> getAllVariables() {
+		return List.of(x, y);
 	}
 	
 	@Override

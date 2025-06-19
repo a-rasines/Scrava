@@ -1,5 +1,6 @@
 package domain.blocks.invocable.looks;
 
+import java.util.List;
 import java.util.Set;
 
 import domain.Sprite;
@@ -55,8 +56,8 @@ public class SetTextureBlock extends FunctionBlock {
 	}
 
 	@Override
-	public Valuable<?>[] getAllVariables() {
-		return new Valuable<?>[] {value};
+	public Iterable<? extends Valuable<?>> getAllVariables() {
+		return List.of(value);
 	}
 
 	@SuppressWarnings("unchecked")

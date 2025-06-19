@@ -13,7 +13,7 @@ import ui.renderers.SimpleBlockRenderer.SimpleRenderable;
 public interface IVariable<T> extends SimpleRenderable<T>, Valuable<T> {
 	
 	@Override public default Valuable<?> getVariableAt(int i) { return null; }
-	@Override public default Valuable<?>[] getAllVariables() { return new Valuable[0]; }
+	@Override public default Iterable<? extends Valuable<?>> getAllVariables() { return List.of(); }
 	@Override public default boolean isAplicable(Valuable<?> v) { return false; }
 	@Override public default LiteralRenderable<?> removeVariable(Valuable<?> v) { return null; }
 	@Override public default void removeVariableAt(int i) {}

@@ -1,6 +1,7 @@
 package domain.blocks.event;
 
 import java.awt.event.KeyEvent;
+import java.util.List;
 
 import domain.Sprite;
 import domain.models.interfaces.Valuable;
@@ -18,8 +19,8 @@ public class OnKeyPressEventBlock extends KeyEventBlock {
 	}
 
 	@Override
-	public Valuable<?>[] getAllVariables() {
-		return new Valuable<?>[] {KEY};
+	public Iterable<? extends Valuable<?>> getAllVariables() {
+		return List.of(KEY);
 	}
 
 	@Override

@@ -1,5 +1,6 @@
 package domain.models.types;
 
+import java.util.List;
 import java.util.Set;
 
 import domain.models.interfaces.Valuable;
@@ -25,8 +26,8 @@ public abstract  class ValuableModifier<In, Out> implements SimpleRenderable<Out
 	}
 
 	@Override
-	public Valuable<?>[] getAllVariables() {
-		return new Valuable<?>[] {value};
+	public Iterable<? extends Valuable<?>> getAllVariables() {
+		return List.of(value);
 	}
 
 	@SuppressWarnings("unchecked")

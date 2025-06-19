@@ -7,11 +7,11 @@ import domain.Sprite;
 import domain.models.interfaces.Translatable;
 import domain.models.interfaces.Valuable;
 import domain.models.types.FunctionBlock;
+import domain.util.Pair;
 import domain.values.AbstractLiteral;
 import domain.values.EnumLiteral;
 import domain.values.IVariable;
 import domain.values.StaticVariable;
-import ui.components.BlockPanel;
 import ui.renderers.LiteralRenderer.LiteralRenderable;
 
 public class SetValueBlock extends FunctionBlock {
@@ -76,8 +76,8 @@ public class SetValueBlock extends FunctionBlock {
 	}
 
 	@Override
-	public Valuable<?>[] getAllVariables() {
-		return new Valuable<?>[] {variables, value};
+	public Iterable<Valuable<?>> getAllVariables() {
+		return new Pair<Valuable<?>>(variables, value);
 	}
 
 	@Override

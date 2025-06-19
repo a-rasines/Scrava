@@ -1,5 +1,7 @@
 package domain.blocks.invocable.movement;
 
+import java.util.List;
+
 import domain.Sprite;
 import domain.models.interfaces.Valuable;
 
@@ -25,8 +27,8 @@ public class MoveXBlock extends MoveBlock{
 	}
 	
 	@Override
-	public Valuable<?>[] getAllVariables() {
-		return new Valuable[] {super.getAllVariables()[0]};
+	public List<? extends Valuable<?>> getAllVariables() {
+		return List.of(super.getAllVariables().get(0));
 	}
 
 }

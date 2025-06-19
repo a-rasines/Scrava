@@ -43,11 +43,8 @@ public class OptionCapsuleBlock extends CapsuleBlock {
 	}
 
 	@Override
-	public Valuable<?>[] getAllVariables() {
-		Valuable<?>[] output = new Valuable[variables.size()];
-		for(int i = 0; i < variables.size(); i++)
-			output[i] = variables.get(i);
-		return output;
+	public Iterable<? extends Valuable<?>> getAllVariables() {
+		return new ArrayList<>(variables);
 	}
 
 	@Override

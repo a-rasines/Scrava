@@ -1,6 +1,7 @@
 package domain.models.types;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
@@ -31,11 +32,11 @@ public abstract class MultipleOptionCapsuleBlock extends ArrayList<OptionCapsule
 	}
 	
 	@Override
-	public Valuable<?>[] getAllVariables() {
+	public Iterable<Valuable<?>> getAllVariables() {
 		List<Valuable<?>> variables = new LinkedList<>();
 		for(OptionCapsuleBlock ocb : this)
-			variables.addAll(List.of(ocb.getAllVariables()));
-		return variables.toArray(new Valuable<?>[variables.size()]);
+			ocb.getAllVariables().forEach(variables::add);
+		return variables;
 	}
 
 	@Override
@@ -78,17 +79,20 @@ public abstract class MultipleOptionCapsuleBlock extends ArrayList<OptionCapsule
 	
 	@Override
 	public void removeVariableAt(int i) {
-		removeVariable(getAllVariables()[i]);
+		removeVariable(getVariableAt(i));
 	}
 	
 	@Override
 	public void setVariableAt(int i, Valuable<?> v) {
-		replaceVariable(getAllVariables()[i], v);
+		replaceVariable(getVariableAt(i), v);
 	}
 	
 	@Override
 	public Valuable<?> getVariableAt(int i) {
-		return getAllVariables()[i];
+		Iterator<Valuable<?>> iter = getAllVariables().iterator();
+		for(int j = 0; j < i; j++)
+			iter.next();
+		return iter.next();
 	}
 	
 	

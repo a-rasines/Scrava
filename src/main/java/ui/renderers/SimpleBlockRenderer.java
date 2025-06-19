@@ -160,10 +160,10 @@ public class SimpleBlockRenderer implements DragableRenderer{
 	@Override
 	public List<IRenderer> getChildren() {
 		List<IRenderer> output = new LinkedList<>();
-		Valuable<?>[] v = block.getAllVariables();
-		for(int i = 0; i < v.length; i++) {
+		Iterable<? extends Valuable<?>> variables = block.getAllVariables();
+		for(Valuable<?> variable : variables) {
 			IRenderer rend;
-			rend = v[i].getRenderer();
+			rend = variable.getRenderer();
 			if(rend.getClickable() instanceof BlockClickable bl)
 				bl.setParent(this.getClickable());
 			

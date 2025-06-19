@@ -1,5 +1,7 @@
 package domain.blocks.invocable.movement;
 
+import java.util.List;
+
 import domain.Sprite;
 import domain.models.interfaces.Valuable;
 import domain.values.NumberHelper;
@@ -26,8 +28,8 @@ public class MoveXToBlock extends CoordinateBlock{
 	}
 	
 	@Override
-	public Valuable<?>[] getAllVariables() {
-		return new Valuable[] {super.getAllVariables()[0]};
+	public List<? extends Valuable<?>> getAllVariables() {
+		return List.of(super.getAllVariables().get(0));
 	}
 	
 	@Override

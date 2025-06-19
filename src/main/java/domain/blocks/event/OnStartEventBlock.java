@@ -1,5 +1,7 @@
 package domain.blocks.event;
 
+import java.util.List;
+
 import domain.Sprite;
 import domain.models.interfaces.Valuable;
 import domain.models.types.EventBlock;
@@ -25,8 +27,8 @@ public class OnStartEventBlock extends EventBlock {
 	}
 
 	@Override
-	public Valuable<?>[] getAllVariables() {
-		return new Valuable[0];
+	public Iterable<? extends Valuable<?>> getAllVariables() {
+		return List.of();
 	}
 
 	@Override

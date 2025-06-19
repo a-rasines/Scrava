@@ -1,5 +1,6 @@
 package domain.blocks.capsule;
 
+import java.util.List;
 import java.util.Set;
 import java.util.function.Supplier;
 
@@ -34,8 +35,8 @@ public class RepeatBlock extends CapsuleBlock{
 	}
 
 	@Override
-	public Valuable<?>[] getAllVariables() {
-		return new Valuable<?>[] {variable};
+	public Iterable<? extends Valuable<?>> getAllVariables() {
+		return List.of(variable);
 	}
 
 	@SuppressWarnings("unchecked")
